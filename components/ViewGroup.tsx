@@ -1,16 +1,16 @@
-import React from "react";
-import { ViewGroup as ViewGroupType, EditorState } from "./types";
-import { Box, Text } from "@modulz/radix";
-import { useSelector } from "react-redux";
+import React from 'react'
+import { ViewGroup as ViewGroupType, EditorState } from './types'
+import { Box, Text } from '@modulz/radix'
+import { useSelector } from 'react-redux'
 
 export const ViewGroup = ({ id }: { id: string }) => {
     const { x, y, name, views, active = 0 } = useSelector(
         (state: EditorState) => state.viewGroups[id]
-    );
-    const activeViewId = views[active];
+    )
+    const activeViewId = views[active]
     const activeView = useSelector(
         (state: EditorState) => state.views[activeViewId]
-    );
+    )
 
     return (
         <Box
@@ -33,5 +33,5 @@ export const ViewGroup = ({ id }: { id: string }) => {
                 </Text>
             </Box>
         </Box>
-    );
-};
+    )
+}

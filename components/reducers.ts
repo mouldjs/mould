@@ -1,3 +1,3 @@
-import { handleMoveWorkspace, handleZoomWorkspace } from "./Workspaces";
+import { handleMoveWorkspace, handleZoomWorkspace } from './Workspaces'
 
-export default [handleMoveWorkspace, handleZoomWorkspace];
+export default [handleMoveWorkspace, handleZoomWorkspace]
