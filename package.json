@@ -1,34 +1,51 @@
 {
-  "name": "mould",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "9.0.7",
-    "react": "16.10.1",
-    "react-dom": "16.10.1"
-  },
-  "devDependencies": {
-    "@types/node": "^12.7.8",
-    "@types/react": "^16.9.4",
-    "husky": ">=1",
-    "lint-staged": ">=8",
-    "prettier": "^1.18.2",
-    "typescript": "^3.6.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
+    "name": "mould",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+    },
+    "dependencies": {
+        "@modulz/radix": "^0.0.1-alpha.54",
+        "@visionjs/core": "^2.0.0-alpha.1",
+        "@zeit/next-css": "^1.0.1",
+        "debounce": "^1.2.0",
+        "immer": "^4.0.0",
+        "next": "9.0.7",
+        "normalize.css": "^8.0.1",
+        "react": "16.10.1",
+        "react-dom": "16.10.1",
+        "react-feather": "^2.0.3",
+        "react-redux": "^7.1.1",
+        "react-spring": "^8.0.27",
+        "react-use-gesture": "^6.0.1",
+        "reduce-reducers": "^1.0.4",
+        "redux": "^4.0.4",
+        "redux-actions": "^2.6.5",
+        "styled-components": "^4.4.0",
+        "styled-system": "^5.1.2"
+    },
+    "devDependencies": {
+        "@types/node": "^12.7.8",
+        "@types/react": "^16.9.4",
+        "@types/react-redux": "^7.1.4",
+        "@types/redux-actions": "^2.6.1",
+        "husky": ">=1",
+        "lint-staged": ">=8",
+        "prettier": "^1.18.2",
+        "typescript": "^3.6.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{ts,tsx,js,css,json,md}": [
+            "prettier --write",
+            "git add"
+        ]
     }
-  },
-  "lint-staged": {
-    "*.{js,css,json,md}": [
-      "prettier --write",
-      "git add"
-    ]
-  }
 }
