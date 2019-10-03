@@ -37,5 +37,5 @@ export type EditorState = {
     testWorkspace: Workspace;
     viewGroups: { [key: string]: ViewGroup };
     views: { [key: string]: View };
-    components: { [key: string]: View };
+    components: { [key: string]: Component };
 };

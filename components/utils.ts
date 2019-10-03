@@ -22,5 +22,6 @@ export const initialData: EditorState = {
             width: 300,
             height: 700
         }
-    }
+    },
+    components: {}
 };

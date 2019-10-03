@@ -1,6 +1,6 @@
-import React from "react";
-import { PlusSquare, Camera } from "react-feather";
-import { Box, Flex, GhostButton, Button } from "@modulz/radix";
+import React from 'react'
+import { PlusSquare } from 'react-feather'
+import { Box, Flex, GhostButton, Button } from '@modulz/radix'
 
 export const Toolbar = () => {
     return (
@@ -12,5 +12,5 @@ export const Toolbar = () => {
         >
             <PlusSquare color="#fff"></PlusSquare>
         </Flex>
-    );
-};
+    )
+}
