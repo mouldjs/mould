@@ -14,6 +14,7 @@ export const initialData: EditorState = {
             x: 500,
             y: 200,
             views: ['a'],
+            mouldId: 'testMould',
         },
     },
     views: {
@@ -23,5 +24,16 @@ export const initialData: EditorState = {
             height: 700,
         },
     },
-    components: {},
+    moulds: {
+        testMould: {
+            id: 'testMould',
+            scope: [],
+            input: [],
+            states: ['default'],
+            tree: {
+                path: '/Hello',
+                props: {},
+            },
+        },
+    },
 }

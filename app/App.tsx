@@ -11,6 +11,7 @@ import './app.css'
 import { useEffect } from 'react'
 import { createProcessReducers } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
+import PropertyToolBar from './PropertyToolBar'
 
 function handleTouchMove(e) {
     e.preventDefault()
@@ -48,7 +49,14 @@ const App = () => {
                 <Box flex={1}>
                     <Workspace {...testWorkspace}></Workspace>
                 </Box>
-                <Box width={300} height="100vh"></Box>
+                <Box
+                    width={300}
+                    height="100vh"
+                    borderLeft="1px solid #aaaaaa"
+                    backgroundColor="#e1e1e1"
+                >
+                    <PropertyToolBar.Target />
+                </Box>
             </Flex>
         </Flex>
     )

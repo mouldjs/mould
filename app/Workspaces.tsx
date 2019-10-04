@@ -51,13 +51,13 @@ export const Workspace = ({
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
     const bind = useGesture({
-        onDrag: ({ last, movement }) => {
-            const xy = [x + movement[0], y + movement[1]]
-            setXY(xy)
-            if (last) {
-                dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
-            }
-        },
+        // onDrag: ({ last, movement }) => {
+        //     const xy = [x + movement[0], y + movement[1]]
+        //     setXY(xy)
+        //     if (last) {
+        //         dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
+        //     }
+        // },
         onWheel: ({ last, movement }) => {
             const xy = [x - movement[0], y - movement[1]]
             setXY(xy)

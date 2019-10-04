@@ -17,6 +17,7 @@ export type ViewGroup = {
     name?: string
     active?: number
     views: string[]
+    mouldId: string
 } & Vector
 
 export type Workspace = {
@@ -26,16 +27,22 @@ export type Workspace = {
 } & Vector
 
 export type Component = {
+    path: string
+    props: object
+    children?: Component[]
+}
+
+export type Mould = {
     id: string
     scope: string[]
-    states: string[]
-    tree: object
     input: string[]
+    states: string[]
+    tree: Component
 }
 
 export type EditorState = {
     testWorkspace: Workspace
     viewGroups: { [key: string]: ViewGroup }
     views: { [key: string]: View }
-    components: { [key: string]: Component }
+    moulds: { [key: string]: Mould }
 }

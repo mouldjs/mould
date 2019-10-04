@@ -5531,6 +5531,11 @@ react-style-singleton@^2.0.0:
     invariant "^2.2.4"
     tslib "^1.0.0"
 
+react-teleporter@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npm.taobao.org/react-teleporter/download/react-teleporter-1.1.1.tgz#498d73b1bf9a3c9dcbf3069badcaa2ae5bf48b8f"
+  integrity sha1-SY1zsb+aPJ3L8wabrcqirlv0i48=
+
 react-use-gesture@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npm.taobao.org/react-use-gesture/download/react-use-gesture-6.0.1.tgz#c66d686c63a2469de3ae178e19e3d1a04c526bf6"

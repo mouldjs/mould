@@ -2,15 +2,17 @@ import React from 'react'
 import { ViewGroup as ViewGroupType, EditorState } from './types'
 import { Box, Text } from '@modulz/radix'
 import { useSelector } from 'react-redux'
+import Mould from '../components/Mould'
 
 export const ViewGroup = ({ id }: { id: string }) => {
-    const { x, y, name, views, active = 0 } = useSelector(
+    const { x, y, name, views, active = 0, mouldId } = useSelector(
         (state: EditorState) => state.viewGroups[id]
     )
     const activeViewId = views[active]
     const activeView = useSelector(
         (state: EditorState) => state.views[activeViewId]
     )
+    const mould = useSelector((state: EditorState) => state.moulds[mouldId])
 
     return (
         <Box
@@ -31,6 +33,7 @@ export const ViewGroup = ({ id }: { id: string }) => {
                 <Text truncate size={1} textColor="rgb(132,132,132)">
                     {name}
                 </Text>
+                <Mould editable {...mould}></Mould>
             </Box>
         </Box>
     )

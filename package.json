@@ -20,6 +20,7 @@
         "react-feather": "^2.0.3",
         "react-redux": "^7.1.1",
         "react-spring": "^8.0.27",
+        "react-teleporter": "^1.1.1",
         "react-use-gesture": "^6.0.1",
         "reduce-reducers": "^1.0.4",
         "redux": "^4.0.4",
