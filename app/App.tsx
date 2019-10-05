@@ -12,6 +12,8 @@ import { useEffect } from 'react'
 import { createProcessReducers } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
+import { DndProvider } from 'react-dnd-cjs'
+import HTML5Backend from 'react-dnd-html5-backend-cjs'
 
 function handleTouchMove(e) {
     e.preventDefault()
@@ -19,6 +21,7 @@ function handleTouchMove(e) {
 
 const App = () => {
     useEffect(() => {
+        //阻止二指滑动的默认浏览器 后退/前进 行为
         if (document) {
             document.addEventListener('wheel', handleTouchMove, {
                 passive: false,
@@ -71,9 +74,11 @@ export default () => {
                 >()(...reducers) as any)
             )}
         >
-            <RadixProvider>
-                <App></App>
-            </RadixProvider>
+            <DndProvider backend={HTML5Backend}>
+                <RadixProvider>
+                    <App></App>
+                </RadixProvider>
+            </DndProvider>
         </Provider>
     )
 }

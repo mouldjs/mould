@@ -2,7 +2,7 @@ import React from 'react'
 import { ViewGroup as ViewGroupType, EditorState } from './types'
 import { Box, Text } from '@modulz/radix'
 import { useSelector } from 'react-redux'
-import Mould from '../components/Mould'
+import Mould from './Mould'
 
 export const ViewGroup = ({ id }: { id: string }) => {
     const { x, y, name, views, active = 0, mouldId } = useSelector(

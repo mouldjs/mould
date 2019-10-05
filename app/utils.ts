@@ -31,9 +31,25 @@ export const initialData: EditorState = {
             input: [],
             states: ['default'],
             tree: {
-                path: '/Hello',
+                type: 'Hello',
                 props: {},
             },
         },
     },
 }
+
+export const selectedThis = (selection: number[] | undefined, path: number[]) =>
+    selection && selection.join('/') === path.join('/')
+
+export const includeSelection = (
+    selection: number[] | undefined,
+    path: number[]
+) => selection && selection.join('/').includes(path.join('/'))
+
+export const selectionInsideThis = (
+    selection: number[] | undefined,
+    path: number[]
+) =>
+    selection &&
+    !selectedThis(selection, path) &&
+    includeSelection(selection, path)

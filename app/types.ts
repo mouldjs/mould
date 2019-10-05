@@ -27,7 +27,7 @@ export type Workspace = {
 } & Vector
 
 export type Component = {
-    path: string
+    type: string
     props: object
     children?: Component[]
 }
@@ -45,4 +45,5 @@ export type EditorState = {
     viewGroups: { [key: string]: ViewGroup }
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
+    selection?: number[]
 }

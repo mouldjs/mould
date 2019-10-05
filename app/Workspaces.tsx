@@ -6,6 +6,7 @@ import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
+import { selectComponent } from './appShell'
 
 type MoveWorkspaceActionType = { id: string } & Vector
 const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
@@ -81,11 +82,13 @@ export const Workspace = ({
     return (
         <Box
             bg="rgb(241,241,241)"
-            // width="100vw"
             height="100vh"
             overflow="hidden"
             position="relative"
             {...bind()}
+            onDoubleClick={() => {
+                dispatch(selectComponent({ selection: undefined }))
+            }}
         >
             <div
                 style={{
