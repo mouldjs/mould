@@ -30,7 +30,9 @@ const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            onDrop(item.name)
+            if (!monitor.getDropResult()) {
+                onDrop(item.name)
+            }
 
             return true
         },
@@ -82,7 +84,11 @@ const Tree = ({
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            if (!selected && !monitor.getDropResult()) {
+            if (monitor.getDropResult()) {
+                return true
+            }
+
+            if (!selected) {
                 return
             }
             onChange({
@@ -90,6 +96,8 @@ const Tree = ({
                 props,
                 children: [...(children || []), { type: item.name, props: {} }],
             })
+
+            return true
         },
         collect: monitor => {
             let canDrop = false

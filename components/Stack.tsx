@@ -2,9 +2,9 @@ import React, { useState, useRef, forwardRef } from 'react'
 import PropSource from '../app/PropSource'
 import {
     Input,
-    Flex,
     ToggleButton,
     ToggleButtonGroup,
+    Flex,
     Box,
     Popover,
     Checkbox,
@@ -18,17 +18,7 @@ import {
     Sliders,
 } from 'react-feather'
 import { Cell, TitledBoard } from './FormComponents'
-import styled from 'styled-components'
-import { system } from 'styled-system'
-
-const FlexBox = styled(Flex)`
-    ${system({
-        outline: {
-            property: 'outline',
-            cssProperty: 'outline',
-        },
-    })}
-`
+import { BaseFlex } from './BaseComponents'
 
 type Alignment =
     | 'flex-start'
@@ -45,7 +35,6 @@ type StackProps = {
     horizontalAlign?: Alignment
     verticalAlign?: Alignment
     wrap?: boolean
-    gap?: number | string
     grow?: boolean
     shrink?: boolean
 }
@@ -71,7 +60,6 @@ export default forwardRef(
             horizontalAlign = 'flex-start',
             verticalAlign = 'flex-start',
             wrap = false,
-            gap = 0,
             grow = true,
             shrink = true,
             ...rest
@@ -82,7 +70,7 @@ export default forwardRef(
         const buttonRef = useRef(null)
 
         return (
-            <FlexBox
+            <BaseFlex
                 flexDirection={direction}
                 justifyContent={verticalAlign}
                 alignItems={horizontalAlign}
@@ -91,29 +79,10 @@ export default forwardRef(
                 flexShrink={shrink && 1}
                 ref={ref}
                 height="100%"
+                width="100%"
                 {...rest}
             >
-                {children &&
-                    children.map((c, index) => {
-                        const first = index === 0
-                        const s = {
-                            // flexGrow: 1,
-                            // width: 'fill-available',
-                            // height: 'fill-available',
-                        }
-
-                        return first ? (
-                            <Box {...s}>{c}</Box>
-                        ) : direction.includes('column') ? (
-                            <Box {...s} mt={gap}>
-                                {c}
-                            </Box>
-                        ) : (
-                            <Box {...s} ml={gap}>
-                                {c}
-                            </Box>
-                        )
-                    })}
+                {children}
                 <PropSource path={path}>
                     <TitledBoard
                         title="Stack"
@@ -204,17 +173,6 @@ export default forwardRef(
                                 </Flex>
                             </ToggleButtonGroup>
                         </Cell>
-                        <Cell label="Gap">
-                            <Input
-                                value={gap}
-                                onChange={e => {
-                                    const gap = parseInt(e.target.value)
-                                    if (gap || gap === 0) {
-                                        requestUpdateProps({ gap })
-                                    }
-                                }}
-                            ></Input>
-                        </Cell>
                     </TitledBoard>
                     <Popover
                         targetRef={buttonRef}
@@ -262,7 +220,7 @@ export default forwardRef(
                         </Flex>
                     </Popover>
                 </PropSource>
-            </FlexBox>
+            </BaseFlex>
         )
     }
 )
