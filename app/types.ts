@@ -40,6 +40,12 @@ export type Mould = {
     tree: Component
 }
 
+export type ComponentPropTypes<T = any> = {
+    requestUpdateProps: (props: object) => void
+    path: number[]
+} & Component &
+    T
+
 export type EditorState = {
     testWorkspace: Workspace
     viewGroups: { [key: string]: ViewGroup }

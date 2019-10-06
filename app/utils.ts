@@ -31,7 +31,7 @@ export const initialData: EditorState = {
             input: [],
             states: ['default'],
             tree: {
-                type: 'Hello',
+                type: 'Stack',
                 props: {},
             },
         },

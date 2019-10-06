@@ -1,12 +1,16 @@
 import React from 'react'
-import { PlusSquare } from 'react-feather'
+import { PlusSquare, Layers, Image } from 'react-feather'
 import { Box, Flex, GhostButton, Button } from '@modulz/radix'
 import { useDrag } from 'react-dnd-cjs'
 
 const Icon = ({ name, children }) => {
     const [, drag] = useDrag({ item: { type: 'TREE', name } })
 
-    return <div ref={drag}>{children}</div>
+    return (
+        <Box marginX={1} ref={drag}>
+            {children}
+        </Box>
+    )
 }
 
 export const Toolbar = () => {
@@ -19,6 +23,12 @@ export const Toolbar = () => {
         >
             <Icon name="Hello">
                 <PlusSquare color="#fff"></PlusSquare>
+            </Icon>
+            <Icon name="Stack">
+                <Layers color="#fff"></Layers>
+            </Icon>
+            <Icon name="Image">
+                <Image color="#fff"></Image>
             </Icon>
         </Flex>
     )

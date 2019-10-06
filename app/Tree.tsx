@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
 import { selectedThis, selectionInsideThis, includeSelection } from './utils'
+import { Box } from '@modulz/radix'
 
 const GREEN = '#8ed80e'
 const BLUE = '#56a9f1'
@@ -147,15 +148,17 @@ const Tree = ({
     }
 
     return (
-        <div
+        <Box
             ref={drop}
-            style={{
-                outline: selected
+            // width="fill-available"
+            // height="fill-available"
+            border={
+                selected
                     ? isOver
-                        ? `1px solid ${GREEN}`
-                        : `1px solid ${BLUE}`
-                    : 'none',
-            }}
+                        ? `2px solid ${GREEN}`
+                        : `2px solid ${BLUE}`
+                    : 'none'
+            }
             onDoubleClickCapture={event => {
                 if (included) {
                     return
@@ -168,10 +171,10 @@ const Tree = ({
             <Comp
                 requestUpdateProps={
                     editable &&
-                    (props => {
+                    (nextProps => {
                         onChange({
                             type,
-                            props,
+                            props: { ...props, ...nextProps },
                             children,
                         })
                     })
@@ -181,7 +184,7 @@ const Tree = ({
             >
                 {inside}
             </Comp>
-        </div>
+        </Box>
     )
 }
 

@@ -1,3 +1,9 @@
 body {
     overflow: hidden;
+    line-height: 1.35;
+}
+
+/* hack: 修复 popover 被 ToggleButton 遮住的问题 */
+div[data-focus-lock-disabled] > div:first-child {
+    z-index: 3;
 }
