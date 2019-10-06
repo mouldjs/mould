@@ -136,6 +136,7 @@ export default forwardRef(
                                 <Flex flexWrap="wrap">
                                     {alignments.map(alignment => (
                                         <ToggleButton
+                                            key={alignment}
                                             style={{
                                                 minWidth: 40,
                                                 marginBottom: 12,
@@ -160,6 +161,7 @@ export default forwardRef(
                                 <Flex flexWrap="wrap">
                                     {alignments.map(alignment => (
                                         <ToggleButton
+                                            key={alignment}
                                             style={{
                                                 minWidth: 40,
                                                 marginBottom: 12,
