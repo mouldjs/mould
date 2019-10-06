@@ -12,7 +12,12 @@ export const Cell = ({
     children: ReactNode
 }) => {
     return (
-        <Flex justifyContent="space-between" alignItems="baseline" margin={1}>
+        <Flex
+            justifyContent="space-between"
+            alignItems="baseline"
+            marginY={1}
+            marginX={3}
+        >
             {desc && (
                 <Tooltip label={desc} side="bottom" align="start">
                     <Text size={0}>{label}</Text>

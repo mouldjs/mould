@@ -31,8 +31,8 @@ const FlexBox = styled(Flex)`
 `
 
 type Alignment =
-    | 'start'
-    | 'end'
+    | 'flex-start'
+    | 'flex-end'
     | 'center'
     | 'space-between'
     | 'space-around'
@@ -51,8 +51,8 @@ type StackProps = {
 }
 
 const alignments: Alignment[] = [
-    'start',
-    'end',
+    'flex-start',
+    'flex-end',
     'center',
     'baseline',
     'space-between',
@@ -68,8 +68,8 @@ export default forwardRef(
             children,
             path,
             direction = 'column',
-            horizontalAlign = 'start',
-            verticalAlign = 'start',
+            horizontalAlign = 'flex-start',
+            verticalAlign = 'flex-start',
             wrap = false,
             gap = 0,
             grow = true,
@@ -97,9 +97,9 @@ export default forwardRef(
                     children.map((c, index) => {
                         const first = index === 0
                         const s = {
-                            flexGrow: 1,
-                            width: 'fill-available',
-                            height: 'fill-available',
+                            // flexGrow: 1,
+                            // width: 'fill-available',
+                            // height: 'fill-available',
                         }
 
                         return first ? (
