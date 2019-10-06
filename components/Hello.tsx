@@ -1,10 +1,16 @@
 import React from 'react'
 import PropSource from '../app/PropSource'
-import { Input } from '@modulz/radix'
+import { Input, Box } from '@modulz/radix'
 
-export default ({ say = 'world', requestUpdateProps, children, path }) => {
+export default ({
+    say = 'world',
+    requestUpdateProps,
+    children,
+    path,
+    ...rest
+}) => {
     return (
-        <div>
+        <Box {...rest}>
             hello, {say}
             {children}
             <PropSource path={path}>
@@ -17,6 +23,6 @@ export default ({ say = 'world', requestUpdateProps, children, path }) => {
                     }}
                 ></Input>
             </PropSource>
-        </div>
+        </Box>
     )
 }

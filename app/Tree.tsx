@@ -148,11 +148,9 @@ const Tree = ({
     }
 
     return (
-        <Box
+        <Comp
             ref={drop}
-            // width="fill-available"
-            // height="fill-available"
-            border={
+            outline={
                 selected
                     ? isOver
                         ? `2px solid ${GREEN}`
@@ -167,24 +165,21 @@ const Tree = ({
                 const selection = path
                 dispatch(selectComponent({ selection }))
             }}
-        >
-            <Comp
-                requestUpdateProps={
-                    editable &&
-                    (nextProps => {
-                        onChange({
-                            type,
-                            props: { ...props, ...nextProps },
-                            children,
-                        })
+            requestUpdateProps={
+                editable &&
+                (nextProps => {
+                    onChange({
+                        type,
+                        props: { ...props, ...nextProps },
+                        children,
                     })
-                }
-                path={path}
-                {...props}
-            >
-                {inside}
-            </Comp>
-        </Box>
+                })
+            }
+            path={path}
+            {...props}
+        >
+            {inside}
+        </Comp>
     )
 }
 

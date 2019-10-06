@@ -40,11 +40,10 @@ export type Mould = {
     tree: Component
 }
 
-export type ComponentPropTypes<T = any> = {
+export type ComponentPropTypes = {
     requestUpdateProps: (props: object) => void
     path: number[]
-} & Component &
-    T
+} & Component
 
 export type EditorState = {
     testWorkspace: Workspace
