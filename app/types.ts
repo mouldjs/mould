@@ -40,9 +40,11 @@ export type Mould = {
     tree: Component
 }
 
+export type Path = [string, ...number[]]
+
 export type ComponentPropTypes = {
     requestUpdateProps: (props: object) => void
-    path: number[]
+    path: Path
 } & Component
 
 export type EditorState = {
@@ -50,6 +52,5 @@ export type EditorState = {
     viewGroups: { [key: string]: ViewGroup }
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
-    selection?: number[]
-    currentMouldId?: string
+    selection?: Path | string //[mouldId, ...path] | mouldId
 }

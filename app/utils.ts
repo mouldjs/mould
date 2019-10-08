@@ -1,4 +1,4 @@
-import { EditorState } from './types'
+import { EditorState, Path } from './types'
 import { useSelector } from 'react-redux'
 
 export const initialData: EditorState = {
@@ -39,49 +39,25 @@ export const initialData: EditorState = {
     },
 }
 
-export const selectedThis = (selection: number[] | undefined, path: number[]) =>
-    selection && selection.join('/') === path.join('/')
-
-export const includeSelection = (
-    selection: number[] | undefined,
-    path: number[]
-) => selection && selection.join('/').includes(path.join('/'))
-
-export const selectionInsideThis = (
-    selection: number[] | undefined,
-    path: number[]
-) =>
-    selection &&
-    !selectedThis(selection, path) &&
-    includeSelection(selection, path)
-
-export const useIsCurrentMould = (mouldId: string) => {
-    const currentMouldId = useSelector(
-        (state: EditorState) => state.currentMouldId
-    )
+export const useIsSelectedMould = (mouldId: string) => {
+    const currentMouldId = useSelector((state: EditorState) => state.selection)
 
     return currentMouldId === mouldId
 }
 
-export const useSelectedThis = (mouldId: string, path: number[]) => {
-    const currentMouldId = useSelector(
-        (state: EditorState) => state.currentMouldId
-    )
-    const selectionPath = useSelector((state: EditorState) => state.selection)
+export const useIsSelectedPath = (path: Path) => {
+    const currentPath = useSelector((state: EditorState) => state.selection)
 
     return (
-        currentMouldId === mouldId && selectionPath.join('/') === path.join('/')
+        Array.isArray(currentPath) && currentPath.join('/') === path.join('/')
     )
 }
 
-export const useIncludeThis = (mouldId: string, path: number[]) => {
-    const currentMouldId = useSelector(
-        (state: EditorState) => state.currentMouldId
-    )
-    const selectionPath = useSelector((state: EditorState) => state.selection)
+export const useIsIncludePath = (path: Path) => {
+    const currentPath = useSelector((state: EditorState) => state.selection)
 
     return (
-        currentMouldId === mouldId &&
-        selectionPath.join('/').includes(path.join('/'))
+        Array.isArray(currentPath) &&
+        currentPath.join('/').includes(path.join('/'))
     )
 }

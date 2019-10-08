@@ -31,7 +31,7 @@ export default ({ id, tree, editable = false }: Mould & Editable) => {
     return (
         <Provider value={editable}>
             <Tree
-                path={[]}
+                path={[id]}
                 onChange={tree => {
                     dispatch(modifyMouldTree({ id, tree }))
                 }}

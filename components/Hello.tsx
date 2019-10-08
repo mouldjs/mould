@@ -13,7 +13,7 @@ export default ({
         <Box {...rest}>
             hello, {say}
             {children}
-            <PropSource path={path}>
+            <PropSource selection={path}>
                 <Input
                     value={say}
                     placeholder="say?"

@@ -1,14 +1,14 @@
 import { useEditable } from './MouldContext'
 import PropertyToolBar from './PropertyToolBar'
-import { useSelector } from 'react-redux'
-import { EditorState } from './types'
-import { selectedThis } from './utils'
+import { useIsSelectedPath, useIsSelectedMould } from './utils'
 
-const PropSource = ({ path, children }) => {
+const PropSource = ({ selection, children }) => {
     const editable = useEditable()
-    const selection = useSelector((state: EditorState) => state.selection)
+    const isSelectedPath = useIsSelectedPath(selection)
+    const isSelectedMould = useIsSelectedMould(selection)
+    const selected = isSelectedMould || isSelectedPath
 
-    return editable && selectedThis(selection, path) ? (
+    return editable && selected ? (
         <PropertyToolBar.Source>{children}</PropertyToolBar.Source>
     ) : null
 }

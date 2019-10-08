@@ -23,7 +23,7 @@ export default forwardRef(
                 <BaseBox ref={ref} {...rest}>
                     <img src={src}></img>
                 </BaseBox>
-                <PropSource path={path}>
+                <PropSource selection={path}>
                     <Input
                         value={src}
                         placeholder="please set img src"

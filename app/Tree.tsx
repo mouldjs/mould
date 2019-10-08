@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { Component, EditorState } from './types'
+import { Component, EditorState, Path } from './types'
 import { useEditable } from './MouldContext'
 import Components from '../components'
 import { useDrop } from 'react-dnd-cjs'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
-import { selectedThis, selectionInsideThis, includeSelection } from './utils'
+import { useIsSelectedPath, useIsIncludePath } from './utils'
 import { Box } from '@modulz/radix'
 
 const GREEN = '#8ed80e'
@@ -16,8 +16,8 @@ type Edit = {
     onChange: (tree: Component) => void
 }
 
-type Path = {
-    path: number[]
+type PathProps = {
+    path: Path
 }
 
 const doNothing = () => {}
@@ -71,12 +71,11 @@ const Tree = ({
     children,
     onChange,
     path,
-}: Component & Edit & Path) => {
+}: Component & Edit & PathProps) => {
     const dispatch = useDispatch()
     const editable = useEditable()
-    const selection = useSelector((state: EditorState) => state.selection)
-    const selected = selectedThis(selection, path)
-    const included = includeSelection(selection, path)
+    const selected = useIsSelectedPath(path)
+    const included = useIsIncludePath(path)
     const [{ isOver, canDrop }, drop] = useDrop<
         { type: string; name: string },
         void,
@@ -117,7 +116,7 @@ const Tree = ({
         children &&
         children.map((tree, index) => (
             <Tree
-                path={[...path, index]}
+                path={[...path, index] as Path}
                 onChange={
                     editable
                         ? tree => {

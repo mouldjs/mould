@@ -1,8 +1,8 @@
 import { createAction, handleAction } from 'redux-actions'
-import { EditorState } from './types'
+import { EditorState, Path } from './types'
 import { initialData } from './utils'
 
-type SelectComponentAction = { selection: number[] }
+type SelectComponentAction = { selection: Path }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
 export const selectComponent = createAction(SELECT_COMPONENT)
 export const handleSelectComponent = handleAction<

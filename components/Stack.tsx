@@ -83,7 +83,7 @@ export default forwardRef(
                 {...rest}
             >
                 {children}
-                <PropSource path={path}>
+                <PropSource selection={path}>
                     <TitledBoard
                         title="Stack"
                         collspae
