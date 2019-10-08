@@ -30,11 +30,11 @@ const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            if (!monitor.getDropResult()) {
+            if (!monitor.getDropResult() || !monitor.getDropResult().res) {
                 onDrop(item.name)
             }
 
-            return true
+            return { res: true }
         },
         collect: monitor => ({
             isOver: monitor.isOver(),
@@ -84,8 +84,8 @@ const Tree = ({
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            if (monitor.getDropResult()) {
-                return true
+            if (monitor.getDropResult() && monitor.getDropResult().res) {
+                return { res: true }
             }
 
             if (!selected) {
@@ -97,7 +97,7 @@ const Tree = ({
                 children: [...(children || []), { type: item.name, props: {} }],
             })
 
-            return true
+            return { res: true }
         },
         collect: monitor => {
             let canDrop = false

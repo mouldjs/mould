@@ -51,4 +51,5 @@ export type EditorState = {
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
     selection?: number[]
+    currentMouldId?: string
 }

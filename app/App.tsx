@@ -66,13 +66,26 @@ const App = () => {
 }
 
 export default () => {
+    const dev =
+        typeof window !== 'undefined' &&
+        (window as any).__REDUX_DEVTOOLS_EXTENSION__
+
     return (
         <Provider
-            store={createStore(
-                reduceReducers(initialData, createProcessReducers<
-                    EditorState
-                >()(...reducers) as any)
-            )}
+            store={
+                dev
+                    ? createStore(
+                          reduceReducers(initialData, createProcessReducers<
+                              EditorState
+                          >()(...reducers) as any),
+                          (window as any).__REDUX_DEVTOOLS_EXTENSION__()
+                      )
+                    : createStore(
+                          reduceReducers(initialData, createProcessReducers<
+                              EditorState
+                          >()(...reducers) as any)
+                      )
+            }
         >
             <DndProvider backend={HTML5Backend}>
                 <RadixProvider>

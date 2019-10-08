@@ -1,21 +1,56 @@
 import React from 'react'
 import styled from 'styled-components'
-import { system } from 'styled-system'
-import { Flex, Box } from '@modulz/radix'
+import {
+    system,
+    compose,
+    space,
+    color,
+    typography,
+    layout,
+    flexbox,
+    background,
+    border,
+    position,
+    shadow,
+} from 'styled-system'
 
-export const BaseFlex = styled(Flex)`
-    ${system({
-        outline: {
-            property: 'outline',
-            cssProperty: 'outline',
-        },
-    })}
+export const BaseFlex = styled.div`
+    ${compose(
+        system({
+            outline: {
+                property: 'outline',
+                cssProperty: 'outline',
+            },
+        }),
+        space,
+        color,
+        typography,
+        layout,
+        flexbox,
+        background,
+        border,
+        position,
+        shadow
+    )}
+    display: flex;
 `
-export const BaseBox = styled(Box)`
-    ${system({
-        outline: {
-            property: 'outline',
-            cssProperty: 'outline',
-        },
-    })}
-`
+
+export const BaseBox = styled.div(
+    compose(
+        system({
+            outline: {
+                property: 'outline',
+                cssProperty: 'outline',
+            },
+        }),
+        space,
+        color,
+        typography,
+        layout,
+        flexbox,
+        background,
+        border,
+        position,
+        shadow
+    )
+)

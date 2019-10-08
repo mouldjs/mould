@@ -1,4 +1,5 @@
 import { EditorState } from './types'
+import { useSelector } from 'react-redux'
 
 export const initialData: EditorState = {
     testWorkspace: {
@@ -53,3 +54,34 @@ export const selectionInsideThis = (
     selection &&
     !selectedThis(selection, path) &&
     includeSelection(selection, path)
+
+export const useIsCurrentMould = (mouldId: string) => {
+    const currentMouldId = useSelector(
+        (state: EditorState) => state.currentMouldId
+    )
+
+    return currentMouldId === mouldId
+}
+
+export const useSelectedThis = (mouldId: string, path: number[]) => {
+    const currentMouldId = useSelector(
+        (state: EditorState) => state.currentMouldId
+    )
+    const selectionPath = useSelector((state: EditorState) => state.selection)
+
+    return (
+        currentMouldId === mouldId && selectionPath.join('/') === path.join('/')
+    )
+}
+
+export const useIncludeThis = (mouldId: string, path: number[]) => {
+    const currentMouldId = useSelector(
+        (state: EditorState) => state.currentMouldId
+    )
+    const selectionPath = useSelector((state: EditorState) => state.selection)
+
+    return (
+        currentMouldId === mouldId &&
+        selectionPath.join('/').includes(path.join('/'))
+    )
+}
