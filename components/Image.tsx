@@ -1,5 +1,5 @@
 import React, { Fragment, forwardRef } from 'react'
-import PropSource from '../app/PropSource'
+import { ComponentInspector } from '../app/Inspectors'
 import { Input } from '@modulz/radix'
 import { BaseBox } from './BaseComponents'
 import { ComponentPropTypes } from '../app/types'
@@ -23,7 +23,7 @@ export default forwardRef(
                 <BaseBox ref={ref} {...rest}>
                     <img src={src}></img>
                 </BaseBox>
-                <PropSource selection={path}>
+                <ComponentInspector path={path}>
                     <Input
                         value={src}
                         placeholder="please set img src"
@@ -32,7 +32,7 @@ export default forwardRef(
                             requestUpdateProps({ src: e.target.value })
                         }}
                     ></Input>
-                </PropSource>
+                </ComponentInspector>
             </Fragment>
         )
     }

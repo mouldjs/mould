@@ -81,7 +81,7 @@ export const Workspace = ({
 
     return (
         <Box
-            bg="rgb(241,241,241)"
+            bg="white"
             height="100vh"
             overflow="hidden"
             position="relative"

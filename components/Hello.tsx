@@ -1,5 +1,5 @@
 import React from 'react'
-import PropSource from '../app/PropSource'
+import { ComponentInspector } from '../app/Inspectors'
 import { Input, Box } from '@modulz/radix'
 
 export default ({
@@ -13,7 +13,7 @@ export default ({
         <Box {...rest}>
             hello, {say}
             {children}
-            <PropSource selection={path}>
+            <ComponentInspector path={path}>
                 <Input
                     value={say}
                     placeholder="say?"
@@ -22,7 +22,7 @@ export default ({
                         requestUpdateProps({ say: e.target.value })
                     }}
                 ></Input>
-            </PropSource>
+            </ComponentInspector>
         </Box>
     )
 }

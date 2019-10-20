@@ -1,5 +1,5 @@
 import React, { useState, useRef, forwardRef } from 'react'
-import PropSource from '../app/PropSource'
+import { ComponentInspector } from '../app/Inspectors'
 import {
     Input,
     ToggleButton,
@@ -17,7 +17,7 @@ import {
     ArrowUp,
     Sliders,
 } from 'react-feather'
-import { Cell, TitledBoard } from './FormComponents'
+import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { BaseFlex } from './BaseComponents'
 
 type Alignment =
@@ -83,7 +83,7 @@ export default forwardRef(
                 {...rest}
             >
                 {children}
-                <PropSource selection={path}>
+                <ComponentInspector path={path}>
                     <TitledBoard
                         title="Stack"
                         collspae
@@ -221,7 +221,7 @@ export default forwardRef(
                             </Checkbox>
                         </Flex>
                     </Popover>
-                </PropSource>
+                </ComponentInspector>
             </BaseFlex>
         )
     }

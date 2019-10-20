@@ -35,7 +35,7 @@ export type Component = {
 export type Mould = {
     id: string
     scope: string[]
-    input: string[]
+    input: { [key: string]: string }
     states: string[]
     tree: Component
 }

@@ -29,7 +29,7 @@ export const initialData: EditorState = {
         testMould: {
             id: 'testMould',
             scope: [],
-            input: [],
+            input: {},
             states: ['default'],
             tree: {
                 type: 'Stack',
