@@ -14,7 +14,7 @@ export const initialData: EditorState = {
             id: 'xxxxxx',
             x: 500,
             y: 200,
-            views: ['a'],
+            views: { default: 'a' },
             mouldId: 'testMould',
         },
     },
@@ -30,10 +30,11 @@ export const initialData: EditorState = {
             id: 'testMould',
             scope: [],
             input: {},
-            states: ['default'],
-            tree: {
-                type: 'Stack',
-                props: {},
+            states: {
+                default: {
+                    type: 'Stack',
+                    props: {},
+                },
             },
         },
     },

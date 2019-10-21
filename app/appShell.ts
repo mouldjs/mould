@@ -1,7 +1,7 @@
 import { createAction, handleAction } from 'redux-actions'
-import { EditorState, Path } from './types'
+import { EditorState, Path, View } from './types'
 import { initialData } from './utils'
-import { string } from 'prop-types'
+import nanoid from 'nanoid'
 
 type SelectComponentAction = { selection: Path }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
@@ -123,7 +123,19 @@ export const addState = createAction<AddStateAction>(ADD_STATE)
 export const handleAddState = handleAction<EditorState, AddStateAction>(
     ADD_STATE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].states.push(action.payload.state)
+        state.moulds[action.payload.mouldId].states[action.payload.state] = {
+            type: 'Stack',
+            props: {},
+        }
+        const view: View = {
+            id: nanoid(6),
+            width: 300,
+            height: 500,
+        }
+        state.views[view.id] = view
+        Object.values(state.viewGroups).find(
+            g => g.mouldId === action.payload.mouldId
+        ).views[action.payload.state] = view.id
 
         return state
     },
@@ -139,12 +151,21 @@ export const removeState = createAction<RemoveStateAction>(REMOVE_STATE)
 export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
     REMOVE_STATE,
     (state, action) => {
-        const index = state.moulds[action.payload.mouldId].states.findIndex(
-            value => value === action.payload.state
-        )
-        if (index !== -1) {
-            state.moulds[action.payload.mouldId].states.splice(index, 1)
-        }
+        const viewGroupId = Object.values(state.viewGroups).find(
+            g => g.mouldId === action.payload.mouldId
+        ).id
+
+        state.moulds[action.payload.mouldId].states[
+            action.payload.state
+        ] = undefined
+        delete state.moulds[action.payload.mouldId].states[action.payload.state]
+
+        const viewId = state.viewGroups[viewGroupId].views[action.payload.state]
+        state.viewGroups[viewGroupId].views[action.payload.state] = undefined
+        delete state.viewGroups[viewGroupId].views[action.payload.state]
+
+        state.views[viewId] = undefined
+        delete state.views[viewId]
 
         return state
     },

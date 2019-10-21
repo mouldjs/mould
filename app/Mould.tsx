@@ -6,7 +6,7 @@ import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch } from 'react-redux'
 
-type ModifyMouldTreeAction = { id: string; tree: Component }
+type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
 const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
 const modifyMouldTree = createAction<ModifyMouldTreeAction>(MODIFY_MOULD_TREE)
 export const handleModifyMouldTree = handleAction<
@@ -15,7 +15,8 @@ export const handleModifyMouldTree = handleAction<
 >(
     MODIFY_MOULD_TREE,
     (state, action) => {
-        state.moulds[action.payload.id].tree = action.payload.tree
+        state.moulds[action.payload.id].states[action.payload.state] =
+            action.payload.tree
 
         return state
     },
@@ -24,16 +25,23 @@ export const handleModifyMouldTree = handleAction<
 
 const { Provider } = MouldContext
 type Editable = { editable: boolean }
+type currentState = { currentState: string }
 
-export default ({ id, tree, editable = false }: Mould & Editable) => {
+export default ({
+    id,
+    currentState,
+    states,
+    editable = false,
+}: Mould & Editable & currentState) => {
     const dispatch = useDispatch()
+    const tree = states[currentState]
 
     return (
         <Provider value={editable}>
             <Tree
-                path={[id]}
+                path={[id, currentState]}
                 onChange={tree => {
-                    dispatch(modifyMouldTree({ id, tree }))
+                    dispatch(modifyMouldTree({ id, tree, state: currentState }))
                 }}
                 {...tree}
             ></Tree>

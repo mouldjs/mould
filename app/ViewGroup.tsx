@@ -3,6 +3,7 @@ import {
     ViewGroup as ViewGroupType,
     EditorState,
     Mould as MouldType,
+    View,
 } from './types'
 import {
     Box,
@@ -29,7 +30,7 @@ import {
 import { useIsSelectedMould } from './utils'
 import { MouldInspector } from './Inspectors'
 import { TitledBoard, Cell } from '../inspector/FormComponents'
-import { Plus, Settings, Trash2, X } from 'react-feather'
+import { Settings, Trash2, X } from 'react-feather'
 import Mould from './Mould'
 
 const InputEditor = ({ input, id }: MouldType) => {
@@ -113,32 +114,31 @@ const InputEditor = ({ input, id }: MouldType) => {
                     )
                 }}
             >
-                {Object.keys(input).length === 0 && (
-                    <span>There is no input yet.</span>
-                )}
-                {Object.keys(input).map(k => {
-                    return (
-                        <Cell key={k} label={k}>
-                            {
-                                <Select
-                                    value={input[k]}
-                                    onChange={e => {
-                                        dispatch(
-                                            modifyInputController({
-                                                mouldId: id,
-                                                inputKey: k,
-                                                controller: e.target.value,
-                                            })
-                                        )
-                                    }}
-                                >
-                                    <option value="number">number</option>
-                                    <option value="text">text</option>
-                                </Select>
-                            }
-                        </Cell>
-                    )
-                })}
+                <Box marginY={1}>
+                    {Object.keys(input).map(k => {
+                        return (
+                            <Cell key={k} label={k}>
+                                {
+                                    <Select
+                                        value={input[k]}
+                                        onChange={e => {
+                                            dispatch(
+                                                modifyInputController({
+                                                    mouldId: id,
+                                                    inputKey: k,
+                                                    controller: e.target.value,
+                                                })
+                                            )
+                                        }}
+                                    >
+                                        <option value="number">number</option>
+                                        <option value="text">text</option>
+                                    </Select>
+                                }
+                            </Cell>
+                        )
+                    })}
+                </Box>
             </TitledBoard>
         </Fragment>
     )
@@ -227,7 +227,7 @@ const StateEditor = ({ states, id }: MouldType) => {
         <Fragment>
             <Dialog isOpen={isOpen} onDismiss={() => setIsOpen(false)}>
                 <Box p={6}>
-                    {states.map(s => {
+                    {Object.keys(states).map(s => {
                         return (
                             <Badge size={1}>
                                 {s}
@@ -278,27 +278,33 @@ const StateEditor = ({ states, id }: MouldType) => {
                     )
                 }}
             >
-                <Select marginY={1} marginX={3}>
-                    {states.map(s => {
-                        return <option value={s}>{s}</option>
-                    })}
-                </Select>
+                {Object.keys(states).map(s => {
+                    return <Badge size={1}>{s}</Badge>
+                })}
             </TitledBoard>
         </Fragment>
     )
 }
 
+const MOULDS_PADDING = 50
+
 export const ViewGroup = ({ id }: { id: string }) => {
-    const { x, y, name, views, active = 0, mouldId } = useSelector(
+    const { x, y, name, views, mouldId } = useSelector(
         (state: EditorState) => state.viewGroups[id]
     )
-    const activeViewId = views[active]
-    const activeView = useSelector(
-        (state: EditorState) => state.views[activeViewId]
+    const viewsInHere = useSelector((state: EditorState): {
+        [key: string]: View
+    } =>
+        Object.keys(views).reduce((prev, curr) => {
+            prev[curr] = state.views[views[curr]]
+
+            return prev
+        }, {})
     )
     const mould = useSelector((state: EditorState) => state.moulds[mouldId])
     const dispatch = useDispatch()
     const isSelected = useIsSelectedMould(mouldId)
+    const states = Object.keys(mould.states)
 
     return (
         <Fragment>
@@ -306,46 +312,68 @@ export const ViewGroup = ({ id }: { id: string }) => {
                 position="absolute"
                 left={x}
                 top={y}
-                width={activeView.width + 100}
-                height={activeView.height + 100}
-                p={50}
-                // border="3px dashed palevioletred"
+                width={
+                    Object.values(viewsInHere).reduce(
+                        (prev, curr) => prev + curr.width,
+                        0
+                    ) +
+                    (states.length + 1) * MOULDS_PADDING
+                }
+                height={
+                    Object.values(viewsInHere).reduce(
+                        (prev, curr) => Math.max(prev, curr.height),
+                        0
+                    ) +
+                    MOULDS_PADDING * 2
+                }
+                p={MOULDS_PADDING}
                 boxSizing="border-box"
                 borderRadius={10}
                 bg="#f1f1f1"
+                border={isSelected ? `1px solid #56a9f1` : 'none'}
+                onDoubleClick={e => {
+                    e.stopPropagation()
+                    dispatch(
+                        selectComponent({
+                            selection: mouldId,
+                        })
+                    )
+                }}
             >
-                <Box
-                    boxShadow="0px 0px 5px #aaaaaa"
-                    position="absolute"
-                    width={activeView.width}
-                    height={activeView.height}
-                    bg="white"
-                    style={{
-                        outline: isSelected ? `1px solid #56a9f1` : 'none',
-                    }}
-                >
-                    <Box
-                        position="absolute"
-                        width={activeView.width}
-                        height={activeView.height}
-                        top={-20}
-                    >
-                        <Text
-                            truncate
-                            size={1}
-                            textColor="rgb(132,132,132)"
-                            onDoubleClick={e => {
-                                e.stopPropagation()
-                                dispatch(
-                                    selectComponent({ selection: mouldId })
-                                )
-                            }}
-                        >
-                            {name}
-                        </Text>
-                        <Mould editable {...mould}></Mould>
-                    </Box>
+                <Box position="absolute" top={-20} left={0}>
+                    <Text truncate size={1} textColor="rgb(132,132,132)">
+                        {name}
+                    </Text>
                 </Box>
+                {states.map((state, i) => {
+                    const view = viewsInHere[state]
+
+                    return (
+                        <Box
+                            boxShadow="0px 0px 5px #aaaaaa"
+                            position="relative"
+                            width={view.width}
+                            height={view.height}
+                            bg="white"
+                            ml={i === 0 ? 0 : MOULDS_PADDING}
+                        >
+                            <Box position="absolute" top={-20}>
+                                <Text
+                                    truncate
+                                    size={1}
+                                    textColor="rgb(132,132,132)"
+                                >
+                                    {state}
+                                </Text>
+                            </Box>
+                            <Mould
+                                editable
+                                {...mould}
+                                currentState={state}
+                            ></Mould>
+                        </Box>
+                    )
+                })}
             </Flex>
             <MouldInspector mouldId={mouldId}>
                 <InputEditor {...mould}></InputEditor>

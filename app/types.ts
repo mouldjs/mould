@@ -16,7 +16,7 @@ export type ViewGroup = {
     id: string
     name?: string
     active?: number
-    views: string[]
+    views: { [key: string]: string }
     mouldId: string
 } & Vector
 
@@ -36,11 +36,10 @@ export type Mould = {
     id: string
     scope: string[]
     input: { [key: string]: string }
-    states: string[]
-    tree: Component
+    states: { [key: string]: Component }
 }
 
-export type Path = [string, ...number[]]
+export type Path = [string, string, ...number[]]
 
 export type ComponentPropTypes = {
     requestUpdateProps: (props: object) => void
@@ -52,5 +51,5 @@ export type EditorState = {
     viewGroups: { [key: string]: ViewGroup }
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
-    selection?: Path | string //[mouldId, ...path] | mouldId
+    selection?: Path | string //[mouldId, state, ...path] | mouldId
 }
