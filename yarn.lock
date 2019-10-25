@@ -1049,6 +1049,20 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
+"@types/react-resizable@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.npm.taobao.org/@types/react-resizable/download/@types/react-resizable-1.7.1.tgz#a9383c488a935e6bca3d845cec10e83218b623a9"
+  integrity sha1-qTg8SIqTXmvKPYRc7BDoMhi2I6k=
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-treeview@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.npm.taobao.org/@types/react-treeview/download/@types/react-treeview-0.4.2.tgz#080a89fdfba18cc589de96f9c51625b7a2ae5a1f"
+  integrity sha1-CAqJ/fuhjMWJ3pb5xRYlt6KuWh8=
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^16.9.4":
   version "16.9.4"
   resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.4.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.9.4.tgz#de8cf5e5e2838659fb78fa93181078469eeb19fc"
@@ -1900,6 +1914,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+classnames@^2.2.5:
+  version "2.2.6"
+  resolved "https://registry.npm.taobao.org/classnames/download/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
+  integrity sha1-Q5Nb/90pHzJtrQogUwmzjQD2UM4=
 
 clean-stack@^2.0.0:
   version "2.2.0"
@@ -5338,7 +5357,7 @@ prop-types-exact@1.2.0:
     object.assign "^4.1.0"
     reflect.ownkeys "^0.2.0"
 
-prop-types@15.7.2, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15.7.2, prop-types@15.x, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npm.taobao.org/prop-types/download/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha1-UsQedbjIfnK52TYOAga5ncv/psU=
@@ -5502,6 +5521,14 @@ react-dom@16.10.1:
     prop-types "^15.6.2"
     scheduler "^0.16.1"
 
+react-draggable@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npm.taobao.org/react-draggable/download/react-draggable-4.0.3.tgz#6b9f76f66431c47b9070e9b805bbc520df8ca481"
+  integrity sha1-a5929mQxxHuQcOm4BbvFIN+MpIE=
+  dependencies:
+    classnames "^2.2.5"
+    prop-types "^15.6.0"
+
 react-error-overlay@5.1.6:
   version "5.1.6"
   resolved "https://registry.npm.taobao.org/react-error-overlay/download/react-error-overlay-5.1.6.tgz#0cd73407c5d141f9638ae1e0c63e7b2bf7e9929d"
@@ -5576,6 +5603,14 @@ react-remove-scroll@^2.0.4:
     tslib "^1.0.0"
     use-sidecar "^1.0.1"
 
+react-resizable@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.npm.taobao.org/react-resizable/download/react-resizable-1.9.0.tgz#7426f06852180e6844bbbc32ead67760d2904a65"
+  integrity sha1-dCbwaFIYDmhEu7wy6tZ3YNKQSmU=
+  dependencies:
+    prop-types "15.x"
+    react-draggable "^4.0.3"
+
 react-spring@^8.0.27:
   version "8.0.27"
   resolved "https://registry.npm.taobao.org/react-spring/download/react-spring-8.0.27.tgz#97d4dee677f41e0b2adcb696f3839680a3aa356a"
@@ -5596,6 +5631,13 @@ react-teleporter@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/react-teleporter/download/react-teleporter-1.1.1.tgz#498d73b1bf9a3c9dcbf3069badcaa2ae5bf48b8f"
   integrity sha1-SY1zsb+aPJ3L8wabrcqirlv0i48=
+
+react-treeview@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.npm.taobao.org/react-treeview/download/react-treeview-0.4.7.tgz#f647e04f70496eb11fb0912c35187e80eb60d458"
+  integrity sha1-9kfgT3BJbrEfsJEsNRh+gOtg1Fg=
+  dependencies:
+    prop-types "^15.5.8"
 
 react-use-gesture@^6.0.1:
   version "6.0.1"

@@ -14,8 +14,6 @@ export type View = {
 
 export type ViewGroup = {
     id: string
-    name?: string
-    active?: number
     views: { [key: string]: string }
     mouldId: string
 } & Vector
@@ -34,6 +32,7 @@ export type Component = {
 
 export type Mould = {
     id: string
+    name?: string
     scope: string[]
     input: { [key: string]: string }
     states: { [key: string]: Component }

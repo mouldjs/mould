@@ -9,6 +9,8 @@ import {
     handleRemoveScope,
     handleAddState,
     handleRemoveState,
+    handleResizeView,
+    handleAddMould,
 } from './appShell'
 
 export default [
@@ -23,4 +25,6 @@ export default [
     handleRemoveScope,
     handleAddState,
     handleRemoveState,
+    handleResizeView,
+    handleAddMould,
 ]

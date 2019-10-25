@@ -26,12 +26,15 @@ import {
     removeScope,
     addState,
     removeState,
+    resizeView,
 } from './appShell'
 import { useIsSelectedMould } from './utils'
 import { MouldInspector } from './Inspectors'
 import { TitledBoard, Cell } from '../inspector/FormComponents'
 import { Settings, Trash2, X } from 'react-feather'
 import Mould from './Mould'
+import { Resizable, ResizableBox } from 'react-resizable'
+import 'react-resizable/css/styles.css'
 
 const InputEditor = ({ input, id }: MouldType) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -289,7 +292,7 @@ const StateEditor = ({ states, id }: MouldType) => {
 const MOULDS_PADDING = 50
 
 export const ViewGroup = ({ id }: { id: string }) => {
-    const { x, y, name, views, mouldId } = useSelector(
+    const { x, y, views, mouldId } = useSelector(
         (state: EditorState) => state.viewGroups[id]
     )
     const viewsInHere = useSelector((state: EditorState): {
@@ -342,38 +345,64 @@ export const ViewGroup = ({ id }: { id: string }) => {
             >
                 <Box position="absolute" top={-20} left={0}>
                     <Text truncate size={1} textColor="rgb(132,132,132)">
-                        {name}
+                        {mould.name}
                     </Text>
                 </Box>
-                {states.map((state, i) => {
-                    const view = viewsInHere[state]
+                {states
+                    .map((state, i) => {
+                        const view = viewsInHere[state]
+                        console.log(state, view)
 
-                    return (
-                        <Box
-                            boxShadow="0px 0px 5px #aaaaaa"
-                            position="relative"
-                            width={view.width}
-                            height={view.height}
-                            bg="white"
-                            ml={i === 0 ? 0 : MOULDS_PADDING}
-                        >
-                            <Box position="absolute" top={-20}>
-                                <Text
-                                    truncate
-                                    size={1}
-                                    textColor="rgb(132,132,132)"
+                        return (
+                            <ResizableBox
+                                key={view.id}
+                                width={view.width}
+                                height={view.height}
+                                onResize={(e, { size: { width, height } }) => {
+                                    dispatch(
+                                        resizeView({
+                                            viewId: view.id,
+                                            width,
+                                            height,
+                                        })
+                                    )
+                                }}
+                            >
+                                <Box
+                                    boxShadow="0px 0px 5px #aaaaaa"
+                                    position="relative"
+                                    width="100%"
+                                    height="100%"
+                                    bg="white"
                                 >
-                                    {state}
-                                </Text>
-                            </Box>
-                            <Mould
-                                editable
-                                {...mould}
-                                currentState={state}
-                            ></Mould>
-                        </Box>
-                    )
-                })}
+                                    <Box position="absolute" top={-20}>
+                                        <Text
+                                            truncate
+                                            size={1}
+                                            textColor="rgb(132,132,132)"
+                                        >
+                                            {state}
+                                        </Text>
+                                    </Box>
+                                    <Mould
+                                        editable
+                                        {...mould}
+                                        currentState={state}
+                                    ></Mould>
+                                </Box>
+                            </ResizableBox>
+                        )
+                    })
+                    .reduce((prev, curr, index) => {
+                        if (index === 0) {
+                            return [curr]
+                        }
+                        return [
+                            ...prev,
+                            <div style={{ width: MOULDS_PADDING }}></div>,
+                            curr,
+                        ]
+                    }, [])}
             </Flex>
             <MouldInspector mouldId={mouldId}>
                 <InputEditor {...mould}></InputEditor>

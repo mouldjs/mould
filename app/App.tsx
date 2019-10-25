@@ -14,6 +14,7 @@ import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd-cjs'
 import HTML5Backend from 'react-dnd-html5-backend-cjs'
+import { Explorer } from './Explorer'
 
 function handleTouchMove(e) {
     e.preventDefault()
@@ -49,11 +50,19 @@ const App = () => {
                 alignItems="stretch"
                 alignContent="stretch"
             >
+                <Box
+                    width={215}
+                    height="100vh"
+                    borderRight="1px solid #aaaaaa"
+                    backgroundColor="#e1e1e1"
+                >
+                    <Explorer></Explorer>
+                </Box>
                 <Box flex={1}>
                     <Workspace {...testWorkspace}></Workspace>
                 </Box>
                 <Box
-                    width={300}
+                    width={215}
                     height="100vh"
                     borderLeft="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"

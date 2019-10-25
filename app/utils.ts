@@ -10,10 +10,9 @@ export const initialData: EditorState = {
     },
     viewGroups: {
         xxxxxx: {
-            name: 'Test View Group',
             id: 'xxxxxx',
-            x: 500,
-            y: 200,
+            x: 50,
+            y: 100,
             views: { default: 'a' },
             mouldId: 'testMould',
         },
@@ -22,12 +21,13 @@ export const initialData: EditorState = {
         a: {
             id: 'a',
             width: 300,
-            height: 700,
+            height: 500,
         },
     },
     moulds: {
         testMould: {
             id: 'testMould',
+            name: 'Test Mould',
             scope: [],
             input: {},
             states: {

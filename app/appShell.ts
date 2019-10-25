@@ -1,7 +1,8 @@
 import { createAction, handleAction } from 'redux-actions'
-import { EditorState, Path, View } from './types'
+import { EditorState, Path, View, Vector, ViewGroup, Mould } from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
+import { Size } from 'mdlz-prmtz/dist/utils/geometry'
 
 type SelectComponentAction = { selection: Path }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
@@ -166,6 +167,65 @@ export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
 
         state.views[viewId] = undefined
         delete state.views[viewId]
+
+        return state
+    },
+    initialData
+)
+
+type ResizeViewAction = {
+    viewId: string
+} & Size
+const RESIZE_VIEW = 'RESIZE_VIEW'
+export const resizeView = createAction<ResizeViewAction>(RESIZE_VIEW)
+export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
+    RESIZE_VIEW,
+    (state, action) => {
+        const view = state.views[action.payload.viewId]
+        view.width = action.payload.width
+        view.height = action.payload.height
+
+        return state
+    },
+    initialData
+)
+
+type AddMouldAction = Size & Vector
+const ADD_MOULD = 'ADD_MOULD'
+export const addMould = createAction<AddMouldAction>(ADD_MOULD)
+export const handleAddMould = handleAction<EditorState, AddMouldAction>(
+    ADD_MOULD,
+    (state, action) => {
+        const { width, height, x, y } = action.payload
+        const view: View = {
+            id: nanoid(6),
+            width,
+            height,
+        }
+        const mould: Mould = {
+            id: nanoid(6),
+            name: `Mould ${Object.values(state.moulds).length + 1}`,
+            scope: [],
+            input: {},
+            states: {
+                default: {
+                    type: 'Stack',
+                    props: {},
+                },
+            },
+        }
+        const viewGroup: ViewGroup = {
+            id: nanoid(6),
+            views: { default: view.id },
+            mouldId: mould.id,
+            x,
+            y,
+        }
+
+        state.testWorkspace.viewGroups.push(viewGroup.id)
+        state.views[view.id] = view
+        state.moulds[mould.id] = mould
+        state.viewGroups[viewGroup.id] = viewGroup
 
         return state
     },
