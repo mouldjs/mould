@@ -50,7 +50,9 @@ export const useIsSelectedPath = (path: Path) => {
     const currentPath = useSelector((state: EditorState) => state.selection)
 
     return (
-        Array.isArray(currentPath) && currentPath.join('/') === path.join('/')
+        path !== undefined &&
+        Array.isArray(currentPath) &&
+        currentPath.join('/') === path.join('/')
     )
 }
 

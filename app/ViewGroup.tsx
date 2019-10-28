@@ -351,7 +351,6 @@ export const ViewGroup = ({ id }: { id: string }) => {
                 {states
                     .map((state, i) => {
                         const view = viewsInHere[state]
-                        console.log(state, view)
 
                         return (
                             <ResizableBox

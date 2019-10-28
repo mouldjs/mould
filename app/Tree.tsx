@@ -77,7 +77,7 @@ const Tree = ({
     const selected = useIsSelectedPath(path)
     const included = useIsIncludePath(path)
     const [{ isOver, canDrop }, drop] = useDrop<
-        { type: string; name: string },
+        { type: string; name: string; props?: object },
         void,
         { isOver: boolean; canDrop: boolean }
     >({
@@ -93,7 +93,10 @@ const Tree = ({
             onChange({
                 type,
                 props,
-                children: [...(children || []), { type: item.name, props: {} }],
+                children: [
+                    ...(children || []),
+                    { type: item.name, props: item.props || {} },
+                ],
             })
 
             return { res: true }
@@ -165,6 +168,7 @@ const Tree = ({
                     : 'none'
             }
             onDoubleClickCapture={event => {
+                console.log(11111, path)
                 if (included) {
                     return
                 }
