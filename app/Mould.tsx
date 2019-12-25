@@ -2,26 +2,8 @@ import React from 'react'
 import { Mould, Component, EditorState } from './types'
 import MouldContext from './MouldContext'
 import Tree from './Tree'
-import { createAction, handleAction } from 'redux-actions'
-import { initialData } from './utils'
 import { useDispatch } from 'react-redux'
-
-type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
-const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
-const modifyMouldTree = createAction<ModifyMouldTreeAction>(MODIFY_MOULD_TREE)
-export const handleModifyMouldTree = handleAction<
-    EditorState,
-    ModifyMouldTreeAction
->(
-    MODIFY_MOULD_TREE,
-    (state, action) => {
-        state.moulds[action.payload.id].states[action.payload.state] =
-            action.payload.tree
-
-        return state
-    },
-    initialData
-)
+import { modifyMouldTree } from './appShell'
 
 const { Provider } = MouldContext
 type Editable = { editable: boolean }

@@ -168,7 +168,6 @@ const Tree = ({
                     : 'none'
             }
             onDoubleClickCapture={event => {
-                console.log(11111, path)
                 if (included) {
                     return
                 }

@@ -1,5 +1,13 @@
 import { createAction, handleAction } from 'redux-actions'
-import { EditorState, Path, View, Vector, ViewGroup, Mould } from './types'
+import {
+    EditorState,
+    Path,
+    View,
+    Vector,
+    ViewGroup,
+    Mould,
+    Component,
+} from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
 import { Size } from 'mdlz-prmtz/dist/utils/geometry'
@@ -55,23 +63,23 @@ export const handleRemoveInput = handleAction<EditorState, RemoveInputAction>(
     initialData
 )
 
-type ModifyInputControllerAction = {
+type ModifyInputDescriptionAction = {
     mouldId: string
     inputKey: string
-    controller: string
+    description: string
 }
-const MODIFY_INPUT_CONTROLLER = 'MODIFY_INPUT_CONTROLLER'
-export const modifyInputController = createAction<ModifyInputControllerAction>(
-    MODIFY_INPUT_CONTROLLER
-)
-export const handleModifyInputControler = handleAction<
+const MODIFY_INPUT_DESCRIPTION = 'MODIFY_INPUT_DESCRIPTION'
+export const modifyInputDescription = createAction<
+    ModifyInputDescriptionAction
+>(MODIFY_INPUT_DESCRIPTION)
+export const handleModifyInputDescription = handleAction<
     EditorState,
-    ModifyInputControllerAction
+    ModifyInputDescriptionAction
 >(
-    MODIFY_INPUT_CONTROLLER,
+    MODIFY_INPUT_DESCRIPTION,
     (state, action) => {
         state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
-            action.payload.controller
+            action.payload.description
 
         return state
     },
@@ -226,6 +234,25 @@ export const handleAddMould = handleAction<EditorState, AddMouldAction>(
         state.views[view.id] = view
         state.moulds[mould.id] = mould
         state.viewGroups[viewGroup.id] = viewGroup
+
+        return state
+    },
+    initialData
+)
+
+type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
+const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
+export const modifyMouldTree = createAction<ModifyMouldTreeAction>(
+    MODIFY_MOULD_TREE
+)
+export const handleModifyMouldTree = handleAction<
+    EditorState,
+    ModifyMouldTreeAction
+>(
+    MODIFY_MOULD_TREE,
+    (state, action) => {
+        state.moulds[action.payload.id].states[action.payload.state] =
+            action.payload.tree
 
         return state
     },

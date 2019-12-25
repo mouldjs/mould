@@ -1,10 +1,11 @@
 import React, { useState, Fragment } from 'react'
 import TreeView from 'react-treeview'
 import 'react-treeview/react-treeview.css'
-import { Component, EditorState, Mould } from './types'
-import { useSelector } from 'react-redux'
+import { Component, EditorState, Mould, Path } from './types'
+import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd-cjs'
+import { selectComponent } from '../app/appShell'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -18,21 +19,42 @@ const MouldLabel = (mould: Mould) => {
     )
 }
 
-const ComponentTree = ({ comp }: { comp: Component }) => {
-    const moulds = useSelector((state: EditorState) => {
-        return state.moulds
+const ComponentTree = ({ comp, path }: { comp: Component; path: Path }) => {
+    const dispatch = useDispatch()
+    const { moulds, selection } = useSelector((state: EditorState) => {
+        return { moulds: state.moulds, selection: state.selection }
     })
 
-    const label =
-        comp.type === 'Mould'
-            ? moulds[(comp.props as any).mouldId].name
-            : comp.type
+    const label = (
+        <Box
+            backgroundColor={
+                Array.isArray(selection) &&
+                (selection as Path).join('/') === path.join('/')
+                    ? 'rgba(86, 169, 241, 0.7)'
+                    : 'transparent'
+            }
+            display="inline-block"
+            style={{
+                cursor: 'pointer',
+            }}
+            onClick={() => dispatch(selectComponent({ selection: path }))}
+        >
+            {comp.type === 'Mould'
+                ? moulds[(comp.props as any).mouldId].name
+                : comp.type}
+        </Box>
+    )
 
     return (
         <TreeView nodeLabel={label}>
             {comp.children &&
-                comp.children.map(c => {
-                    return <ComponentTree comp={c}></ComponentTree>
+                comp.children.map((c, index) => {
+                    return (
+                        <ComponentTree
+                            comp={c}
+                            path={[...path, index] as Path}
+                        ></ComponentTree>
+                    )
                 })}
         </TreeView>
     )
@@ -56,6 +78,7 @@ export const Explorer = () => {
                                 <TreeView key={state} nodeLabel={state}>
                                     <ComponentTree
                                         comp={mould.states[state]}
+                                        path={[mould.id, state]}
                                     ></ComponentTree>
                                 </TreeView>
                             )

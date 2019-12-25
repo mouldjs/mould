@@ -45,6 +45,9 @@ export const Head = ({
             alignItems="center"
             paddingX={12}
             paddingY="8px"
+            onDBClick={e => {
+                console.log('heade')
+            }}
         >
             {desc && (
                 <Tooltip label={desc} side="bottom" align="start">

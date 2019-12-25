@@ -30,11 +30,13 @@ export type Component = {
     children?: Component[]
 }
 
+type Desc = string
+
 export type Mould = {
     id: string
     name?: string
     scope: string[]
-    input: { [key: string]: string }
+    input: { [key: string]: Desc }
     states: { [key: string]: Component }
 }
 

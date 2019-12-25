@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, Fragment } from 'react'
 import {
     Mould as MouldType,
     Component,
@@ -7,6 +7,9 @@ import {
 } from '../app/types'
 import Components from '.'
 import { useSelector } from 'react-redux'
+import { Cell, TitledBoard } from '../inspector/FormComponents'
+import { ComponentInspector } from '../app/Inspectors'
+import { Select } from '@modulz/radix'
 
 const Tree = forwardRef(
     ({ type, props, children, ...rest }: Component, ref) => {
@@ -24,20 +27,47 @@ const Mould = forwardRef(
     (
         {
             mouldId,
+            mockState,
             requestUpdateProps,
             children,
             path,
             ...rest
-        }: ComponentPropTypes & { mouldId: string },
+        }: ComponentPropTypes & { mouldId: string; mockState: string },
         ref
     ) => {
         const { states } = useSelector((state: EditorState) => {
             return state.moulds[mouldId]
         })
-        const defaultTree = Object.values(states)[0]
-        // console.log(2222, path, rest)
+        const stateNames = Object.keys(states)
+        const currentMockState = mockState || stateNames[0]
+        const currentMockTree = states[currentMockState]
 
-        return <Tree {...rest} {...defaultTree} ref={ref}></Tree>
+        return (
+            <Fragment>
+                <ComponentInspector path={path}>
+                    <TitledBoard title="Mould">
+                        <Cell label="state">
+                            <Select
+                                value={currentMockState}
+                                onChange={e =>
+                                    requestUpdateProps({
+                                        mockState: e.target.value,
+                                    })
+                                }
+                            >
+                                {stateNames.map(state => {
+                                    return (
+                                        <option value={state}>{state}</option>
+                                    )
+                                })}
+                            </Select>
+                        </Cell>
+                        <Cell label="Mock state">Select</Cell>
+                    </TitledBoard>
+                </ComponentInspector>
+                <Tree {...rest} {...currentMockTree} ref={ref}></Tree>
+            </Fragment>
+        )
     }
 )
 

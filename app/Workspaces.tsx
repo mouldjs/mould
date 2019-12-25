@@ -6,6 +6,7 @@ import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
+import { useSpring, animated } from 'react-spring'
 import { selectComponent } from './appShell'
 
 type MoveWorkspaceActionType = { id: string } & Vector
@@ -51,29 +52,32 @@ export const Workspace = ({
     const dispatch = useDispatch()
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
-    const bind = useGesture({
-        // onDrag: ({ last, movement }) => {
-        //     const xy = [x + movement[0], y + movement[1]]
-        //     setXY(xy)
-        //     if (last) {
-        //         dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
-        //     }
-        // },
-        onWheel: ({ last, movement }) => {
-            const xy = [x - movement[0], y - movement[1]]
-            setXY(xy)
-            if (last) {
-                dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
-            }
+    const bind = useGesture(
+        {
+            // onDrag: ({ last, movement }) => {
+            //     const xy = [x + movement[0], y + movement[1]]
+            //     setXY(xy)
+            //     if (last) {
+            //         dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
+            //     }
+            // },
+            onWheel: ({ last, movement }) => {
+                const xy = [x - movement[0], y - movement[1]]
+                setXY(xy)
+                if (last) {
+                    dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
+                }
+            },
+            onPinch: ({ da: [d, a] }) => {
+                setScale((d + zoom * 200) / 200)
+            },
         },
-        onPinch: ({ da: [d, a], origin, memo = 0 }) => {
-            const s = scale * (d / memo)
-            console.log(d, a, origin, memo, s)
-            setScale(s)
-
-            return d
-        },
-    })
+        {
+            pinch: {
+                initial: [200, 1],
+            } as any,
+        }
+    )
 
     const groups = Object.values(viewGroups).map(viewGroupId => {
         return <ViewGroup key={viewGroupId} id={viewGroupId}></ViewGroup>

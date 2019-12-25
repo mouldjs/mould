@@ -21,12 +21,12 @@ import {
     selectComponent,
     addInput,
     removeInput,
-    modifyInputController,
     addScope,
     removeScope,
     addState,
     removeState,
     resizeView,
+    modifyInputDescription,
 } from './appShell'
 import { useIsSelectedMould } from './utils'
 import { MouldInspector } from './Inspectors'
@@ -56,21 +56,19 @@ const InputEditor = ({ input, id }: MouldType) => {
                         return (
                             <Flex>
                                 <Text>{k}</Text>
-                                <Select
-                                    value={v}
+                                <Input
+                                    value={input[k]}
                                     onChange={e => {
                                         dispatch(
-                                            modifyInputController({
+                                            modifyInputDescription({
                                                 mouldId: id,
                                                 inputKey: k,
-                                                controller: e.target.value,
+                                                description: e.target.value,
                                             })
                                         )
                                     }}
-                                >
-                                    <option value="number">number</option>
-                                    <option value="text">text</option>
-                                </Select>
+                                    ml={2}
+                                ></Input>
                                 <GhostButton
                                     onClick={() => {
                                         dispatch(
@@ -122,21 +120,19 @@ const InputEditor = ({ input, id }: MouldType) => {
                         return (
                             <Cell key={k} label={k}>
                                 {
-                                    <Select
+                                    <Input
                                         value={input[k]}
                                         onChange={e => {
                                             dispatch(
-                                                modifyInputController({
+                                                modifyInputDescription({
                                                     mouldId: id,
                                                     inputKey: k,
-                                                    controller: e.target.value,
+                                                    description: e.target.value,
                                                 })
                                             )
                                         }}
-                                    >
-                                        <option value="number">number</option>
-                                        <option value="text">text</option>
-                                    </Select>
+                                        ml={2}
+                                    ></Input>
                                 }
                             </Cell>
                         )
@@ -354,7 +350,7 @@ export const ViewGroup = ({ id }: { id: string }) => {
 
                         return (
                             <ResizableBox
-                                key={view.id}
+                                // key={view.id}
                                 width={view.width}
                                 height={view.height}
                                 onResize={(e, { size: { width, height } }) => {
