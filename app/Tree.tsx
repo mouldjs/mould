@@ -119,7 +119,7 @@ const Tree = ({
         children &&
         children.map((tree, index) => (
             <Tree
-                path={[...path, index] as Path}
+                path={[path[0], [...path[1], index]] as Path}
                 onChange={
                     editable
                         ? tree => {

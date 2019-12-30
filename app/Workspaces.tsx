@@ -1,13 +1,14 @@
 import React, { useState, useRef, DOMElement, useEffect } from 'react'
 import { Box } from '@modulz/radix'
 import { Workspace as WorkspaceType, EditorState, Vector } from './types'
-import { ViewGroup } from './ViewGroup'
+// import { ViewGroup } from './ViewGroup'
 import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
 import { useSpring, animated } from 'react-spring'
 import { selectComponent } from './appShell'
+import { View } from './View'
 
 type MoveWorkspaceActionType = { id: string } & Vector
 const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
@@ -42,13 +43,7 @@ export const handleZoomWorkspace = handleAction<
     initialData
 )
 
-export const Workspace = ({
-    viewGroups,
-    x,
-    y,
-    id,
-    zoom = 1,
-}: WorkspaceType) => {
+export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
@@ -79,13 +74,13 @@ export const Workspace = ({
         }
     )
 
-    const groups = Object.values(viewGroups).map(viewGroupId => {
-        return <ViewGroup key={viewGroupId} id={viewGroupId}></ViewGroup>
+    const vs = Object.values(views).map(viewId => {
+        return <View key={viewId} viewId={viewId}></View>
     })
 
     return (
         <Box
-            bg="white"
+            bg="#f1f1f1"
             height="100vh"
             overflow="hidden"
             position="relative"
@@ -102,7 +97,7 @@ export const Workspace = ({
                     zoom: scale,
                 }}
             >
-                {groups}
+                {vs}
             </div>
         </Box>
     )

@@ -1,3 +1,9 @@
+export type ID = string
+export type MouldID = ID
+export type StateName = string
+export type ComponentIndex = number
+export type Desc = string
+
 export type Vector = {
     x: number
     y: number
@@ -8,19 +14,26 @@ export type Size = {
     height: number
 }
 
-export type View = {
-    id: string
-} & Size
+export type ComponentPath = [MouldID, StateName]
 
-export type ViewGroup = {
-    id: string
-    views: { [key: string]: string }
-    mouldId: string
-} & Vector
+export type Path = [ComponentPath, ComponentIndex[]]
+
+export type View = {
+    id: ID
+    mouldId: MouldID
+    state: StateName
+} & Size &
+    Vector
+
+// export type ViewGroup = {
+//     id: ID
+//     views: { [key: string]: string }
+//     mouldId: MouldID
+// } & Vector
 
 export type Workspace = {
-    id: string
-    viewGroups: string[]
+    id: ID
+    views: ID[]
     zoom?: number
 } & Vector
 
@@ -30,8 +43,6 @@ export type Component = {
     children?: Component[]
 }
 
-type Desc = string
-
 export type Mould = {
     id: string
     name?: string
@@ -40,8 +51,6 @@ export type Mould = {
     states: { [key: string]: Component }
 }
 
-export type Path = [string, string, ...number[]]
-
 export type ComponentPropTypes = {
     requestUpdateProps: (props: object) => void
     path: Path
@@ -49,8 +58,7 @@ export type ComponentPropTypes = {
 
 export type EditorState = {
     testWorkspace: Workspace
-    viewGroups: { [key: string]: ViewGroup }
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
-    selection?: Path | string //[mouldId, state, ...path] | mouldId
+    selection?: Path //[mouldId, state, ...path]
 }

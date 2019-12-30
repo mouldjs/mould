@@ -1,5 +1,5 @@
 import React from 'react'
-import { Mould, Component, EditorState } from './types'
+import { Mould } from './types'
 import MouldContext from './MouldContext'
 import Tree from './Tree'
 import { useDispatch } from 'react-redux'
@@ -21,7 +21,7 @@ export default ({
     return (
         <Provider value={editable}>
             <Tree
-                path={[id, currentState]}
+                path={[[id, currentState], []]}
                 onChange={tree => {
                     dispatch(modifyMouldTree({ id, tree, state: currentState }))
                 }}

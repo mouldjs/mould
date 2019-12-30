@@ -18,8 +18,8 @@ const Icon = ({ name, children }) => {
 
 const AddMould = () => {
     const dispatch = useDispatch()
-    const viewGroupsLength = useSelector((state: EditorState) => {
-        return Object.values(state.viewGroups).length
+    const viewsLength = useSelector((state: EditorState) => {
+        return Object.values(state.views).length
     })
 
     return (
@@ -29,7 +29,7 @@ const AddMould = () => {
                 dispatch(
                     addMould({
                         x: 50,
-                        y: 100 + (100 + 500 + 70) * viewGroupsLength,
+                        y: 100 + (100 + 500 + 70) * viewsLength,
                         width: 300,
                         height: 500,
                     })

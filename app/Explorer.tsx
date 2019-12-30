@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd-cjs'
 import { selectComponent } from '../app/appShell'
+import { useIsSelectedPath } from './utils'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -24,12 +25,12 @@ const ComponentTree = ({ comp, path }: { comp: Component; path: Path }) => {
     const { moulds, selection } = useSelector((state: EditorState) => {
         return { moulds: state.moulds, selection: state.selection }
     })
+    const isSelected = useIsSelectedPath(path)
 
     const label = (
         <Box
             backgroundColor={
-                Array.isArray(selection) &&
-                (selection as Path).join('/') === path.join('/')
+                Array.isArray(selection) && isSelected
                     ? 'rgba(86, 169, 241, 0.7)'
                     : 'transparent'
             }
@@ -52,7 +53,7 @@ const ComponentTree = ({ comp, path }: { comp: Component; path: Path }) => {
                     return (
                         <ComponentTree
                             comp={c}
-                            path={[...path, index] as Path}
+                            path={[path[0], [...path[1], index]]}
                         ></ComponentTree>
                     )
                 })}
@@ -78,7 +79,7 @@ export const Explorer = () => {
                                 <TreeView key={state} nodeLabel={state}>
                                     <ComponentTree
                                         comp={mould.states[state]}
-                                        path={[mould.id, state]}
+                                        path={[[mould.id, state], []]}
                                     ></ComponentTree>
                                 </TreeView>
                             )

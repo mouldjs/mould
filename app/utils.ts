@@ -1,27 +1,22 @@
-import { EditorState, Path } from './types'
+import { EditorState, Path, StateName, MouldID } from './types'
 import { useSelector } from 'react-redux'
 
 export const initialData: EditorState = {
     testWorkspace: {
         id: '1234',
-        viewGroups: ['xxxxxx'],
         x: 0,
         y: 0,
-    },
-    viewGroups: {
-        xxxxxx: {
-            id: 'xxxxxx',
-            x: 50,
-            y: 100,
-            views: { default: 'a' },
-            mouldId: 'testMould',
-        },
+        views: ['a'],
     },
     views: {
         a: {
             id: 'a',
+            mouldId: 'testMould',
+            state: 'default',
             width: 300,
             height: 500,
+            x: 100,
+            y: 100,
         },
     },
     moulds: {
@@ -40,10 +35,23 @@ export const initialData: EditorState = {
     },
 }
 
-export const useIsSelectedMould = (mouldId: string) => {
-    const currentMouldId = useSelector((state: EditorState) => state.selection)
+export const useIsSelectedMould = (mouldId: MouldID) => {
+    const currentComponentPath = useSelector(
+        (state: EditorState) => state.selection
+    )[0]
 
-    return currentMouldId === mouldId
+    return currentComponentPath[0] === mouldId
+}
+
+export const useIsSelectedState = (mouldId: MouldID, stateName: StateName) => {
+    const currentComponentPath = useSelector(
+        (state: EditorState) => state.selection
+    )[0]
+
+    return (
+        currentComponentPath[0] === mouldId &&
+        currentComponentPath[1] === stateName
+    )
 }
 
 export const useIsSelectedPath = (path: Path) => {
@@ -51,8 +59,9 @@ export const useIsSelectedPath = (path: Path) => {
 
     return (
         path !== undefined &&
-        Array.isArray(currentPath) &&
-        currentPath.join('/') === path.join('/')
+        currentPath !== undefined &&
+        [currentPath[0].join('/'), currentPath[1].join('/')].join('+') ===
+            [path[0].join('/'), path[1].join('/')].join('+')
     )
 }
 
@@ -60,7 +69,10 @@ export const useIsIncludePath = (path: Path) => {
     const currentPath = useSelector((state: EditorState) => state.selection)
 
     return (
-        Array.isArray(currentPath) &&
-        currentPath.join('/').includes(path.join('/'))
+        path !== undefined &&
+        currentPath !== undefined &&
+        [currentPath[0].join('/'), currentPath[1].join('/')]
+            .join('+')
+            .includes([path[0].join('/'), path[1].join('/')].join('+'))
     )
 }

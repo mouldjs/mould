@@ -1,13 +1,5 @@
 import { createAction, handleAction } from 'redux-actions'
-import {
-    EditorState,
-    Path,
-    View,
-    Vector,
-    ViewGroup,
-    Mould,
-    Component,
-} from './types'
+import { EditorState, Path, View, Vector, Mould, Component } from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
 import { Size } from 'mdlz-prmtz/dist/utils/geometry'
@@ -138,13 +130,14 @@ export const handleAddState = handleAction<EditorState, AddStateAction>(
         }
         const view: View = {
             id: nanoid(6),
+            mouldId: action.payload.mouldId,
+            state: action.payload.state,
             width: 300,
             height: 500,
+            x: 100,
+            y: 100,
         }
         state.views[view.id] = view
-        Object.values(state.viewGroups).find(
-            g => g.mouldId === action.payload.mouldId
-        ).views[action.payload.state] = view.id
 
         return state
     },
@@ -160,7 +153,7 @@ export const removeState = createAction<RemoveStateAction>(REMOVE_STATE)
 export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
     REMOVE_STATE,
     (state, action) => {
-        const viewGroupId = Object.values(state.viewGroups).find(
+        const viewId = Object.values(state.views).find(
             g => g.mouldId === action.payload.mouldId
         ).id
 
@@ -168,10 +161,6 @@ export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
             action.payload.state
         ] = undefined
         delete state.moulds[action.payload.mouldId].states[action.payload.state]
-
-        const viewId = state.viewGroups[viewGroupId].views[action.payload.state]
-        state.viewGroups[viewGroupId].views[action.payload.state] = undefined
-        delete state.viewGroups[viewGroupId].views[action.payload.state]
 
         state.views[viewId] = undefined
         delete state.views[viewId]
@@ -205,13 +194,18 @@ export const handleAddMould = handleAction<EditorState, AddMouldAction>(
     ADD_MOULD,
     (state, action) => {
         const { width, height, x, y } = action.payload
+        const mouldId = nanoid(6)
         const view: View = {
             id: nanoid(6),
             width,
             height,
+            x,
+            y,
+            mouldId,
+            state: 'default',
         }
         const mould: Mould = {
-            id: nanoid(6),
+            id: mouldId,
             name: `Mould ${Object.values(state.moulds).length + 1}`,
             scope: [],
             input: {},
@@ -222,18 +216,10 @@ export const handleAddMould = handleAction<EditorState, AddMouldAction>(
                 },
             },
         }
-        const viewGroup: ViewGroup = {
-            id: nanoid(6),
-            views: { default: view.id },
-            mouldId: mould.id,
-            x,
-            y,
-        }
 
-        state.testWorkspace.viewGroups.push(viewGroup.id)
+        state.testWorkspace.views.push(view.id)
         state.views[view.id] = view
         state.moulds[mould.id] = mould
-        state.viewGroups[viewGroup.id] = viewGroup
 
         return state
     },

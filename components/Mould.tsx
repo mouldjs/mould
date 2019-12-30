@@ -46,23 +46,7 @@ const Mould = forwardRef(
             <Fragment>
                 <ComponentInspector path={path}>
                     <TitledBoard title="Mould">
-                        <Cell label="state">
-                            <Select
-                                value={currentMockState}
-                                onChange={e =>
-                                    requestUpdateProps({
-                                        mockState: e.target.value,
-                                    })
-                                }
-                            >
-                                {stateNames.map(state => {
-                                    return (
-                                        <option value={state}>{state}</option>
-                                    )
-                                })}
-                            </Select>
-                        </Cell>
-                        <Cell label="Mock state">Select</Cell>
+                        <Cell label="input">input</Cell>
                     </TitledBoard>
                 </ComponentInspector>
                 <Tree {...rest} {...currentMockTree} ref={ref}></Tree>
