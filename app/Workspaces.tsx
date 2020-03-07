@@ -4,10 +4,15 @@ import { Workspace as WorkspaceType, EditorState, Vector } from './types'
 // import { ViewGroup } from './ViewGroup'
 import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
 import { useSpring, animated } from 'react-spring'
-import { selectComponent } from './appShell'
+import {
+    selectComponent,
+    startCreating,
+    finishCreating,
+    updateCreating,
+} from './appShell'
 import { View } from './View'
 
 type MoveWorkspaceActionType = { id: string } & Vector
@@ -45,6 +50,10 @@ export const handleZoomWorkspace = handleAction<
 
 export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
+    const creating = useSelector((state: EditorState) => {
+        return state.creating
+    })
+    const creation = creating && creating[1]
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
     const bind = useGesture(
@@ -65,6 +74,28 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             },
             onPinch: ({ da: [d, a] }) => {
                 setScale((d + zoom * 200) / 200)
+            },
+            onDrag: ({ event }) => {
+                event!.stopPropagation()
+                dispatch(
+                    updateCreating({
+                        x: (event as any).offsetX - x,
+                        y: (event as any).offsetY - y,
+                    })
+                )
+            },
+            onMouseDown: event => {
+                event.stopPropagation()
+                dispatch(
+                    startCreating({
+                        x: event.nativeEvent.offsetX - x,
+                        y: event.nativeEvent.offsetY - y,
+                    })
+                )
+            },
+            onMouseUp: event => {
+                event.stopPropagation()
+                dispatch(finishCreating())
             },
         },
         {
@@ -98,6 +129,20 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 }}
             >
                 {vs}
+                {creation && (
+                    <Box
+                        position="absolute"
+                        bg="white"
+                        style={{
+                            left: creation.x,
+                            top: creation.y,
+                            width: creation.width,
+                            height: creation.height,
+                        }}
+                    >
+                        {/* <Mould editable {...mould} currentState={state}></Mould> */}
+                    </Box>
+                )}
             </div>
         </Box>
     )

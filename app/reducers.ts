@@ -11,6 +11,11 @@ import {
     handleResizeView,
     handleAddMould,
     handleModifyMouldTree,
+    handleWaitingForCreating,
+    handleStartCreating,
+    handleUpdateCreating,
+    handleFinishCreating,
+    handleCancelCreating,
 } from './appShell'
 
 export default [
@@ -27,4 +32,9 @@ export default [
     handleRemoveState,
     handleResizeView,
     handleAddMould,
+    handleWaitingForCreating,
+    handleStartCreating,
+    handleUpdateCreating,
+    handleFinishCreating,
+    handleCancelCreating,
 ]

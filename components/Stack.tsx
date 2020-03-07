@@ -2,7 +2,7 @@ import React, { useState, useRef, forwardRef } from 'react'
 import { ComponentInspector } from '../app/Inspectors'
 import {
     Input,
-    ToggleButton,
+    ToggleButton as OToggleButton,
     ToggleButtonGroup,
     Flex,
     Box,
@@ -19,6 +19,8 @@ import {
 } from 'react-feather'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { BaseFlex } from './BaseComponents'
+
+const ToggleButton = OToggleButton as any
 
 type Alignment =
     | 'flex-start'
@@ -179,10 +181,10 @@ export default forwardRef(
                     <Popover
                         targetRef={buttonRef}
                         isOpen={isOpen}
-                        onDismiss={() => setIsOpen(false)}
+                        onClose={() => setIsOpen(false)}
                         side="bottom"
                         align="end"
-                        css={{ zIndex: 10000 }}
+                        style={{ zIndex: 10000 }}
                     >
                         <Flex
                             padding={12}

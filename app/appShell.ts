@@ -1,18 +1,25 @@
 import { createAction, handleAction } from 'redux-actions'
-import { EditorState, Path, View, Vector, Mould, Component } from './types'
+import {
+    EditorState,
+    Path,
+    View,
+    Vector,
+    Size,
+    Mould,
+    Component,
+} from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
-import { Size } from 'mdlz-prmtz/dist/utils/geometry'
 
 type SelectComponentAction = { selection: Path }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
 export const selectComponent = createAction(SELECT_COMPONENT)
 export const handleSelectComponent = handleAction<
-    EditorState,
+    EditorState | undefined,
     SelectComponentAction
 >(
     SELECT_COMPONENT,
-    (state, action) => {
+    (state = initialData, action) => {
         if (action.payload.selection === state.selection) {
             return
         }
@@ -42,10 +49,10 @@ const REMOVE_INPUT = 'REMOTE_INPUT'
 export const removeInput = createAction<RemoveInputAction>(REMOVE_INPUT)
 export const handleRemoveInput = handleAction<EditorState, RemoveInputAction>(
     REMOVE_INPUT,
-    (state, action) => {
-        state.moulds[action.payload.mouldId].input[
-            action.payload.inputKey
-        ] = undefined
+    (state = initialData, action) => {
+        // state.moulds[action.payload.mouldId].input[
+        //     action.payload.inputKey
+        // ] = undefined
         delete state.moulds[action.payload.mouldId].input[
             action.payload.inputKey
         ]
@@ -153,16 +160,16 @@ export const removeState = createAction<RemoveStateAction>(REMOVE_STATE)
 export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
     REMOVE_STATE,
     (state, action) => {
-        const viewId = Object.values(state.views).find(
-            g => g.mouldId === action.payload.mouldId
-        ).id
+        const viewId = (<any>Object)
+            .values(state.views)
+            .find(g => g.mouldId === action.payload.mouldId).id
 
-        state.moulds[action.payload.mouldId].states[
-            action.payload.state
-        ] = undefined
+        // state.moulds[action.payload.mouldId].states[
+        //     action.payload.state
+        // ] = undefined
         delete state.moulds[action.payload.mouldId].states[action.payload.state]
 
-        state.views[viewId] = undefined
+        // state.views[viewId] = undefined
         delete state.views[viewId]
 
         return state
@@ -239,6 +246,143 @@ export const handleModifyMouldTree = handleAction<
     (state, action) => {
         state.moulds[action.payload.id].states[action.payload.state] =
             action.payload.tree
+
+        return state
+    },
+    initialData
+)
+
+type WaitingForCreatingAction = { mouldId: string; stateName: string }
+const WAITING_FOR_CREATING = 'WAITING_FOR_CREATING'
+export const waitingForCreating = createAction<WaitingForCreatingAction>(
+    WAITING_FOR_CREATING
+)
+export const handleWaitingForCreating = handleAction<
+    EditorState,
+    WaitingForCreatingAction
+>(
+    WAITING_FOR_CREATING,
+    (state, { payload: { mouldId, stateName } }) => {
+        state.creating = [
+            'waiting',
+            {
+                id: nanoid(6),
+                mouldId,
+                state: stateName,
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0,
+            },
+        ]
+
+        return state
+    },
+    initialData
+)
+
+type StartCreatingAction = Vector
+const START_CREATING = 'START_CREATING'
+export const startCreating = createAction<StartCreatingAction>(START_CREATING)
+export const handleStartCreating = handleAction<
+    EditorState,
+    StartCreatingAction
+>(
+    START_CREATING,
+    (state, { payload: { x, y } }) => {
+        if (state.creating && state.creating[0] === 'waiting') {
+            state.creating[0] = 'start'
+            state.creating[1].x = x
+            state.creating[1].y = y
+        }
+
+        return state
+    },
+    initialData
+)
+
+type UpdateCreatingAction = Vector
+const UPDATE_CREATING = 'UPDATE_CREATING'
+export const updateCreating = createAction<UpdateCreatingAction>(
+    UPDATE_CREATING
+)
+export const handleUpdateCreating = handleAction<
+    EditorState,
+    UpdateCreatingAction
+>(
+    UPDATE_CREATING,
+    (state, { payload: { x, y } }) => {
+        if (
+            state.creating &&
+            (state.creating[0] === 'start' || state.creating[0] === 'updating')
+        ) {
+            state.creating[0] = 'updating'
+            state.creating[1].width = Math.abs(x - state.creating[1].x)
+            state.creating[1].height = Math.abs(y - state.creating[1].y)
+            state.creating[1].x = Math.min(x, state.creating[1].x)
+            state.creating[1].y = Math.min(y, state.creating[1].y)
+        }
+
+        return state
+    },
+    initialData
+)
+
+type FinishCreatingAction = void
+const FINISH_CREATING = 'FINISH_CREATING'
+export const finishCreating = createAction<FinishCreatingAction>(
+    FINISH_CREATING
+)
+export const handleFinishCreating = handleAction<
+    EditorState,
+    FinishCreatingAction
+>(
+    FINISH_CREATING,
+    state => {
+        const [creatingStep, creation] = state.creating || []
+        if (
+            creatingStep === 'updating' &&
+            typeof creation === 'object' &&
+            creation.width !== 0 &&
+            creation.height !== 0
+        ) {
+            state.views[creation.id] = creation
+            state.testWorkspace.views = [
+                ...state.testWorkspace.views,
+                creation.id,
+            ]
+            if (!state.moulds[creation.mouldId]) {
+                state.moulds[creation.mouldId] = {
+                    id: creation.mouldId,
+                    scope: [],
+                    input: {},
+                    states: {},
+                }
+            }
+            state.moulds[creation.mouldId].states[creation.state] = null
+        }
+
+        state.creating = undefined
+        delete state.creating
+
+        return state
+    },
+    initialData
+)
+
+type CancelCreatingAction = void
+const CANCEL_CREATING = 'CANCEL_CREATING'
+export const cancelCreating = createAction<CancelCreatingAction>(
+    CANCEL_CREATING
+)
+export const handleCancelCreating = handleAction<
+    EditorState,
+    CancelCreatingAction
+>(
+    CANCEL_CREATING,
+    state => {
+        state.creating = undefined
+        delete state.creating
 
         return state
     },

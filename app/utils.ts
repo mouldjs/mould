@@ -37,7 +37,7 @@ export const initialData: EditorState = {
 
 export const useIsSelectedMould = (mouldId: MouldID) => {
     const currentComponentPath = useSelector(
-        (state: EditorState) => state.selection
+        (state: EditorState) => state.selection || []
     )[0]
 
     return currentComponentPath[0] === mouldId
@@ -45,7 +45,7 @@ export const useIsSelectedMould = (mouldId: MouldID) => {
 
 export const useIsSelectedState = (mouldId: MouldID, stateName: StateName) => {
     const currentComponentPath = useSelector(
-        (state: EditorState) => state.selection
+        (state: EditorState) => state.selection || []
     )[0]
 
     return (

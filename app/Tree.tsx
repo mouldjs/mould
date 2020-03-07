@@ -25,7 +25,7 @@ const doNothing = () => {}
 const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
     const [{ isOver }, drop] = useDrop<
         { type: string; name: string },
-        void,
+        { res: boolean },
         { isOver: boolean }
     >({
         accept: 'TREE',
@@ -78,7 +78,7 @@ const Tree = ({
     const included = useIsIncludePath(path)
     const [{ isOver, canDrop }, drop] = useDrop<
         { type: string; name: string; props?: object },
-        void,
+        { res: boolean },
         { isOver: boolean; canDrop: boolean }
     >({
         accept: 'TREE',
@@ -139,7 +139,7 @@ const Tree = ({
 
     if (inside && canDrop) {
         const handleDrop = index => droppedType => {
-            const nextChildren = [...children]
+            const nextChildren = [...(children || [])]
             nextChildren.splice(index, 0, { type: droppedType, props: {} })
             onChange({
                 type,

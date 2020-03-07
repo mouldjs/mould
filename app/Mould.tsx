@@ -20,13 +20,17 @@ export default ({
 
     return (
         <Provider value={editable}>
-            <Tree
-                path={[[id, currentState], []]}
-                onChange={tree => {
-                    dispatch(modifyMouldTree({ id, tree, state: currentState }))
-                }}
-                {...tree}
-            ></Tree>
+            {tree && (
+                <Tree
+                    path={[[id, currentState], []]}
+                    onChange={tree => {
+                        dispatch(
+                            modifyMouldTree({ id, tree, state: currentState })
+                        )
+                    }}
+                    {...tree}
+                ></Tree>
+            )}
         </Provider>
     )
 }

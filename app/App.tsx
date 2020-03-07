@@ -1,5 +1,5 @@
 import { Workspace } from './Workspaces'
-import { Provider, useSelector } from 'react-redux'
+import { Provider, useSelector, useDispatch } from 'react-redux'
 import { createStore } from 'redux'
 import reducers from './reducers'
 import reduceReducers from 'reduce-reducers'
@@ -15,6 +15,7 @@ import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd-cjs'
 import HTML5Backend from 'react-dnd-html5-backend-cjs'
 import { Explorer } from './Explorer'
+import { cancelCreating } from './appShell'
 
 function handleTouchMove(e) {
     e.preventDefault()
@@ -33,13 +34,27 @@ const App = () => {
             }
         }
     }, [])
-
+    const dispatch = useDispatch()
     const testWorkspace = useSelector((state: EditorState) => {
         return state.testWorkspace
     })
+    const creating = useSelector((state: EditorState) => {
+        return state.creating
+    })
+    const creatingStep = creating && creating[0]
 
     return (
-        <Flex flexDirection="column" minHeight="100vh" alignItems="stretch">
+        <Flex
+            flexDirection="column"
+            minHeight="100vh"
+            alignItems="stretch"
+            style={{ cursor: creatingStep ? 'crosshair' : 'unset' }}
+            onMouseDown={() => {
+                if (creatingStep) {
+                    dispatch(cancelCreating())
+                }
+            }}
+        >
             <Box width="100vw" height={50}>
                 <Toolbar></Toolbar>
             </Box>

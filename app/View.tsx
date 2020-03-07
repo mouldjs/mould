@@ -29,6 +29,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     //         )
     //     }}
     // >
+
     return (
         <Box
             boxShadow="0px 0px 5px #aaaaaa"
@@ -39,7 +40,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             left={x}
             top={y}
         >
-            <Box position="absolute" top={-20}>
+            <Box position="absolute" top={-20} style={{ cursor: 'grab' }}>
                 <Text truncate size={1} textColor="rgb(132,132,132)">
                     {state}
                 </Text>

@@ -8,12 +8,12 @@ export const ComponentInspector = ({ path, children }) => {
     const selected = useIsSelectedPath(path)
 
     return (
-        editable &&
-        selected && (
+        (editable && selected && (
             <PropertyToolBar.Source>
                 <Box onDoubleClick={e => e.stopPropagation()}>{children}</Box>
             </PropertyToolBar.Source>
-        )
+        )) ||
+        null
     )
 }
 

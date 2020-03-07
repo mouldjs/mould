@@ -48,7 +48,7 @@ export type Mould = {
     name?: string
     scope: string[]
     input: { [key: string]: Desc }
-    states: { [key: string]: Component }
+    states: { [key: string]: Component | null }
 }
 
 export type ComponentPropTypes = {
@@ -56,9 +56,12 @@ export type ComponentPropTypes = {
     path: Path
 } & Component
 
+export type Creating = ['waiting' | 'start' | 'updating', View]
+
 export type EditorState = {
     testWorkspace: Workspace
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
     selection?: Path //[mouldId, state, ...path]
+    creating?: Creating
 }

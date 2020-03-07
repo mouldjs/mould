@@ -5,6 +5,7 @@ import { useDrag } from 'react-dnd-cjs'
 import { useDispatch, useSelector } from 'react-redux'
 import { addMould } from './appShell'
 import { EditorState } from './types'
+import { MouldStates } from './MouldStates'
 
 const Icon = ({ name, children }) => {
     const [, drag] = useDrag({ item: { type: 'TREE', name } })
@@ -59,6 +60,7 @@ export const Toolbar = () => {
                     <Image color="#fff"></Image>
                 </Icon>
             </Flex>
+            <MouldStates></MouldStates>
             <AddMould></AddMould>
         </Flex>
     )

@@ -77,10 +77,14 @@ export const Explorer = () => {
                         {Object.keys(mould.states).map(state => {
                             return (
                                 <TreeView key={state} nodeLabel={state}>
-                                    <ComponentTree
-                                        comp={mould.states[state]}
-                                        path={[[mould.id, state], []]}
-                                    ></ComponentTree>
+                                    {mould.states[state] && (
+                                        <ComponentTree
+                                            comp={
+                                                mould.states[state] as Component
+                                            }
+                                            path={[[mould.id, state], []]}
+                                        ></ComponentTree>
+                                    )}
                                 </TreeView>
                             )
                         })}
