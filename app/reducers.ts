@@ -16,6 +16,7 @@ import {
     handleUpdateCreating,
     handleFinishCreating,
     handleCancelCreating,
+    handleDragView,
 } from './appShell'
 
 export default [
@@ -37,4 +38,5 @@ export default [
     handleUpdateCreating,
     handleFinishCreating,
     handleCancelCreating,
+    handleDragView,
 ]

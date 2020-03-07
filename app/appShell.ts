@@ -388,3 +388,17 @@ export const handleCancelCreating = handleAction<
     },
     initialData
 )
+
+type DragViewAction = { id: string; x: number; y: number }
+const DRAG_VIEW = 'DRAG_VIEW'
+export const dragView = createAction<DragViewAction>(DRAG_VIEW)
+export const handleDragView = handleAction<EditorState, DragViewAction>(
+    DRAG_VIEW,
+    (state, { payload: { id, x, y } }) => {
+        state.views[id].x = x
+        state.views[id].y = y
+
+        return state
+    },
+    initialData
+)

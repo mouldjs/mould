@@ -1,6 +1,7 @@
 body {
     overflow: hidden;
     line-height: 1.35;
+    user-select: none;
 }
 
 /* hack: 修复 popover 被 ToggleButton 遮住的问题 */
