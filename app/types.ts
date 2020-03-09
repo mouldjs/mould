@@ -1,3 +1,5 @@
+import { CSSProperties } from 'react'
+
 export type ID = string
 export type MouldID = ID
 export type StateName = string

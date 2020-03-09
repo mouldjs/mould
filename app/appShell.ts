@@ -15,13 +15,13 @@ type SelectComponentAction = { selection: Path }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
 export const selectComponent = createAction(SELECT_COMPONENT)
 export const handleSelectComponent = handleAction<
-    EditorState | undefined,
+    EditorState,
     SelectComponentAction
 >(
     SELECT_COMPONENT,
-    (state = initialData, action) => {
+    (state, action) => {
         if (action.payload.selection === state.selection) {
-            return
+            return state
         }
         state.selection = action.payload.selection
 
@@ -354,12 +354,16 @@ export const handleFinishCreating = handleAction<
             if (!state.moulds[creation.mouldId]) {
                 state.moulds[creation.mouldId] = {
                     id: creation.mouldId,
+                    name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
                     input: {},
                     states: {},
                 }
             }
-            state.moulds[creation.mouldId].states[creation.state] = null
+            state.moulds[creation.mouldId].states[creation.state] = {
+                type: 'Stack',
+                props: {},
+            }
         }
 
         state.creating = undefined

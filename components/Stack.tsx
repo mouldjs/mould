@@ -19,6 +19,7 @@ import {
 } from 'react-feather'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { BaseFlex } from './BaseComponents'
+import { GeneralStyleInspector } from './GeneralStyleInspector'
 
 const ToggleButton = OToggleButton as any
 
@@ -178,6 +179,10 @@ export default forwardRef(
                             </ToggleButtonGroup>
                         </Cell>
                     </TitledBoard>
+                    <GeneralStyleInspector
+                        style={rest}
+                        requestUpdateProps={requestUpdateProps}
+                    ></GeneralStyleInspector>
                     <Popover
                         targetRef={buttonRef}
                         isOpen={isOpen}

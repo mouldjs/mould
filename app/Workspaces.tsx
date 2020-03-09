@@ -94,7 +94,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 )
             },
             onMouseUp: event => {
-                event.stopPropagation()
+                // event.stopPropagation()
                 dispatch(finishCreating())
             },
         },

@@ -3,6 +3,7 @@ import { ComponentInspector } from '../app/Inspectors'
 import { Input } from '@modulz/radix'
 import { BaseBox } from './BaseComponents'
 import { ComponentPropTypes } from '../app/types'
+import { GeneralStyleInspector } from './GeneralStyleInspector'
 
 type ImagePropTypes = {
     src: string
@@ -18,20 +19,18 @@ export default forwardRef(
         }: ComponentPropTypes & ImagePropTypes,
         ref
     ) => {
+        console.log(rest)
+
         return (
             <Fragment>
                 <BaseBox ref={ref} {...rest}>
                     <img src={src}></img>
                 </BaseBox>
                 <ComponentInspector path={path}>
-                    <Input
-                        value={src}
-                        placeholder="please set img src"
-                        variant="fade"
-                        onChange={e => {
-                            requestUpdateProps({ src: e.target.value })
-                        }}
-                    ></Input>
+                    <GeneralStyleInspector
+                        style={rest}
+                        requestUpdateProps={requestUpdateProps}
+                    ></GeneralStyleInspector>
                 </ComponentInspector>
             </Fragment>
         )

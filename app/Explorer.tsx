@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, Fragment, ReactNode } from 'react'
 import TreeView from 'react-treeview'
 import 'react-treeview/react-treeview.css'
 import { Component, EditorState, Mould, Path } from './types'
@@ -20,14 +20,22 @@ const MouldLabel = (mould: Mould) => {
     )
 }
 
-const ComponentTree = ({ comp, path }: { comp: Component; path: Path }) => {
+const ComponentTree = ({
+    comp,
+    path,
+    label,
+}: {
+    comp: Component
+    path: Path
+    label?: ReactNode
+}) => {
     const dispatch = useDispatch()
     const { moulds, selection } = useSelector((state: EditorState) => {
         return { moulds: state.moulds, selection: state.selection }
     })
     const isSelected = useIsSelectedPath(path)
 
-    const label = (
+    label = (
         <Box
             backgroundColor={
                 Array.isArray(selection) && isSelected
@@ -40,9 +48,10 @@ const ComponentTree = ({ comp, path }: { comp: Component; path: Path }) => {
             }}
             onClick={() => dispatch(selectComponent({ selection: path }))}
         >
-            {comp.type === 'Mould'
-                ? moulds[(comp.props as any).mouldId].name
-                : comp.type}
+            {label ||
+                (comp.type === 'Mould'
+                    ? moulds[(comp.props as any).mouldId].name
+                    : comp.type)}
         </Box>
     )
 
@@ -75,17 +84,26 @@ export const Explorer = () => {
                         nodeLabel={<MouldLabel {...mould}></MouldLabel>}
                     >
                         {Object.keys(mould.states).map(state => {
+                            // return
+                            // <TreeView key={state} nodeLabel={state}>
+                            //     {mould.states[state] && (
+                            //         <ComponentTree
+                            //             comp={
+                            //                 mould.states[state] as Component
+                            //             }
+                            //             path={[[mould.id, state], []]}
+                            //         ></ComponentTree>
+                            //     )}
+                            // </TreeView>
                             return (
-                                <TreeView key={state} nodeLabel={state}>
-                                    {mould.states[state] && (
-                                        <ComponentTree
-                                            comp={
-                                                mould.states[state] as Component
-                                            }
-                                            path={[[mould.id, state], []]}
-                                        ></ComponentTree>
-                                    )}
-                                </TreeView>
+                                mould.states[state] && (
+                                    <ComponentTree
+                                        key={state}
+                                        comp={mould.states[state] as Component}
+                                        path={[[mould.id, state], []]}
+                                        label={state}
+                                    ></ComponentTree>
+                                )
                             )
                         })}
                     </TreeView>

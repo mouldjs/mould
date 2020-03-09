@@ -21,7 +21,7 @@ export const MouldStates = () => {
                         dispatch(
                             waitingForCreating({
                                 mouldId: mould.id,
-                                stateName: `state${
+                                stateName: `state ${
                                     Object.keys(mould.states).length
                                 }`,
                             })
