@@ -1,5 +1,5 @@
 import React from 'react'
-import { PlusSquare, Layers, Image, Pocket } from 'react-feather'
+import { PlusSquare, Layers, Image, Pocket, Type } from 'react-feather'
 import { Box, Flex, GhostButton, Button } from '@modulz/radix'
 import { useDrag } from 'react-dnd-cjs'
 import nanoid from 'nanoid'
@@ -60,8 +60,8 @@ export const Toolbar = () => {
             paddingX={12}
         >
             <Flex>
-                <Icon name="Hello">
-                    <PlusSquare color="#fff"></PlusSquare>
+                <Icon name="Text">
+                    <Type color="#fff"></Type>
                 </Icon>
                 <Icon name="Stack">
                     <Layers color="#fff"></Layers>

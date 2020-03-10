@@ -6188,6 +6188,11 @@ react-spring@^8.0.27:
     "@babel/runtime" "^7.3.1"
     prop-types "^15.5.8"
 
+react-style-editor@^0.2.2:
+  version "0.2.2"
+  resolved "https://npm-registry.toolsfdg.net/react-style-editor/-/react-style-editor-0.2.2.tgz#c86c5b5ff213f5c12935b9ff9915c7a40814abb3"
+  integrity sha512-+PpgwOJKcbGxFRizZWk8e0DP70AtusJXhxxSD+Lp1rD+YVXvQU9jX9O0TQSmiLkSPqNmLfZoQPussINAwpRO8Q==
+
 react-style-singleton@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/react-style-singleton/download/react-style-singleton-2.0.0.tgz#fdc9ff3a82674c256f0033d140b7b1d9d37e7f17"

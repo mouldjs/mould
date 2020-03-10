@@ -39,9 +39,11 @@ export type Workspace = {
     zoom?: number
 } & Vector
 
+export type ComponentProps = { style?: CSSProperties } & object
+
 export type Component = {
     type: string
-    props: object
+    props: ComponentProps
     children?: Component[]
 }
 

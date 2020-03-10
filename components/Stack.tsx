@@ -9,17 +9,19 @@ import {
     Popover,
     Checkbox,
 } from '@modulz/radix'
-import { ComponentPropTypes } from '../app/types'
+import { ComponentPropTypes, ComponentProps } from '../app/types'
 import {
     ArrowLeft,
     ArrowRight,
     ArrowDown,
     ArrowUp,
     Sliders,
+    Props,
 } from 'react-feather'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { BaseFlex } from './BaseComponents'
 import { GeneralStyleInspector } from './GeneralStyleInspector'
+import { CSSInspector } from './CSSInspector'
 
 const ToggleButton = OToggleButton as any
 
@@ -65,8 +67,9 @@ export default forwardRef(
             wrap = false,
             grow = true,
             shrink = true,
+            style,
             ...rest
-        }: ComponentPropTypes & StackProps,
+        }: ComponentPropTypes & ComponentProps & StackProps,
         ref
     ) => {
         const [isOpen, setIsOpen] = useState(false)
@@ -83,6 +86,8 @@ export default forwardRef(
                 ref={ref}
                 height="100%"
                 width="100%"
+                {...style}
+                // style={style}
                 {...rest}
             >
                 {children}
@@ -179,10 +184,14 @@ export default forwardRef(
                             </ToggleButtonGroup>
                         </Cell>
                     </TitledBoard>
-                    <GeneralStyleInspector
+                    <CSSInspector
+                        style={style}
+                        requestUpdateProps={requestUpdateProps}
+                    ></CSSInspector>
+                    {/* <GeneralStyleInspector
                         style={rest}
                         requestUpdateProps={requestUpdateProps}
-                    ></GeneralStyleInspector>
+                    ></GeneralStyleInspector> */}
                     <Popover
                         targetRef={buttonRef}
                         isOpen={isOpen}
