@@ -1,5 +1,5 @@
 import React from 'react'
-import { PlusSquare, Layers, Image, Pocket, Type } from 'react-feather'
+import { PlusSquare, Layers, Image, Pocket, Type, Italic } from 'react-feather'
 import { Box, Flex, GhostButton, Button } from '@modulz/radix'
 import { useDrag } from 'react-dnd-cjs'
 import nanoid from 'nanoid'
@@ -68,6 +68,9 @@ export const Toolbar = () => {
                 </Icon>
                 <Icon name="Image">
                     <Image color="#fff"></Image>
+                </Icon>
+                <Icon name="Input">
+                    <Italic color="#fff"></Italic>
                 </Icon>
             </Flex>
             <MouldStates></MouldStates>

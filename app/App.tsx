@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { Workspace } from './Workspaces'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { createStore } from 'redux'
@@ -14,8 +15,14 @@ import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd-cjs'
 import HTML5Backend from 'react-dnd-html5-backend-cjs'
-import { Explorer } from './Explorer'
-import { cancelCreating } from './appShell'
+import { Explorer, Explorer2 } from './Explorer'
+import { cancelCreating, deleteNode } from './appShell'
+// import KeyboardEventHandler from 'react-keyboard-event-handler'
+
+const KeyboardEventHandler: any = dynamic(
+    () => import('react-keyboard-event-handler'),
+    { ssr: false }
+)
 
 function handleTouchMove(e) {
     e.preventDefault()
@@ -41,11 +48,15 @@ const App = () => {
     const creating = useSelector((state: EditorState) => {
         return state.creating
     })
+    const selection = useSelector((state: EditorState) => {
+        return state.selection
+    })
     const creatingStep = creating && creating[0]
 
     return (
         <Flex
             flexDirection="column"
+            bg="#f1f1f1"
             minHeight="100vh"
             alignItems="stretch"
             style={{ cursor: creatingStep ? 'crosshair' : 'unset' }}
@@ -55,6 +66,13 @@ const App = () => {
                 }
             }}
         >
+            <KeyboardEventHandler
+                handleKeys={['backspace', 'del']}
+                onKeyEvent={(key, e) => {
+                    console.log(`do something upon keydown event of ${key}`)
+                    dispatch(deleteNode())
+                }}
+            />
             <Box width="100vw" height={50}>
                 <Toolbar></Toolbar>
             </Box>
@@ -64,20 +82,46 @@ const App = () => {
                 flexDirection="row"
                 alignItems="stretch"
                 alignContent="stretch"
+                style={{
+                    position: 'relative',
+                }}
             >
                 <Box
                     width={215}
+                    style={{
+                        transition: '0.3s',
+                        position: 'absolute',
+                        left: selection ? 0 : -215,
+                        top: 0,
+                        zIndex: 99999,
+                    }}
                     height="100vh"
                     borderRight="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"
                 >
-                    <Explorer></Explorer>
+                    {/* <Explorer></Explorer> */}
+                    <Explorer2></Explorer2>
                 </Box>
-                <Box flex={1}>
+                <Box
+                    flex={1}
+                    style={{
+                        // zoom: selection ? 1 : 0.7,
+                        transition: '0.3s',
+                        transform: selection ? 'scale(1)' : 'scale(0.75)',
+                        overflow: 'visible',
+                    }}
+                >
                     <Workspace {...testWorkspace}></Workspace>
                 </Box>
                 <Box
                     width={215}
+                    style={{
+                        transition: '0.3s',
+                        position: 'absolute',
+                        right: selection ? 0 : -215,
+                        top: 0,
+                        zIndex: 99999,
+                    }}
                     height="100vh"
                     borderLeft="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"

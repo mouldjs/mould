@@ -17,6 +17,8 @@ import {
     handleFinishCreating,
     handleCancelCreating,
     handleDragView,
+    handleSortTree,
+    handleDeleteNode,
 } from './appShell'
 
 export default [
@@ -39,4 +41,6 @@ export default [
     handleFinishCreating,
     handleCancelCreating,
     handleDragView,
+    handleSortTree,
+    handleDeleteNode,
 ]

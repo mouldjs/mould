@@ -3,6 +3,7 @@ import Image from './Image'
 import Stack from './Stack'
 import Mould from './Mould'
 import Text from './Text'
+import Input from './Input'
 
 export default {
     // Hello,
@@ -10,4 +11,5 @@ export default {
     Image,
     Stack,
     Mould,
+    Input,
 }

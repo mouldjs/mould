@@ -54,3 +54,23 @@ export const BaseBox = styled.div(
         shadow
     )
 )
+
+export const BaseInput = styled.input(
+    compose(
+        system({
+            outline: {
+                property: 'outline',
+                cssProperty: 'outline',
+            },
+        }),
+        space,
+        color,
+        typography,
+        layout,
+        flexbox,
+        background,
+        border,
+        position,
+        shadow
+    )
+)

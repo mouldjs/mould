@@ -7,6 +7,7 @@ import {
     Size,
     Mould,
     Component,
+    ID,
 } from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
@@ -401,6 +402,148 @@ export const handleDragView = handleAction<EditorState, DragViewAction>(
     (state, { payload: { id, x, y } }) => {
         state.views[id].x = x
         state.views[id].y = y
+
+        return state
+    },
+    initialData
+)
+
+type SortTreeAction = { info: any }
+const SORT_TREE = 'SORT_TREE'
+export const sortTree = createAction<SortTreeAction>(SORT_TREE)
+export const handleSortTree = handleAction<EditorState, SortTreeAction>(
+    SORT_TREE,
+    (state, { payload: { info } }) => {
+        const selection = state.selection
+        const moulds = state.moulds
+        const selectedTree =
+            selection && moulds[selection[0][0]].states[selection[0][1]]
+
+        if (selectedTree && selection) {
+            let dropKey = info.node.props.eventKey
+            const dragKey = info.dragNode.props.eventKey
+            const dropPos = info.node.props.pos.split('-')
+            const dropPosition =
+                info.dropPosition - Number(dropPos[dropPos.length - 1])
+
+            const loop = (data, key, addPath, callback) => {
+                data.forEach((item, index, arr) => {
+                    const path = addPath ? `${addPath}-${index}` : `${index}`
+                    if (path === key) {
+                        callback(item, index, arr)
+                        return
+                    }
+                    if (item.children) {
+                        loop(item.children, key, path, callback)
+                    }
+                })
+            }
+            const data = [selectedTree]
+
+            // Find dragObject
+            let dragObj
+            loop(data, dragKey, '', (item, index, arr) => {
+                arr.splice(index, 1)
+                dragObj = item
+            })
+
+            const l = dragKey.length - 1
+            if (parseInt(dragKey[l]) < parseInt(dropKey[l])) {
+                const prevStr = dragKey.substring(0, l)
+                if (prevStr === dropKey.substring(0, l)) {
+                    dropKey =
+                        prevStr +
+                        (parseInt(dropKey[l]) - 1) +
+                        dropKey.substring(l + 1)
+                }
+            }
+
+            if (!info.dropToGap) {
+                // Drop on the content
+                loop(data, dropKey, '', item => {
+                    item.children = item.children || []
+                    // where to insert 示例添加到尾部，可以是随意位置
+                    const index = item.children.push(dragObj)
+                })
+            } else if (
+                (info.node.props.children || []).length > 0 && // Has children
+                info.node.props.expanded && // Is expanded
+                dropPosition === 1 // On the bottom gap
+            ) {
+                loop(data, dropKey, '', item => {
+                    item.children = item.children || []
+                    // where to insert 示例添加到尾部，可以是随意位置
+                    item.children.unshift(dragObj)
+                })
+            } else {
+                // Drop on the gap
+                let ar
+                let i
+                loop(data, dropKey, '', (item, index, arr) => {
+                    ar = arr
+                    i = index
+                })
+                if (dropPosition === -1) {
+                    ar.splice(i, 0, dragObj)
+                } else {
+                    ar.splice(i + 1, 0, dragObj)
+                }
+            }
+
+            moulds[selection[0][0]].states[selection[0][1]] = data[0]
+            selection[1] = []
+        }
+
+        return state
+    },
+    initialData
+)
+
+const deleteChildren = (comp: Component, path: number[]) => {
+    if (path.length === 1) {
+        ;(comp.children as Component[]).splice(path[0], 1)
+    } else {
+        deleteChildren((comp.children as Component[])[path[0]], path.slice(1))
+    }
+}
+
+type DeleteNodeAction = void
+const DELETE_NODE = 'DELETE_NODE'
+export const deleteNode = createAction<DeleteNodeAction>(DELETE_NODE)
+export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
+    DELETE_NODE,
+    state => {
+        const selection = state.selection
+        if (selection) {
+            if (selection[1].length) {
+                deleteChildren(
+                    state.moulds[selection[0][0]].states[
+                        selection[0][1]
+                    ] as Component,
+                    selection[1]
+                )
+                selection[1] = []
+            } else {
+                delete state.moulds[selection[0][0]].states[selection[0][1]]
+                if (
+                    Object.keys(state.moulds[selection[0][0]].states).length ===
+                    0
+                ) {
+                    delete state.moulds[selection[0][0]]
+                }
+                const view = Object.values(state.views).find(
+                    view =>
+                        view.mouldId === selection[0][0] &&
+                        view.state === selection[0][1]
+                )
+                delete state.views[view!.id]
+                const index = state.testWorkspace.views.findIndex(
+                    viewId => view!.id === viewId
+                )
+                state.testWorkspace.views.splice(index, 1)
+                state.selection = undefined
+            }
+        }
 
         return state
     },

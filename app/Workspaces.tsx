@@ -113,7 +113,6 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
         <Box
             bg="#f1f1f1"
             height="100vh"
-            overflow="hidden"
             position="relative"
             {...bind()}
             onDoubleClick={() => {
