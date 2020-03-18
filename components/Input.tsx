@@ -4,7 +4,17 @@ import { Input } from '@modulz/radix'
 import { BaseInput, BaseBox } from './BaseComponents'
 import { CSSInspector } from './CSSInspector'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
-import { ComponentPropTypes, ComponentProps } from '../app/types'
+import * as z from 'zod'
+import { ComponentPropTypes, zodComponentProps } from '../app/types'
+
+export const inputProps = z
+    .object({
+        value: z.string().optional(),
+        placeholder: z.string().optional(),
+    })
+    .merge(zodComponentProps)
+
+type PropType = z.TypeOf<typeof inputProps>
 
 export default forwardRef(
     (
@@ -14,10 +24,8 @@ export default forwardRef(
             requestUpdateProps,
             children,
             path,
-            style,
             ...rest
-        }: ComponentPropTypes &
-            ComponentProps & { value: string; placeholder: string },
+        }: ComponentPropTypes & PropType,
         ref
     ) => {
         return (
@@ -27,7 +35,6 @@ export default forwardRef(
                     ref={ref}
                     value={value}
                     placeholder={placeholder}
-                    {...style}
                     {...rest}
                 ></BaseBox>
                 <ComponentInspector path={path}>
@@ -58,7 +65,7 @@ export default forwardRef(
                     </TitledBoard>
 
                     <CSSInspector
-                        style={style}
+                        style={rest}
                         requestUpdateProps={requestUpdateProps}
                     ></CSSInspector>
                 </ComponentInspector>

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import { Component, EditorState, Path } from './types'
 import { useEditable } from './MouldContext'
 import Components from '../components'
-import { useDrop } from 'react-dnd-cjs'
+import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
@@ -101,8 +101,8 @@ export const Tree = ({
                 type,
                 props,
                 children: [
-                    ...(children || []),
-                    { type: item.name, props: item.props || {} },
+                    ...children,
+                    { type: item.name, props: item.props || {}, children: [] },
                 ],
             })
 
@@ -123,7 +123,12 @@ export const Tree = ({
 
     const compRef = useRef()
 
-    const Comp = Components[type]
+    const plugin = Components.find(c => c.type === type)
+    if (!plugin) {
+        return null
+    }
+    const Comp = plugin.component
+
     let inside =
         children &&
         children.map((tree, index) => (
@@ -149,7 +154,11 @@ export const Tree = ({
     if (inside && canDrop) {
         const handleDrop = index => droppedType => {
             const nextChildren = [...(children || [])]
-            nextChildren.splice(index, 0, { type: droppedType, props: {} })
+            nextChildren.splice(index, 0, {
+                type: droppedType,
+                props: {},
+                children: [],
+            })
             onChange({
                 type,
                 props,
@@ -214,48 +223,3 @@ export const Tree = ({
         </>
     )
 }
-
-// export default Tree
-// export const Root = ({ path }) => {
-//     const dispatch = useDispatch()
-//     const editable = useEditable()
-//     const selected = useIsSelectedPath(path)
-//     const included = useIsIncludePath(path)
-//     const [{ isOver, canDrop }, drop] = useDrop<
-//         { type: string; name: string; props?: object },
-//         { res: boolean },
-//         { isOver: boolean; canDrop: boolean }
-//     >({
-//         accept: 'TREE',
-//         drop: (item, monitor) => {
-//             if (monitor.getDropResult() && monitor.getDropResult().res) {
-//                 return { res: true }
-//             }
-
-//             if (!selected) {
-//                 return
-//             }
-//             onChange({
-//                 type,
-//                 props,
-//                 children: [
-//                     ...(children || []),
-//                     { type: item.name, props: item.props || {} },
-//                 ],
-//             })
-
-//             return { res: true }
-//         },
-//         collect: monitor => {
-//             let canDrop = false
-//             try {
-//                 canDrop = monitor.canDrop()
-//             } catch (e) {}
-
-//             return {
-//                 isOver: monitor.isOver(),
-//                 canDrop,
-//             }
-//         },
-//     })
-// }

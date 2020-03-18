@@ -1,4 +1,12 @@
-import { EditorState, Path, StateName, MouldID } from './types'
+import {
+    EditorState,
+    Path,
+    StateName,
+    MouldID,
+    Mould,
+    Component,
+    ComponentProps,
+} from './types'
 import { useSelector } from 'react-redux'
 import data from './initialData'
 
@@ -77,4 +85,39 @@ export const useIsIncludePath = (path: Path) => {
             .join('+')
             .includes([path[0].join('/'), path[1].join('/')].join('+'))
     )
+}
+
+export const rootTree = (props: ComponentProps, children: Component[]) => {
+    return {
+        type: 'Root',
+        props,
+        children,
+    }
+}
+
+export const mouldTree = (mould: Mould, stateName: string) => {
+    return rootTree(mould.rootProps, mould.states[stateName])
+}
+
+export const useCurrentMould = () => {
+    const [selection, moulds] = useSelector((state: EditorState) => [
+        state.selection,
+        state.moulds,
+    ])
+
+    if (!selection) {
+        return
+    }
+
+    return moulds[selection[0][0]]
+}
+
+export const useCurrentState = () => {
+    const selection = useSelector((state: EditorState) => state.selection)
+
+    if (!selection) {
+        return
+    }
+
+    return selection[0][1]
 }

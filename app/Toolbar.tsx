@@ -1,7 +1,7 @@
 import React from 'react'
 import { PlusSquare, Layers, Image, Pocket, Type, Italic } from 'react-feather'
 import { Box, Flex, GhostButton, Button } from '@modulz/radix'
-import { useDrag } from 'react-dnd-cjs'
+import { useDrag } from 'react-dnd'
 import nanoid from 'nanoid'
 import { useDispatch, useSelector } from 'react-redux'
 import { addMould, waitingForCreating } from './appShell'

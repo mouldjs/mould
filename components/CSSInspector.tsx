@@ -1,8 +1,10 @@
-import React, { useState, CSSProperties } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 import analyze from 'react-style-editor/lib/utils/analyze'
 // import str from 'react-style-editor/lib/utils/stringify'
 import { TitledBoard } from '../inspector/FormComponents'
+import { CSSProperties } from '../lib/zodTypes'
+import { ComponentProps } from '../app/types'
 
 const StyleEditor = dynamic(() => import('react-style-editor'), {
     ssr: false,
@@ -15,7 +17,7 @@ function hyphenate(str) {
     })
 }
 
-const convertReactStyleToCSS = (style: CSSProperties) =>
+const convertReactStyleToCSS = (style: ComponentProps) =>
     `style{${Object.keys(style)
         .map(k => `${hyphenate(k)}:${style[k]};`)
         .join('')}}`
@@ -28,8 +30,20 @@ function camelize(str) {
 
 // const convertCSSToReactStyle = (cssObject) =>
 
+function pick(obj, keys) {
+    return keys
+        .map(k => (k in obj ? { [k]: obj[k] } : {}))
+        .reduce((res, o) => Object.assign(res, o), {})
+}
+
+const pickStyle = obj => pick(obj, Object.keys(CSSProperties._def.shape))
+
 export const CSSInspector = ({ style, requestUpdateProps }) => {
-    const css = style ? convertReactStyleToCSS(style) : 'style{background}'
+    style = pickStyle(style)
+    if (Object.keys(style).length === 0) {
+        style = undefined
+    }
+    const css = style ? convertReactStyleToCSS(style) : 'style{color}'
 
     return (
         <TitledBoard title="Style" collspae>
@@ -65,11 +79,11 @@ export const CSSInspector = ({ style, requestUpdateProps }) => {
                             {}
                         )
                         if (reactStyle) {
-                            requestUpdateProps({
-                                style: Object.keys(reactStyle).length
+                            requestUpdateProps(
+                                Object.keys(reactStyle).length
                                     ? reactStyle
-                                    : undefined,
-                            })
+                                    : undefined
+                            )
                         }
                     }
                 }}

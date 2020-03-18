@@ -6,6 +6,7 @@ import {
     handleModifyInputDescription,
     handleAddScope,
     handleRemoveScope,
+    handleModifyScope,
     handleAddState,
     handleRemoveState,
     handleResizeView,
@@ -19,6 +20,8 @@ import {
     handleDragView,
     handleSortTree,
     handleDeleteNode,
+    handleAddKit,
+    handleConnectScopeToKit,
 } from './appShell'
 
 export default [
@@ -31,6 +34,7 @@ export default [
     handleModifyInputDescription,
     handleAddScope,
     handleRemoveScope,
+    handleModifyScope,
     handleAddState,
     handleRemoveState,
     handleResizeView,
@@ -43,4 +47,6 @@ export default [
     handleDragView,
     handleSortTree,
     handleDeleteNode,
+    handleAddKit,
+    handleConnectScopeToKit,
 ]

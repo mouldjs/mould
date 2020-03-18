@@ -42,7 +42,9 @@ const Alignment = z.union([
     z.literal('stretch'),
 ])
 
-export const stackProps = z
+const alignments = Array.from(Alignment._def.options).map(a => a._def.value)
+
+export const rootProps = z
     .object({
         direction: Direction.optional(),
         horizontalAlign: Alignment.optional(),
@@ -53,11 +55,9 @@ export const stackProps = z
     })
     .merge(zodComponentProps)
 
-type PropType = z.TypeOf<typeof stackProps>
+type PropType = z.TypeOf<typeof rootProps>
 
 const ToggleButton = OToggleButton as any
-
-const alignments = Array.from(Alignment._def.options).map(a => a._def.value)
 
 export default forwardRef(
     (

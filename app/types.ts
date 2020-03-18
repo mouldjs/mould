@@ -1,4 +1,6 @@
-import { CSSProperties } from 'react'
+import { ComponentType, ForwardRefExoticComponent } from 'react'
+import * as z from 'zod'
+import { CSSProperties } from '../lib/zodTypes'
 
 export type ID = string
 export type MouldID = ID
@@ -39,20 +41,33 @@ export type Workspace = {
     zoom?: number
 } & Vector
 
-export type ComponentProps = { style?: CSSProperties } & object
+export const zodComponentProps = CSSProperties
+
+export type ComponentProps = z.TypeOf<typeof zodComponentProps>
 
 export type Component = {
     type: string
     props: ComponentProps
-    children?: Component[]
+    children: Component[]
+}
+
+//[scope-field, prop-field]
+export type DataMappingVector = [string, string]
+
+export type Kit = {
+    type: string
+    dataMappingVector: DataMappingVector[]
+    name: string
 }
 
 export type Mould = {
     id: string
     name?: string
     scope: string[]
+    kits: Kit[]
     input: { [key: string]: Desc }
-    states: { [key: string]: Component | null }
+    states: { [key: string]: Component[] }
+    rootProps: ComponentProps
 }
 
 export type ComponentPropTypes = {
@@ -68,4 +83,13 @@ export type EditorState = {
     moulds: { [key: string]: Mould }
     selection?: Path //[mouldId, state, ...path]
     creating?: Creating
+}
+
+export type RootType = 'root'
+
+export type AtomicComponent = {
+    type: string
+    component: ForwardRefExoticComponent<any>
+    icon: ComponentType
+    propType: z.ZodObject<{ [k: string]: any }>
 }

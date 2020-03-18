@@ -4,6 +4,7 @@ import MouldContext from './MouldContext'
 import { Tree } from './Tree'
 import { useDispatch } from 'react-redux'
 import { modifyMouldTree } from './appShell'
+import { mouldTree, rootTree } from './utils'
 
 const { Provider } = MouldContext
 type Editable = { editable: boolean }
@@ -14,9 +15,10 @@ export default ({
     currentState,
     states,
     editable = false,
+    rootProps,
 }: Mould & Editable & currentState) => {
     const dispatch = useDispatch()
-    const tree = states[currentState]
+    const tree = rootTree(rootProps, states[currentState])
 
     return (
         <Provider value={editable}>

@@ -8,6 +8,7 @@ import {
     Mould,
     Component,
     ID,
+    Kit,
 } from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
@@ -86,6 +87,22 @@ export const handleModifyInputDescription = handleAction<
     initialData
 )
 
+type ModifyScopeAction = {
+    mouldId: string
+    scope: string[]
+}
+const MODIFY_SCOPE = 'MODIFY_SCOPE'
+export const modifyScope = createAction<ModifyScopeAction>(MODIFY_SCOPE)
+export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
+    MODIFY_SCOPE,
+    (state, action) => {
+        state.moulds[action.payload.mouldId].scope = action.payload.scope
+
+        return state
+    },
+    initialData
+)
+
 type AddScopeAction = {
     mouldId: string
     scope: string
@@ -132,10 +149,7 @@ export const addState = createAction<AddStateAction>(ADD_STATE)
 export const handleAddState = handleAction<EditorState, AddStateAction>(
     ADD_STATE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].states[action.payload.state] = {
-            type: 'Stack',
-            props: {},
-        }
+        state.moulds[action.payload.mouldId].states[action.payload.state] = []
         const view: View = {
             id: nanoid(6),
             mouldId: action.payload.mouldId,
@@ -216,13 +230,12 @@ export const handleAddMould = handleAction<EditorState, AddMouldAction>(
             id: mouldId,
             name: `Mould ${Object.values(state.moulds).length + 1}`,
             scope: [],
+            kits: [],
             input: {},
             states: {
-                default: {
-                    type: 'Stack',
-                    props: {},
-                },
+                default: [],
             },
+            rootProps: {},
         }
 
         state.testWorkspace.views.push(view.id)
@@ -245,8 +258,9 @@ export const handleModifyMouldTree = handleAction<
 >(
     MODIFY_MOULD_TREE,
     (state, action) => {
-        state.moulds[action.payload.id].states[action.payload.state] =
-            action.payload.tree
+        const mould = state.moulds[action.payload.id]
+        mould.states[action.payload.state] = action.payload.tree.children
+        mould.rootProps = action.payload.tree.props
 
         return state
     },
@@ -357,14 +371,13 @@ export const handleFinishCreating = handleAction<
                     id: creation.mouldId,
                     name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
+                    kits: [],
                     input: {},
                     states: {},
+                    rootProps: {},
                 }
             }
-            state.moulds[creation.mouldId].states[creation.state] = {
-                type: 'Stack',
-                props: {},
-            }
+            state.moulds[creation.mouldId].states[creation.state] = []
         }
 
         state.creating = undefined
@@ -438,7 +451,7 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                     }
                 })
             }
-            const data = [selectedTree]
+            const data = selectedTree
 
             // Find dragObject
             let dragObj
@@ -490,7 +503,7 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                 }
             }
 
-            moulds[selection[0][0]].states[selection[0][1]] = data[0]
+            moulds[selection[0][0]].states[selection[0][1]] = data
             selection[1] = []
         }
 
@@ -499,11 +512,15 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
     initialData
 )
 
-const deleteChildren = (comp: Component, path: number[]) => {
+type HasChildren = {
+    children: HasChildren[]
+}
+
+const deleteChildren = (comp: HasChildren, path: number[]) => {
     if (path.length === 1) {
-        ;(comp.children as Component[]).splice(path[0], 1)
+        comp.children.splice(path[0], 1)
     } else {
-        deleteChildren((comp.children as Component[])[path[0]], path.slice(1))
+        deleteChildren(comp.children[path[0]], path.slice(1))
     }
 }
 
@@ -517,9 +534,12 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
         if (selection) {
             if (selection[1].length) {
                 deleteChildren(
-                    state.moulds[selection[0][0]].states[
-                        selection[0][1]
-                    ] as Component,
+                    {
+                        children:
+                            state.moulds[selection[0][0]].states[
+                                selection[0][1]
+                            ],
+                    },
                     selection[1]
                 )
                 selection[1] = []
@@ -544,6 +564,50 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
                 state.selection = undefined
             }
         }
+
+        return state
+    },
+    initialData
+)
+
+type AddKitAction = { type: string; mouldId: ID; name?: string }
+const ADD_KIT = 'ADD_KIT'
+export const addKit = createAction<AddKitAction>(ADD_KIT)
+export const handleAddKit = handleAction<EditorState, AddKitAction>(
+    ADD_KIT,
+    (state, { payload: { type, mouldId, name } }) => {
+        const mould = state.moulds[mouldId]
+        const kit: Kit = {
+            type,
+            name: name || `kit ${mould.kits.length}`,
+            dataMappingVector: [],
+        }
+        mould.kits.push(kit)
+
+        return state
+    },
+    initialData
+)
+
+type ConnectScopeToKit = {
+    scope: string
+    prop: string
+    mouldId: ID
+    kitIndex: number
+}
+const CONNECT_SCOPE_TO_KIT = 'CONNECT_SCOPE_TO_KIT'
+export const connectScopeToKit = createAction<ConnectScopeToKit>(
+    CONNECT_SCOPE_TO_KIT
+)
+export const handleConnectScopeToKit = handleAction<
+    EditorState,
+    ConnectScopeToKit
+>(
+    CONNECT_SCOPE_TO_KIT,
+    (state, { payload: { scope, prop, mouldId, kitIndex } }) => {
+        const mould = state.moulds[mouldId]
+        const kit = mould.kits[kitIndex]
+        kit.dataMappingVector.push([prop, scope])
 
         return state
     },

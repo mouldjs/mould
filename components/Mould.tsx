@@ -1,15 +1,26 @@
 import React, { forwardRef, Fragment } from 'react'
-import {
-    Mould as MouldType,
-    Component,
-    ComponentPropTypes,
-    EditorState,
-} from '../app/types'
 import Components from '.'
 import { useSelector } from 'react-redux'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
 import { Select } from '@modulz/radix'
+import * as z from 'zod'
+import {
+    ComponentPropTypes,
+    zodComponentProps,
+    Mould as MouldType,
+    Component,
+    EditorState,
+} from '../app/types'
+
+export const mouldProps = z
+    .object({
+        mouldId: z.string(),
+        mockState: z.string().optional(),
+    })
+    .merge(zodComponentProps)
+
+type PropType = z.TypeOf<typeof mouldProps>
 
 const Tree = forwardRef(
     ({ type, props, children, ...rest }: Component, ref) => {
@@ -32,7 +43,7 @@ const Mould = forwardRef(
             children,
             path,
             ...rest
-        }: ComponentPropTypes & { mouldId: string; mockState: string },
+        }: ComponentPropTypes & PropType,
         ref
     ) => {
         const { states } = useSelector((state: EditorState) => {
@@ -49,7 +60,12 @@ const Mould = forwardRef(
                         <Cell label="input">input</Cell>
                     </TitledBoard>
                 </ComponentInspector>
-                <Tree {...rest} {...currentMockTree} ref={ref}></Tree>
+                <Tree
+                    {...rest}
+                    children={children}
+                    {...currentMockTree}
+                    ref={ref}
+                ></Tree>
             </Fragment>
         )
     }

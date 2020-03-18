@@ -13,11 +13,15 @@ import { useEffect } from 'react'
 import { createProcessReducers } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
-import { DndProvider } from 'react-dnd-cjs'
-import HTML5Backend from 'react-dnd-html5-backend-cjs'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer, Explorer2 } from './Explorer'
 import { cancelCreating, deleteNode } from './appShell'
-// import KeyboardEventHandler from 'react-keyboard-event-handler'
+import { TitledBoard } from '../inspector/FormComponents'
+import { MouldMetas } from './MouldMetas'
+import { MouldScope } from './MouldScope'
+import { MouldKits } from './MouldKits'
+import { ArcherContainer } from 'react-archer'
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -68,14 +72,14 @@ const App = () => {
         >
             <KeyboardEventHandler
                 handleKeys={['backspace', 'del']}
-                onKeyEvent={(key, e) => {
-                    console.log(`do something upon keydown event of ${key}`)
+                onKeyEvent={() => {
                     dispatch(deleteNode())
                 }}
             />
             <Box width="100vw" height={50}>
                 <Toolbar></Toolbar>
             </Box>
+
             <Flex
                 flex={1}
                 overflow="hidden"
@@ -93,14 +97,34 @@ const App = () => {
                         position: 'absolute',
                         left: selection ? 0 : -215,
                         top: 0,
-                        zIndex: 99999,
+                        zIndex: 1,
                     }}
                     height="100vh"
                     borderRight="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"
                 >
-                    {/* <Explorer></Explorer> */}
-                    <Explorer2></Explorer2>
+                    <ArcherContainer
+                        style={{
+                            height: '100%',
+                            backgroundColor: '#e1e1e1',
+                        }}
+                        svgContainerStyle={{
+                            overflow: 'visible',
+                            pointerEvents: 'none',
+                            zIndex: -1,
+                        }}
+                        strokeColor="red"
+                        arrowLength={0}
+                        strokeWidth={1}
+                    >
+                        <MouldScope></MouldScope>
+                        <TitledBoard title="Metas">
+                            <MouldMetas></MouldMetas>
+                        </TitledBoard>
+                        <TitledBoard title="Kits">
+                            <MouldKits></MouldKits>
+                        </TitledBoard>
+                    </ArcherContainer>
                 </Box>
                 <Box
                     flex={1}
@@ -120,12 +144,15 @@ const App = () => {
                         position: 'absolute',
                         right: selection ? 0 : -215,
                         top: 0,
-                        zIndex: 99999,
+                        zIndex: 1,
                     }}
                     height="100vh"
                     borderLeft="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"
                 >
+                    <TitledBoard title="Hierarchy" collspae>
+                        <Explorer2></Explorer2>
+                    </TitledBoard>
                     <PropertyToolBar.Target />
                 </Box>
             </Flex>

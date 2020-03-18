@@ -6,9 +6,9 @@ import './rc-tree.css'
 import { Component, EditorState, Mould, Path } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
-import { useDrag } from 'react-dnd-cjs'
+import { useDrag } from 'react-dnd'
 import { selectComponent, sortTree } from '../app/appShell'
-import { useIsSelectedPath } from './utils'
+import { useIsSelectedPath, mouldTree } from './utils'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -101,7 +101,7 @@ export const Explorer = () => {
                                 mould.states[state] && (
                                     <ComponentTree
                                         key={state}
-                                        comp={mould.states[state] as Component}
+                                        comp={mouldTree(mould, state)}
                                         path={[[mould.id, state], []]}
                                         label={state}
                                     ></ComponentTree>
@@ -174,20 +174,17 @@ const isSelectedPath = (path: Path, currentPath: Path | undefined) =>
         [path[0].join('/'), path[1].join('/')].join('+')
 
 export const Explorer2 = () => {
-    // const moulds = useSelector((state: EditorState) => {
-    //     return state.moulds
-    // })
-    // const [expandedKeys, setExpandedK] = useState()
     const dispatch = useDispatch()
     const { moulds, selection } = useSelector((state: EditorState) => {
         return { moulds: state.moulds, selection: state.selection }
     })
-    const selectedTree =
-        selection && moulds[selection[0][0]].states[selection[0][1]]
-
-    if (!selectedTree || !selection) {
+    if (!selection) {
         return null
     }
+    const mould = moulds[selection[0][0]]
+    const stateName = selection[0][1]
+
+    const selectedTree = mouldTree(mould, stateName)
 
     const onDragStart = info => {
         console.log('start', info)
@@ -197,81 +194,12 @@ export const Explorer2 = () => {
         console.log('enter', info)
     }
 
-    const onDrop = info => {
-        console.log('drop', info, info.event.target)
-        // const dropKey = info.node.props.eventKey
-        // const dragKey = info.dragNode.props.eventKey
-        // const dropPos = info.node.props.pos.split('-')
-        // const dropPosition =
-        //     info.dropPosition - Number(dropPos[dropPos.length - 1])
-
-        // console.log({
-        //     dropKey,
-        //     dragKey,
-        //     dropPos,
-        //     dropPosition,
-        //     dropToGap: info.dropToGap,
-        // })
-
-        // const loop = (data, key, addPath, callback) => {
-        //     data.forEach((item, index, arr) => {
-        //         const path = addPath ? `${addPath}-${index}` : `${index}`
-        //         if (path === key) {
-        //             callback(item, index, arr)
-        //             return
-        //         }
-        //         if (item.children) {
-        //             loop(item.children, key, path, callback)
-        //         }
-        //     })
-        // }
-        // const data = [selectedTree]
-
-        // // Find dragObject
-        // let dragObj
-        // loop(data, dragKey, '', (item, index, arr) => {
-        //     arr.splice(index, 1)
-        //     dragObj = item
-        // })
-
-        // if (!info.dropToGap) {
-        //     // Drop on the content
-        //     loop(data, dropKey, '', item => {
-        //         item.children = item.children || []
-        //         // where to insert 示例添加到尾部，可以是随意位置
-        //         item.children.push(dragObj)
-        //     })
-        // } else if (
-        //     (info.node.props.children || []).length > 0 && // Has children
-        //     info.node.props.expanded && // Is expanded
-        //     dropPosition === 1 // On the bottom gap
-        // ) {
-        //     loop(data, dropKey, '', item => {
-        //         item.children = item.children || []
-        //         // where to insert 示例添加到尾部，可以是随意位置
-        //         item.children.unshift(dragObj)
-        //     })
-        // } else {
-        //     // Drop on the gap
-        //     let ar
-        //     let i
-        //     loop(data, dropKey, '', (item, index, arr) => {
-        //         ar = arr
-        //         i = index
-        //     })
-        //     if (dropPosition === -1) {
-        //         ar.splice(i, 0, dragObj)
-        //     } else {
-        //         ar.splice(i + 1, 0, dragObj)
-        //     }
-        // }
-
+    const onDrop = info =>
         dispatch(
             sortTree({
                 info,
             })
         )
-    }
 
     const renderComponentTree = ({
         comp,
@@ -305,7 +233,7 @@ export const Explorer2 = () => {
         )
 
         return (
-            <TreeNode key={`0-${path[1].join('-')}`} title={label}>
+            <TreeNode key={`${path[1].join('-')}`} title={label}>
                 {comp.children &&
                     comp.children.map((c, index) => {
                         return renderComponentTree({
@@ -318,26 +246,22 @@ export const Explorer2 = () => {
     }
 
     return (
-        <>
-            {selectedTree && selection && (
-                <div className="draggable-container">
-                    <Tree
-                        key={selection[0].join('/')}
-                        draggable
-                        defaultExpandAll
-                        selectable={false}
-                        onDragStart={onDragStart}
-                        onDragEnter={onDragEnter}
-                        onDrop={onDrop}
-                    >
-                        {renderComponentTree({
-                            comp: selectedTree,
-                            path: [selection[0], []],
-                            label: selection[0][1],
-                        })}
-                    </Tree>
-                </div>
-            )}
-        </>
+        <div className="draggable-container">
+            <Tree
+                key={selection[0].join('/')}
+                draggable
+                defaultExpandAll
+                selectable={false}
+                onDragStart={onDragStart}
+                onDragEnter={onDragEnter}
+                onDrop={onDrop}
+            >
+                {renderComponentTree({
+                    comp: selectedTree,
+                    path: [selection[0], []],
+                    label: 'Root',
+                })}
+            </Tree>
+        </div>
     )
 }

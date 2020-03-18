@@ -8,3 +8,7 @@ body {
 div[data-focus-lock-disabled] > div:first-child {
     z-index: 3;
 }
+
+radix-portal div {
+    z-index: 100;
+}

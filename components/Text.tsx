@@ -1,10 +1,19 @@
 import React, { forwardRef } from 'react'
+import * as z from 'zod'
 import { ComponentInspector } from '../app/Inspectors'
 import { Input, Box } from '@modulz/radix'
 import { BaseBox } from './BaseComponents'
 import { CSSInspector } from './CSSInspector'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
-import { ComponentPropTypes, ComponentProps } from '../app/types'
+import { ComponentPropTypes, zodComponentProps } from '../app/types'
+
+export const textProps = z
+    .object({
+        content: z.string().optional(),
+    })
+    .merge(zodComponentProps)
+
+type PropType = z.TypeOf<typeof textProps>
 
 export default forwardRef(
     (
@@ -13,13 +22,12 @@ export default forwardRef(
             requestUpdateProps,
             children,
             path,
-            style,
             ...rest
-        }: ComponentPropTypes & ComponentProps & { content: string },
+        }: ComponentPropTypes & PropType,
         ref
     ) => {
         return (
-            <BaseBox ref={ref} as="span" {...style} {...rest}>
+            <BaseBox ref={ref} as="span" {...rest}>
                 {content}
                 <ComponentInspector path={path}>
                     <TitledBoard title="Text" collspae>
@@ -38,7 +46,7 @@ export default forwardRef(
                     </TitledBoard>
 
                     <CSSInspector
-                        style={style}
+                        style={rest}
                         requestUpdateProps={requestUpdateProps}
                     ></CSSInspector>
                 </ComponentInspector>

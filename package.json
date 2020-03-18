@@ -14,6 +14,7 @@
         "@types/react-treeview": "^0.4.2",
         "@visionjs/core": "^2.0.0-alpha.1",
         "@zeit/next-css": "^1.0.1",
+        "b1ncer-react-tag-input": "^0.0.0",
         "debounce": "^1.2.0",
         "immer": "^4.0.0",
         "nanoid": "^2.1.2",
@@ -22,7 +23,10 @@
         "ramda": "^0.26.1",
         "rc-tree": "^3.1.1",
         "react": "16.10.1",
+        "react-archer": "^1.5.0",
+        "react-dnd": "^10.0.2",
         "react-dnd-cjs": "^9.4.0",
+        "react-dnd-html5-backend": "^10.0.2",
         "react-dnd-html5-backend-cjs": "^9.4.0",
         "react-dom": "16.10.1",
         "react-feather": "^2.0.3",
@@ -32,6 +36,7 @@
         "react-resizable": "^1.9.0",
         "react-spring": "^8.0.27",
         "react-style-editor": "^0.2.2",
+        "react-tag-input": "^6.4.2",
         "react-teleporter": "^1.1.1",
         "react-treeview": "^0.4.7",
         "react-use-gesture": "^6.0.1",
@@ -39,7 +44,8 @@
         "redux": "^4.0.4",
         "redux-actions": "^2.6.5",
         "styled-components": "^4.4.0",
-        "styled-system": "^5.1.2"
+        "styled-system": "^5.1.2",
+        "zod": "^1.0.9"
     },
     "devDependencies": {
         "@types/node": "^12.7.8",
