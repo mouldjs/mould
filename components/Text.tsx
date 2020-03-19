@@ -29,27 +29,29 @@ export default forwardRef(
         return (
             <BaseBox ref={ref} as="span" {...rest}>
                 {content}
-                <ComponentInspector path={path}>
-                    <TitledBoard title="Text" collspae>
-                        <Cell label="Content">
-                            <Input
-                                value={content}
-                                placeholder="Input your content"
-                                variant="fade"
-                                onChange={e => {
-                                    requestUpdateProps({
-                                        content: e.target.value,
-                                    })
-                                }}
-                            ></Input>
-                        </Cell>
-                    </TitledBoard>
+                {requestUpdateProps && path && (
+                    <ComponentInspector path={path}>
+                        <TitledBoard title="Text" collspae>
+                            <Cell label="Content">
+                                <Input
+                                    value={content}
+                                    placeholder="Input your content"
+                                    variant="fade"
+                                    onChange={e => {
+                                        requestUpdateProps({
+                                            content: e.target.value,
+                                        })
+                                    }}
+                                ></Input>
+                            </Cell>
+                        </TitledBoard>
 
-                    <CSSInspector
-                        style={rest}
-                        requestUpdateProps={requestUpdateProps}
-                    ></CSSInspector>
-                </ComponentInspector>
+                        <CSSInspector
+                            style={rest}
+                            requestUpdateProps={requestUpdateProps}
+                        ></CSSInspector>
+                    </ComponentInspector>
+                )}
             </BaseBox>
         )
     }

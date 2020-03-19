@@ -4,7 +4,7 @@ import { Flex, Text, Box, Select, Option } from '@modulz/radix'
 import { ArcherElement } from 'react-archer'
 import { Type } from 'react-feather'
 import { useCurrentMould } from './utils'
-import { useDrop } from 'react-dnd'
+import { useDrop, useDrag } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { addKit, connectScopeToKit } from './appShell'
 import { Kit } from './types'
@@ -22,6 +22,13 @@ const MouldKitItem = ({
             setDraggingScope(item.scope)
         },
     })
+    const [, drag] = useDrag({
+        item: {
+            type: 'TREE',
+            name: 'Kit',
+            props: { __kitName: name },
+        },
+    })
     const plugin = Components.find(c => c.type === type)
     if (!plugin) {
         return null
@@ -33,7 +40,10 @@ const MouldKitItem = ({
             height={70}
             justifyContent="space-between"
             padding="8px 0 8px 8px"
-            ref={drop}
+            ref={dom => {
+                drop(dom)
+                drag(dom)
+            }}
         >
             <Flex>
                 <Flex

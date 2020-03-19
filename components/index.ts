@@ -6,14 +6,15 @@ import {
     Italic,
     Package,
 } from 'react-feather'
+import { AtomicComponent } from '../app/types'
 // import Hello from './Hello'
 import Image, { imageProps } from './Image'
 import Stack, { stackProps } from './Stack'
-import Mould, { mouldProps } from './Mould'
+import Mould from './Mould'
 import Text, { textProps } from './Text'
 import Input, { inputProps } from './Input'
 import Root, { rootProps } from './Root'
-import { AtomicComponent } from '../app/types'
+import Kit from './Kit'
 
 export default [
     // Hello,
@@ -39,7 +40,6 @@ export default [
         type: 'Mould',
         component: Mould,
         icon: Box,
-        propType: mouldProps,
     },
     {
         type: 'Input',
@@ -52,5 +52,9 @@ export default [
         component: Root,
         icon: Package,
         propType: rootProps,
+    },
+    {
+        type: 'Kit',
+        component: Kit,
     },
 ] as AtomicComponent[]

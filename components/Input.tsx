@@ -37,38 +37,40 @@ export default forwardRef(
                     placeholder={placeholder}
                     {...rest}
                 ></BaseBox>
-                <ComponentInspector path={path}>
-                    <TitledBoard title="Text" collspae>
-                        <Cell label="Value">
-                            <Input
-                                value={value}
-                                placeholder="Input something"
-                                variant="fade"
-                                onChange={e => {
-                                    requestUpdateProps({
-                                        value: e.target.value,
-                                    })
-                                }}
-                            ></Input>
-                        </Cell>
-                        <Cell label="Placeholder">
-                            <Input
-                                value={placeholder}
-                                variant="fade"
-                                onChange={e => {
-                                    requestUpdateProps({
-                                        placeholder: e.target.value,
-                                    })
-                                }}
-                            ></Input>
-                        </Cell>
-                    </TitledBoard>
+                {requestUpdateProps && path && (
+                    <ComponentInspector path={path}>
+                        <TitledBoard title="Text" collspae>
+                            <Cell label="Value">
+                                <Input
+                                    value={value}
+                                    placeholder="Input something"
+                                    variant="fade"
+                                    onChange={e => {
+                                        requestUpdateProps({
+                                            value: e.target.value,
+                                        })
+                                    }}
+                                ></Input>
+                            </Cell>
+                            <Cell label="Placeholder">
+                                <Input
+                                    value={placeholder}
+                                    variant="fade"
+                                    onChange={e => {
+                                        requestUpdateProps({
+                                            placeholder: e.target.value,
+                                        })
+                                    }}
+                                ></Input>
+                            </Cell>
+                        </TitledBoard>
 
-                    <CSSInspector
-                        style={rest}
-                        requestUpdateProps={requestUpdateProps}
-                    ></CSSInspector>
-                </ComponentInspector>
+                        <CSSInspector
+                            style={rest}
+                            requestUpdateProps={requestUpdateProps}
+                        ></CSSInspector>
+                    </ComponentInspector>
+                )}
             </>
         )
     }

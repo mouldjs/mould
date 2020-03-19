@@ -45,7 +45,8 @@
         "redux-actions": "^2.6.5",
         "styled-components": "^4.4.0",
         "styled-system": "^5.1.2",
-        "zod": "^1.0.9"
+        "zod": "^1.0.9",
+        "zustand": "^2.2.3"
     },
     "devDependencies": {
         "@types/node": "^12.7.8",

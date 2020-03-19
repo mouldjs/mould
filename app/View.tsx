@@ -13,6 +13,7 @@ import { ResizableBox } from 'react-resizable'
 import { resizeView, dragView, selectComponent } from './appShell'
 import { Box, Text } from '@modulz/radix'
 import Mould from './Mould'
+import { useDrag } from 'react-dnd'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -24,6 +25,9 @@ export const View = ({ viewId }: { viewId: string }) => {
     const { mouldId, state, x, y, width, height } = useSelector(
         (state: EditorState) => state.views[viewId]
     )
+    const [, drag] = useDrag({
+        item: { type: 'TREE', name: 'Mould', props: { __mouldId: mouldId } },
+    })
     const path: Path = [[mouldId, state], []]
     const mould = useSelector((state: EditorState) => state.moulds[mouldId])
     const included = useIsIncludePath(path)
@@ -131,11 +135,16 @@ export const View = ({ viewId }: { viewId: string }) => {
                 }}
             >
                 <div style={{ cursor: 'grab', position: 'absolute', top: -20 }}>
-                    <Text truncate size={1} textColor="rgb(132,132,132)">
+                    <Text
+                        ref={drag}
+                        truncate
+                        size={1}
+                        textColor="rgb(132,132,132)"
+                    >
                         {state}
                     </Text>
                 </div>
-                <Mould editable {...mould} currentState={state}></Mould>
+                <Mould {...mould} currentState={state}></Mould>
             </Box>
         </>
     )

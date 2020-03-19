@@ -55,9 +55,9 @@ export type Component = {
 export type DataMappingVector = [string, string]
 
 export type Kit = {
+    name: ID
     type: string
     dataMappingVector: DataMappingVector[]
-    name: string
 }
 
 export type Mould = {
@@ -71,8 +71,8 @@ export type Mould = {
 }
 
 export type ComponentPropTypes = {
-    requestUpdateProps: (props: object) => void
-    path: Path
+    requestUpdateProps?: (props: object) => void
+    path?: Path
 } & Component
 
 export type Creating = ['waiting' | 'start' | 'updating', View]

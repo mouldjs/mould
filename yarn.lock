@@ -7752,3 +7752,8 @@ zod@^1.0.9:
   version "1.0.9"
   resolved "https://registry.npm.taobao.org/zod/-/zod-1.0.9.tgz#c3d1010f0d20f1e6747a6bcb0903269d63b90d86"
   integrity sha512-1sfiVveSSKGphn++TkLPFbDkMyLoeZPNpI8PjhH7bKdUNIa+E8a6GMGVNtMJIs/GwTbe8de0eBiG2ocnfDNGDg==
+
+zustand@^2.2.3:
+  version "2.2.3"
+  resolved "https://npm-registry.toolsfdg.net/zustand/-/zustand-2.2.3.tgz#07ee668bf600a5e0dcff8f8b60f35faa149f65d5"
+  integrity sha512-SSd5DzbwUN0b8ePW4I+8mSdXQc6UOqTgYzlMtoNvf7pogmFoXjeE0wZwCVopoZBnzz/uRBD2dsozzM2FXDQcXw==

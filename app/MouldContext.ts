@@ -1,9 +1,6 @@
-import { createContext, useContext } from 'react'
+import { createContext } from 'react'
+import { Mould } from './types'
 
-const MouldContext = createContext(false)
-
-export const useEditable = () => {
-    return useContext(MouldContext)
-}
+const MouldContext = createContext<Mould | null>(null)
 
 export default MouldContext

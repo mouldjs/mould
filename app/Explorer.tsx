@@ -227,7 +227,9 @@ export const Explorer2 = () => {
             >
                 {label ||
                     (comp.type === 'Mould'
-                        ? moulds[(comp.props as any).mouldId].name
+                        ? moulds[(comp.props as any).__mouldId].name
+                        : comp.type === 'Kit'
+                        ? (comp.props as any).__kitName
                         : comp.type)}
             </Box>
         )

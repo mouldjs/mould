@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, EditorState, Path } from './types'
-import { useEditable } from './MouldContext'
+import MouldContext from './MouldContext'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,6 +9,8 @@ import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
 import { useIsSelectedPath, useIsIncludePath } from './utils'
 import { Box } from '@modulz/radix'
+
+const { Provider } = MouldContext
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -25,8 +27,6 @@ type Edit = {
 type PathProps = {
     path: Path
 }
-
-const doNothing = () => {}
 
 const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
     const [{ isOver }, drop] = useDrop<
@@ -80,7 +80,7 @@ export const Tree = ({
     root = false,
 }: Component & Edit & PathProps & { root?: boolean }) => {
     const dispatch = useDispatch()
-    const editable = useEditable()
+    const mould = useContext(MouldContext)
     const selected = useIsSelectedPath(path)
     const included = useIsIncludePath(path)
     const [{ isOver, canDrop }, drop] = useDrop<
@@ -134,19 +134,15 @@ export const Tree = ({
         children.map((tree, index) => (
             <Tree
                 path={[path[0], [...path[1], index]] as Path}
-                onChange={
-                    editable
-                        ? tree => {
-                              const nextChildren = [...children]
-                              nextChildren[index] = tree
-                              onChange({
-                                  type,
-                                  props,
-                                  children: nextChildren,
-                              })
-                          }
-                        : doNothing
-                }
+                onChange={tree => {
+                    const nextChildren = [...children]
+                    nextChildren[index] = tree
+                    onChange({
+                        type,
+                        props,
+                        children: nextChildren,
+                    })
+                }}
                 {...tree}
             ></Tree>
         ))
@@ -205,16 +201,13 @@ export const Tree = ({
                     const selection = path
                     dispatch(selectComponent({ selection }))
                 }}
-                requestUpdateProps={
-                    editable &&
-                    (nextProps => {
-                        onChange({
-                            type,
-                            props: { ...props, ...nextProps },
-                            children,
-                        })
+                requestUpdateProps={nextProps => {
+                    onChange({
+                        type,
+                        props: { ...props, ...nextProps },
+                        children,
                     })
-                }
+                }}
                 path={path}
                 {...props}
             >

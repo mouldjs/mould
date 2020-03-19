@@ -42,9 +42,10 @@ export const MouldScope = () => {
                 paddingLeft: 30,
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
+                // justifyContent: 'center',
                 minWidth: 200,
                 pointerEvents: 'none',
+                paddingTop: 40,
             }}
         >
             <div style={{ pointerEvents: 'auto' }}>

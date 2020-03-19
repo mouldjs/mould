@@ -1,48 +1,34 @@
 import React from 'react'
 import { Mould } from './types'
-import MouldContext from './MouldContext'
 import { Tree } from './Tree'
 import { useDispatch } from 'react-redux'
 import { modifyMouldTree } from './appShell'
-import { mouldTree, rootTree } from './utils'
+import { rootTree } from './utils'
+import MouldContext from './MouldContext'
 
 const { Provider } = MouldContext
-type Editable = { editable: boolean }
+
 type currentState = { currentState: string }
 
-export default ({
-    id,
-    currentState,
-    states,
-    editable = false,
-    rootProps,
-}: Mould & Editable & currentState) => {
+export default ({ currentState, ...mould }: Mould & currentState) => {
     const dispatch = useDispatch()
+    const { rootProps, states, id } = mould
     const tree = rootTree(rootProps, states[currentState])
 
-    return (
-        <Provider value={editable}>
-            {tree && (
-                <Tree
-                    root
-                    path={[[id, currentState], []]}
-                    onChange={tree => {
-                        dispatch(
-                            modifyMouldTree({ id, tree, state: currentState })
-                        )
-                    }}
-                    {...tree}
-                ></Tree>
-            )}
+    if (!tree) {
+        return null
+    }
 
-            {/* <Tree
+    return (
+        <Provider value={mould}>
+            <Tree
+                root
                 path={[[id, currentState], []]}
                 onChange={tree => {
                     dispatch(modifyMouldTree({ id, tree, state: currentState }))
                 }}
-                type="Stack"
-                props={{}}
-            ></Tree> */}
+                {...tree}
+            ></Tree>
         </Provider>
     )
 }

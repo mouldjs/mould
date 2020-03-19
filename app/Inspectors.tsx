@@ -1,14 +1,12 @@
-import { useEditable } from './MouldContext'
 import PropertyToolBar from './PropertyToolBar'
 import { useIsSelectedPath, useIsSelectedMould } from './utils'
 import { Box } from '@modulz/radix'
 
 export const ComponentInspector = ({ path, children }) => {
-    const editable = useEditable()
     const selected = useIsSelectedPath(path)
 
     return (
-        (editable && selected && (
+        (selected && (
             <PropertyToolBar.Source>
                 <Box onDoubleClick={e => e.stopPropagation()}>{children}</Box>
             </PropertyToolBar.Source>
