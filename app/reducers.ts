@@ -22,6 +22,7 @@ import {
     handleDeleteNode,
     handleAddKit,
     handleConnectScopeToKit,
+    handleModifyInput,
 } from './appShell'
 
 export default [
@@ -49,4 +50,5 @@ export default [
     handleDeleteNode,
     handleAddKit,
     handleConnectScopeToKit,
+    handleModifyInput,
 ]

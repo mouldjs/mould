@@ -12,24 +12,10 @@ import {
     EditorState,
 } from '../app/types'
 import MouldContext from '../app/MouldContext'
-import MouldComponent from '../app/Mould'
 import { rootTree } from '../app/utils'
-import Root from './Root'
 import Tree from './Tree'
 
 const { Provider } = MouldContext
-
-// const Tree = forwardRef(
-//     ({ type, props, children, ...rest }: Component, ref) => {
-//         const Comp = Components[type]
-
-//         return (
-//             <Comp {...rest} {...props} ref={ref}>
-//                 {children && children.map(c => <Tree {...c}></Tree>)}
-//             </Comp>
-//         )
-//     }
-// )
 
 const Mould = forwardRef(
     (

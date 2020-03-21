@@ -65,7 +65,8 @@ export type Mould = {
     name?: string
     scope: string[]
     kits: Kit[]
-    input: { [key: string]: Desc }
+    // input: { [key: string]: Desc }
+    input: string[]
     states: { [key: string]: Component[] }
     rootProps: ComponentProps
 }
@@ -93,3 +94,7 @@ export type AtomicComponent = {
     icon: ComponentType
     propType: z.ZodObject<{ [k: string]: any }>
 }
+
+export type useInputToScope<InputType, ScopeType> = (
+    input: InputType
+) => [StateName, ScopeType]

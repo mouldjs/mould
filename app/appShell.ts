@@ -231,7 +231,7 @@ export const handleAddMould = handleAction<EditorState, AddMouldAction>(
             name: `Mould ${Object.values(state.moulds).length + 1}`,
             scope: [],
             kits: [],
-            input: {},
+            input: [],
             states: {
                 default: [],
             },
@@ -372,7 +372,7 @@ export const handleFinishCreating = handleAction<
                     name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
                     kits: [],
-                    input: {},
+                    input: [],
                     states: {},
                     rootProps: {},
                 }
@@ -608,6 +608,22 @@ export const handleConnectScopeToKit = handleAction<
         const mould = state.moulds[mouldId]
         const kit = mould.kits[kitIndex]
         kit.dataMappingVector.push([prop, scope])
+
+        return state
+    },
+    initialData
+)
+
+type ModifyInputAction = {
+    mouldId: string
+    input: string[]
+}
+const MODIFY_INPUT = 'MODIFY_INPUT'
+export const modifyInput = createAction<ModifyInputAction>(MODIFY_INPUT)
+export const handleModifyInput = handleAction<EditorState, ModifyInputAction>(
+    MODIFY_INPUT,
+    (state, action) => {
+        state.moulds[action.payload.mouldId].input = action.payload.input
 
         return state
     },

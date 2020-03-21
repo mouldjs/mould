@@ -22,6 +22,7 @@ import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
 import { MouldKits } from './MouldKits'
 import { ArcherContainer } from 'react-archer'
+import { MouldInput } from './MouldInput'
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -120,6 +121,7 @@ const App = () => {
                         <MouldScope></MouldScope>
                         <TitledBoard title="Metas">
                             <MouldMetas></MouldMetas>
+                            <MouldInput></MouldInput>
                         </TitledBoard>
                         <TitledBoard title="Kits">
                             <MouldKits></MouldKits>

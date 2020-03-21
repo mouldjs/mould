@@ -23,6 +23,12 @@ div.ReactTags__selected {
     flex-direction: column;
 }
 
+.horizontal-tag-input div.ReactTags__selected {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 div.ReactTags__selected span.ReactTags__tag {
     border: 1px solid #ddd;
     background: #eee;

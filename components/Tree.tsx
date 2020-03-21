@@ -2,8 +2,6 @@ import React, { forwardRef } from 'react'
 import { Component, AtomicComponent } from '../app/types'
 import Components from '.'
 
-console.log(Components)
-
 const Tree = forwardRef(
     (
         { component: { type, children, props } }: { component: Component },
