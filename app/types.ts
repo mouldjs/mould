@@ -63,6 +63,7 @@ export type Kit = {
 export type Mould = {
     id: string
     name?: string
+    hookFunctionName?: string
     scope: string[]
     kits: Kit[]
     // input: { [key: string]: Desc }
@@ -95,6 +96,4 @@ export type AtomicComponent = {
     propType: z.ZodObject<{ [k: string]: any }>
 }
 
-export type useInputToScope<InputType, ScopeType> = (
-    input: InputType
-) => [StateName, ScopeType]
+export type useScopeFn = (input: object) => [StateName, object]

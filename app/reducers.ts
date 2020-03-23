@@ -23,6 +23,7 @@ import {
     handleAddKit,
     handleConnectScopeToKit,
     handleModifyInput,
+    handleModifyMeta,
 } from './appShell'
 
 export default [
@@ -51,4 +52,5 @@ export default [
     handleAddKit,
     handleConnectScopeToKit,
     handleModifyInput,
+    handleModifyMeta,
 ]

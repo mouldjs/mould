@@ -629,3 +629,22 @@ export const handleModifyInput = handleAction<EditorState, ModifyInputAction>(
     },
     initialData
 )
+
+type ModifyMetaAction = {
+    mouldId: ID
+    name?: string
+    hookFunctionName?: string
+}
+const MODIFY_META = 'MOULD_META'
+export const modifyMeta = createAction<ModifyMetaAction>(MODIFY_META)
+export const handleModifyMeta = handleAction<EditorState, ModifyMetaAction>(
+    MODIFY_META,
+    (state, { payload: { mouldId, name, hookFunctionName } }) => {
+        name && (state.moulds[mouldId].name = name)
+        hookFunctionName &&
+            (state.moulds[mouldId].hookFunctionName = hookFunctionName)
+
+        return state
+    },
+    initialData
+)

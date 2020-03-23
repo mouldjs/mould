@@ -23,6 +23,7 @@ import { MouldScope } from './MouldScope'
 import { MouldKits } from './MouldKits'
 import { ArcherContainer } from 'react-archer'
 import { MouldInput } from './MouldInput'
+import DebugPanel from './DebugPanel'
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -119,13 +120,14 @@ const App = () => {
                         strokeWidth={1}
                     >
                         <MouldScope></MouldScope>
+                        <TitledBoard title="Kits">
+                            <MouldKits></MouldKits>
+                        </TitledBoard>
                         <TitledBoard title="Metas">
                             <MouldMetas></MouldMetas>
                             <MouldInput></MouldInput>
                         </TitledBoard>
-                        <TitledBoard title="Kits">
-                            <MouldKits></MouldKits>
-                        </TitledBoard>
+                        <DebugPanel.Target></DebugPanel.Target>
                     </ArcherContainer>
                 </Box>
                 <Box
