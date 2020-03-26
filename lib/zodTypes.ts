@@ -42,4 +42,37 @@ export const Typography = z.object({
         .optional(),
 })
 
-export const CSSProperties = Space.merge(Color).merge(Typography)
+export const Layout = z.object({
+    width: stringOrNumber.optional(),
+    minWidth: stringOrNumber.optional(),
+    maxWidth: stringOrNumber.optional(),
+    height: stringOrNumber.optional(),
+    minHeight: stringOrNumber.optional(),
+    maxHeight: stringOrNumber.optional(),
+    display: z.string().optional(),
+    overflow: z.string().optional(),
+    overflowX: z.string().optional(),
+    overflowY: z.string().optional(),
+})
+
+export const Background = z.object({
+    background: z.string().optional(),
+})
+
+export const Border = z.object({
+    border: z.string().optional(),
+})
+
+//TODO fix events
+export const Events = z.object({
+    onClick: z.string().optional(),
+    onHover: z.string().optional(),
+})
+
+export const CSSProperties = Space.merge(Color)
+    .merge(Typography)
+    .merge(Layout)
+    .merge(Background)
+    .merge(Border)
+
+export const DOMAttributes = Events.merge(CSSProperties)

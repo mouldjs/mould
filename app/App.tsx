@@ -10,7 +10,7 @@ import { initialData } from './utils'
 import { EditorState } from './types'
 import './app.css'
 import { useEffect } from 'react'
-import { createProcessReducers } from '../lib/undo-redux'
+import { createProcessReducers, undo } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
@@ -78,6 +78,10 @@ const App = () => {
                     dispatch(deleteNode())
                 }}
             />
+            <KeyboardEventHandler
+                handleKeys={['meta+z']}
+                onKeyEvent={() => dispatch(undo())}
+            ></KeyboardEventHandler>
             <Box width="100vw" height={50}>
                 <Toolbar></Toolbar>
             </Box>
@@ -174,15 +178,21 @@ export default () => {
             store={
                 dev
                     ? createStore(
-                          reduceReducers(initialData, createProcessReducers<
-                              EditorState
-                          >()(...reducers) as any),
+                          reduceReducers(
+                              initialData,
+                              createProcessReducers<EditorState>()(
+                                  ...reducers
+                              ) as any
+                          ),
                           (window as any).__REDUX_DEVTOOLS_EXTENSION__()
                       )
                     : createStore(
-                          reduceReducers(initialData, createProcessReducers<
-                              EditorState
-                          >()(...reducers) as any)
+                          reduceReducers(
+                              initialData,
+                              createProcessReducers<EditorState>()(
+                                  ...reducers
+                              ) as any
+                          )
                       )
             }
         >

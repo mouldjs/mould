@@ -122,11 +122,14 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
+                        style={{
+                            pointerEvents: !paused ? 'none' : 'auto',
+                        }}
                     ></Moveable>
                     <DebugPanel.Source>
                         <TitledBoard
                             title="Debug"
-                            renderTitle={collspaed => {
+                            renderTitle={(collspaed) => {
                                 if (collspaed) {
                                     return null
                                 }
@@ -148,12 +151,12 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 )
                             }}
                         >
-                            {mould.input.map(input => {
+                            {mould.input.map((input) => {
                                 return (
                                     <Cell label={input}>
                                         <Input
                                             value={inputValue[input]}
-                                            onChange={e => {
+                                            onChange={(e) => {
                                                 setInputValue({
                                                     ...inputValue,
                                                     [input]: e.target.value,
@@ -177,7 +180,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                 bg="white"
                 left={x}
                 top={y}
-                onDoubleClickCapture={event => {
+                onDoubleClickCapture={(event) => {
                     if (included) {
                         return
                     }

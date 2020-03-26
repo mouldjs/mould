@@ -2,7 +2,7 @@ import React, { forwardRef, Fragment } from 'react'
 import { useSelector } from 'react-redux'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
-import { Select } from '@modulz/radix'
+import { Select, Input } from '@modulz/radix'
 import * as z from 'zod'
 import {
     ComponentPropTypes,
@@ -32,7 +32,7 @@ const Mould = forwardRef(
         const mould = useSelector((state: EditorState) => {
             return state.moulds[__mouldId]
         })
-        const { states } = mould
+        const { states, input } = mould
         const stateNames = Object.keys(states)
         const currentMockState = mockState || stateNames[0]
         const tree = rootTree(mould.rootProps, states[currentMockState])
@@ -41,7 +41,20 @@ const Mould = forwardRef(
             <Fragment>
                 <ComponentInspector path={path}>
                     <TitledBoard title="Mould">
-                        <Cell label="input">input</Cell>
+                        {input.map((i) => {
+                            return (
+                                <Cell label={i}>
+                                    <Input
+                                        value={rest[i]}
+                                        onChange={(e) =>
+                                            requestUpdateProps!({
+                                                [i]: e.target.value,
+                                            })
+                                        }
+                                    ></Input>
+                                </Cell>
+                            )
+                        })}
                     </TitledBoard>
                 </ComponentInspector>
                 <Provider value={mould}>

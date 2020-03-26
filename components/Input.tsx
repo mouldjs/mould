@@ -11,6 +11,7 @@ export const inputProps = z
     .object({
         value: z.string().optional(),
         placeholder: z.string().optional(),
+        onChange: z.function(z.tuple([z.string()]), z.undefined()) as any,
     })
     .merge(zodComponentProps)
 
@@ -21,6 +22,7 @@ export default forwardRef(
         {
             value = 'Input ...',
             placeholder = '',
+            onChange = () => {},
             requestUpdateProps,
             children,
             path,
@@ -35,6 +37,7 @@ export default forwardRef(
                     ref={ref}
                     value={value}
                     placeholder={placeholder}
+                    onChange={(e) => onChange(e.target.value)}
                     {...rest}
                 ></BaseBox>
                 {requestUpdateProps && path && (
@@ -45,7 +48,7 @@ export default forwardRef(
                                     value={value}
                                     placeholder="Input something"
                                     variant="fade"
-                                    onChange={e => {
+                                    onChange={(e) => {
                                         requestUpdateProps({
                                             value: e.target.value,
                                         })
@@ -56,7 +59,7 @@ export default forwardRef(
                                 <Input
                                     value={placeholder}
                                     variant="fade"
-                                    onChange={e => {
+                                    onChange={(e) => {
                                         requestUpdateProps({
                                             placeholder: e.target.value,
                                         })

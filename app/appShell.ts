@@ -129,7 +129,7 @@ export const handleRemoveScope = handleAction<EditorState, RemoveScopeAction>(
     REMOVE_SCOPE,
     (state, action) => {
         const index = state.moulds[action.payload.mouldId].scope.findIndex(
-            value => value === action.payload.scope
+            (value) => value === action.payload.scope
         )
         if (index !== -1) {
             state.moulds[action.payload.mouldId].scope.splice(index, 1)
@@ -177,7 +177,7 @@ export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
     (state, action) => {
         const viewId = (<any>Object)
             .values(state.views)
-            .find(g => g.mouldId === action.payload.mouldId).id
+            .find((g) => g.mouldId === action.payload.mouldId).id
 
         // state.moulds[action.payload.mouldId].states[
         //     action.payload.state
@@ -259,7 +259,7 @@ export const handleModifyMouldTree = handleAction<
     MODIFY_MOULD_TREE,
     (state, action) => {
         const mould = state.moulds[action.payload.id]
-        mould.states[action.payload.state] = action.payload.tree.children
+        mould.states[action.payload.state] = action.payload.tree.children || []
         mould.rootProps = action.payload.tree.props
 
         return state
@@ -353,7 +353,7 @@ export const handleFinishCreating = handleAction<
     FinishCreatingAction
 >(
     FINISH_CREATING,
-    state => {
+    (state) => {
         const [creatingStep, creation] = state.creating || []
         if (
             creatingStep === 'updating' &&
@@ -398,7 +398,7 @@ export const handleCancelCreating = handleAction<
     CancelCreatingAction
 >(
     CANCEL_CREATING,
-    state => {
+    (state) => {
         state.creating = undefined
         delete state.creating
 
@@ -473,7 +473,7 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
 
             if (!info.dropToGap) {
                 // Drop on the content
-                loop(data, dropKey, '', item => {
+                loop(data, dropKey, '', (item) => {
                     item.children = item.children || []
                     // where to insert 示例添加到尾部，可以是随意位置
                     const index = item.children.push(dragObj)
@@ -483,7 +483,7 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                 info.node.props.expanded && // Is expanded
                 dropPosition === 1 // On the bottom gap
             ) {
-                loop(data, dropKey, '', item => {
+                loop(data, dropKey, '', (item) => {
                     item.children = item.children || []
                     // where to insert 示例添加到尾部，可以是随意位置
                     item.children.unshift(dragObj)
@@ -513,14 +513,14 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
 )
 
 type HasChildren = {
-    children: HasChildren[]
+    children?: HasChildren[]
 }
 
 const deleteChildren = (comp: HasChildren, path: number[]) => {
     if (path.length === 1) {
-        comp.children.splice(path[0], 1)
+        comp.children!.splice(path[0], 1)
     } else {
-        deleteChildren(comp.children[path[0]], path.slice(1))
+        deleteChildren(comp.children![path[0]], path.slice(1))
     }
 }
 
@@ -529,7 +529,7 @@ const DELETE_NODE = 'DELETE_NODE'
 export const deleteNode = createAction<DeleteNodeAction>(DELETE_NODE)
 export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
     DELETE_NODE,
-    state => {
+    (state) => {
         const selection = state.selection
         if (selection) {
             if (selection[1].length) {
@@ -552,13 +552,13 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
                     delete state.moulds[selection[0][0]]
                 }
                 const view = Object.values(state.views).find(
-                    view =>
+                    (view) =>
                         view.mouldId === selection[0][0] &&
                         view.state === selection[0][1]
                 )
                 delete state.views[view!.id]
                 const index = state.testWorkspace.views.findIndex(
-                    viewId => view!.id === viewId
+                    (viewId) => view!.id === viewId
                 )
                 state.testWorkspace.views.splice(index, 1)
                 state.selection = undefined
@@ -570,17 +570,18 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
     initialData
 )
 
-type AddKitAction = { type: string; mouldId: ID; name?: string }
+type AddKitAction = { type: string; mouldId: ID; name?: string; param?: object }
 const ADD_KIT = 'ADD_KIT'
 export const addKit = createAction<AddKitAction>(ADD_KIT)
 export const handleAddKit = handleAction<EditorState, AddKitAction>(
     ADD_KIT,
-    (state, { payload: { type, mouldId, name } }) => {
+    (state, { payload: { type, mouldId, name, param } }) => {
         const mould = state.moulds[mouldId]
         const kit: Kit = {
             type,
             name: name || `kit ${mould.kits.length}`,
             dataMappingVector: [],
+            param,
         }
         mould.kits.push(kit)
 
@@ -643,6 +644,24 @@ export const handleModifyMeta = handleAction<EditorState, ModifyMetaAction>(
         name && (state.moulds[mouldId].name = name)
         hookFunctionName &&
             (state.moulds[mouldId].hookFunctionName = hookFunctionName)
+
+        return state
+    },
+    initialData
+)
+
+type ModifyKitAction = {
+    mouldId: ID
+    kitName: string
+    [key: string]: any
+}
+const MODIFY_KIT = 'MODIFY_KIT'
+export const modifyKit = createAction<ModifyKitAction>(MODIFY_KIT)
+export const handleModifyKit = handleAction<EditorState, ModifyKitAction>(
+    MODIFY_KIT,
+    (state, { payload: { mouldId, kitName, ...rest } }) => {
+        const kit = state.moulds[mouldId].kits.find((k) => k.name === kitName)
+        Object.assign(kit, rest)
 
         return state
     },

@@ -7,7 +7,9 @@ const Tree = forwardRef(
         { component: { type, children, props } }: { component: Component },
         ref
     ) => {
-        const plugin = Components.find(c => c.type === type) as AtomicComponent
+        const plugin = Components.find(
+            (c) => c.type === type
+        ) as AtomicComponent
 
         if (!plugin) {
             return null
@@ -17,9 +19,7 @@ const Tree = forwardRef(
 
         return (
             <Comp ref={ref} {...props}>
-                {children.map(c => (
-                    <Tree component={c}></Tree>
-                ))}
+                {children && children.map((c) => <Tree component={c}></Tree>)}
             </Comp>
         )
     }

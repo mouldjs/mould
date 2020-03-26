@@ -43,7 +43,7 @@ import data from './initialData'
 //         },
 //     },
 // }
-export const initialData = data as EditorState
+export const initialData = (data as any) as EditorState
 
 export const useIsSelectedMould = (mouldId: MouldID) => {
     const currentComponentPath = useSelector(

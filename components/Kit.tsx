@@ -2,6 +2,7 @@ import React, { forwardRef, useContext } from 'react'
 import { Kit, ComponentPropTypes } from '../app/types'
 import components from './'
 import MouldContext from '../app/MouldContext'
+import List from './List'
 
 export default forwardRef(
     (
@@ -18,11 +19,31 @@ export default forwardRef(
         if (!mould) {
             return null
         }
-        const kit = mould.kits.find(kit => kit.name === __kitName)
+        const kit = mould.kits.find((kit) => kit.name === __kitName)
         if (!kit) {
             return null
         }
-        const plugin = components.find(c => c.type === kit.type)
+        const isMould = kit.type === 'Mould'
+        const mouldProp = isMould
+            ? { __mouldId: (kit.param as any).mouldId }
+            : {}
+        if (kit.isList) {
+            const Comp = List
+
+            return (
+                <Comp
+                    ref={ref}
+                    requestUpdateProps={requestUpdateProps}
+                    path={path}
+                    {...mouldProp}
+                    {...rest}
+                >
+                    {children}
+                </Comp>
+            )
+        }
+
+        const plugin = components.find((c) => c.type === kit.type)
         if (!plugin) {
             return null
         }
@@ -34,6 +55,7 @@ export default forwardRef(
                 ref={ref}
                 requestUpdateProps={requestUpdateProps}
                 path={path}
+                {...mouldProp}
                 {...rest}
             >
                 {children}

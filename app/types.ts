@@ -1,6 +1,6 @@
 import { ComponentType, ForwardRefExoticComponent } from 'react'
 import * as z from 'zod'
-import { CSSProperties } from '../lib/zodTypes'
+import { DOMAttributes } from '../lib/zodTypes'
 
 export type ID = string
 export type MouldID = ID
@@ -41,14 +41,14 @@ export type Workspace = {
     zoom?: number
 } & Vector
 
-export const zodComponentProps = CSSProperties
+export const zodComponentProps = DOMAttributes
 
 export type ComponentProps = z.TypeOf<typeof zodComponentProps>
 
 export type Component = {
     type: string
     props: ComponentProps
-    children: Component[]
+    children?: Component[]
 }
 
 //[scope-field, prop-field]
@@ -57,6 +57,8 @@ export type DataMappingVector = [string, string]
 export type Kit = {
     name: ID
     type: string
+    isList?: boolean
+    param?: object
     dataMappingVector: DataMappingVector[]
 }
 
@@ -74,6 +76,9 @@ export type Mould = {
 
 export type ComponentPropTypes = {
     requestUpdateProps?: (props: object) => void
+    requestUpdateChildren?: (
+        updateChildren: (children?: Component[]) => Component[] | undefined
+    ) => void
     path?: Path
 } & Component
 

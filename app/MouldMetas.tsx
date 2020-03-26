@@ -17,8 +17,9 @@ export const MouldMetas = () => {
         <>
             <Cell label="name">
                 <Input
+                    key={mould.id}
                     value={mould.name}
-                    onChange={e => {
+                    onChange={(e) => {
                         dispatch(
                             modifyMeta({
                                 mouldId: mould.id,
@@ -27,9 +28,12 @@ export const MouldMetas = () => {
                         )
                     }}
                 ></Input>
+            </Cell>
+            <Cell label="function">
                 <Input
+                    key={mould.id}
                     value={mould.hookFunctionName}
-                    onChange={e => {
+                    onChange={(e) => {
                         dispatch(
                             modifyMeta({
                                 mouldId: mould.id,

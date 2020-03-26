@@ -42,7 +42,7 @@ const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
 
             return { res: true }
         },
-        collect: monitor => ({
+        collect: (monitor) => ({
             isOver: monitor.isOver(),
         }),
     })
@@ -84,7 +84,7 @@ export const Tree = ({
     const selected = useIsSelectedPath(path)
     const included = useIsIncludePath(path)
     const [{ isOver, canDrop }, drop] = useDrop<
-        { type: string; name: string; props?: object },
+        { type: string; name: string; props?: object; children?: Component[] },
         { res: boolean },
         { isOver: boolean; canDrop: boolean }
     >({
@@ -101,14 +101,18 @@ export const Tree = ({
                 type,
                 props,
                 children: [
-                    ...children,
-                    { type: item.name, props: item.props || {}, children: [] },
+                    ...(children || []),
+                    {
+                        type: item.name,
+                        props: item.props || {},
+                        children: item.children,
+                    },
                 ],
             })
 
             return { res: true }
         },
-        collect: monitor => {
+        collect: (monitor) => {
             let canDrop = false
             try {
                 canDrop = monitor.canDrop()
@@ -123,7 +127,7 @@ export const Tree = ({
 
     const compRef = useRef()
 
-    const plugin = Components.find(c => c.type === type)
+    const plugin = Components.find((c) => c.type === type)
     if (!plugin) {
         return null
     }
@@ -134,7 +138,7 @@ export const Tree = ({
         children.map((tree, index) => (
             <Tree
                 path={[path[0], [...path[1], index]] as Path}
-                onChange={tree => {
+                onChange={(tree) => {
                     const nextChildren = [...children]
                     nextChildren[index] = tree
                     onChange({
@@ -148,7 +152,7 @@ export const Tree = ({
         ))
 
     if (inside && canDrop) {
-        const handleDrop = index => droppedType => {
+        const handleDrop = (index) => (droppedType) => {
             const nextChildren = [...(children || [])]
             nextChildren.splice(index, 0, {
                 type: droppedType,
@@ -182,7 +186,7 @@ export const Tree = ({
             )}
             <Comp
                 // id={pathStr}
-                ref={dom => {
+                ref={(dom) => {
                     drop(dom)
                     compRef.current = dom
                 }}
@@ -193,7 +197,7 @@ export const Tree = ({
                 //             : `2px solid ${BLUE}`
                 //         : 'none'
                 // }
-                onDoubleClickCapture={event => {
+                onDoubleClickCapture={(event) => {
                     if (included) {
                         return
                     }
@@ -201,11 +205,18 @@ export const Tree = ({
                     const selection = path
                     dispatch(selectComponent({ selection }))
                 }}
-                requestUpdateProps={nextProps => {
+                requestUpdateProps={(nextProps) => {
                     onChange({
                         type,
                         props: { ...props, ...nextProps },
                         children,
+                    })
+                }}
+                requestUpdateChildren={(updateChildren) => {
+                    onChange({
+                        type,
+                        props,
+                        children: updateChildren(children),
                     })
                 }}
                 path={path}
