@@ -4,7 +4,7 @@ import { Box, Flex, GhostButton, Button } from '@modulz/radix'
 import { useDrag } from 'react-dnd'
 import nanoid from 'nanoid'
 import { useDispatch, useSelector } from 'react-redux'
-import { addMould, waitingForCreating } from './appShell'
+import { waitingForCreating } from './appShell'
 import { EditorState } from './types'
 import { MouldStates } from './MouldStates'
 

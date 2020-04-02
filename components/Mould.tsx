@@ -21,12 +21,13 @@ const Mould = forwardRef(
     (
         {
             __mouldId,
-            mockState,
+            __state,
+            children,
             requestUpdateProps,
             path,
             ...rest
         }: ComponentPropTypes &
-            ComponentProps & { __mouldId: string; mockState: string },
+            ComponentProps & { __mouldId: string; __state: string },
         ref
     ) => {
         const mould = useSelector((state: EditorState) => {
@@ -34,8 +35,6 @@ const Mould = forwardRef(
         })
         const { states, input } = mould
         const stateNames = Object.keys(states)
-        const currentMockState = mockState || stateNames[0]
-        const tree = rootTree(mould.rootProps, states[currentMockState])
 
         return (
             <Fragment>
@@ -57,9 +56,7 @@ const Mould = forwardRef(
                         })}
                     </TitledBoard>
                 </ComponentInspector>
-                <Provider value={mould}>
-                    <Tree component={tree} ref={ref}></Tree>
-                </Provider>
+                <Provider value={mould}>{children}</Provider>
             </Fragment>
         )
     }

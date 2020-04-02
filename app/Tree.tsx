@@ -97,6 +97,7 @@ export const Tree = ({
             if (!selected) {
                 return
             }
+
             onChange({
                 type,
                 props,
@@ -134,22 +135,25 @@ export const Tree = ({
     const Comp = plugin.component
 
     let inside =
-        children &&
-        children.map((tree, index) => (
-            <Tree
-                path={[path[0], [...path[1], index]] as Path}
-                onChange={(tree) => {
-                    const nextChildren = [...children]
-                    nextChildren[index] = tree
-                    onChange({
-                        type,
-                        props,
-                        children: nextChildren,
-                    })
-                }}
-                {...tree}
-            ></Tree>
-        ))
+        Array.isArray(children) && children.length
+            ? children.map((tree, index) => {
+                  return (
+                      <Tree
+                          path={[path[0], [...path[1], index]] as Path}
+                          onChange={(tree) => {
+                              const nextChildren = [...children]
+                              nextChildren[index] = tree
+                              onChange({
+                                  type,
+                                  props,
+                                  children: nextChildren,
+                              })
+                          }}
+                          {...tree}
+                      ></Tree>
+                  )
+              })
+            : null
 
     if (inside && canDrop) {
         const handleDrop = (index) => (droppedType) => {

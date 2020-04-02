@@ -12,8 +12,8 @@ type currentState = { currentState: string }
 
 export default ({ currentState, ...mould }: Mould & currentState) => {
     const dispatch = useDispatch()
-    const { rootProps, states, id } = mould
-    const tree = rootTree(rootProps, states[currentState])
+    const { states, id } = mould
+    const tree = states[currentState]
 
     if (!tree) {
         return null
@@ -24,7 +24,7 @@ export default ({ currentState, ...mould }: Mould & currentState) => {
             <Tree
                 root
                 path={[[id, currentState], []]}
-                onChange={tree => {
+                onChange={(tree) => {
                     dispatch(modifyMouldTree({ id, tree, state: currentState }))
                 }}
                 {...tree}

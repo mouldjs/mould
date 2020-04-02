@@ -95,10 +95,6 @@ export const rootTree = (props: ComponentProps, children: Component[]) => {
     }
 }
 
-export const mouldTree = (mould: Mould, stateName: string) => {
-    return rootTree(mould.rootProps, mould.states[stateName])
-}
-
 export const useCurrentMould = () => {
     const [selection, moulds] = useSelector((state: EditorState) => [
         state.selection,

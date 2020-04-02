@@ -70,8 +70,7 @@ export type Mould = {
     kits: Kit[]
     // input: { [key: string]: Desc }
     input: string[]
-    states: { [key: string]: Component[] }
-    rootProps: ComponentProps
+    states: { [key: string]: Component | null }
 }
 
 export type ComponentPropTypes = {
@@ -91,8 +90,6 @@ export type EditorState = {
     selection?: Path //[mouldId, state, ...path]
     creating?: Creating
 }
-
-export type RootType = 'root'
 
 export type AtomicComponent = {
     type: string

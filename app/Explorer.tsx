@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd'
 import { selectComponent, sortTree } from '../app/appShell'
-import { useIsSelectedPath, mouldTree } from './utils'
+import { useIsSelectedPath } from './utils'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -69,49 +69,6 @@ const ComponentTree = ({
                     )
                 })}
         </TreeView>
-    )
-}
-
-export const Explorer = () => {
-    const moulds = useSelector((state: EditorState) => {
-        return state.moulds
-    })
-
-    return (
-        <Fragment>
-            {Object.values(moulds).map(mould => {
-                return (
-                    <TreeView
-                        key={mould.id}
-                        nodeLabel={<MouldLabel {...mould}></MouldLabel>}
-                    >
-                        {Object.keys(mould.states).map(state => {
-                            // return
-                            // <TreeView key={state} nodeLabel={state}>
-                            //     {mould.states[state] && (
-                            //         <ComponentTree
-                            //             comp={
-                            //                 mould.states[state] as Component
-                            //             }
-                            //             path={[[mould.id, state], []]}
-                            //         ></ComponentTree>
-                            //     )}
-                            // </TreeView>
-                            return (
-                                mould.states[state] && (
-                                    <ComponentTree
-                                        key={state}
-                                        comp={mouldTree(mould, state)}
-                                        path={[[mould.id, state], []]}
-                                        label={state}
-                                    ></ComponentTree>
-                                )
-                            )
-                        })}
-                    </TreeView>
-                )
-            })}
-        </Fragment>
     )
 }
 
@@ -184,17 +141,17 @@ export const Explorer2 = () => {
     const mould = moulds[selection[0][0]]
     const stateName = selection[0][1]
 
-    const selectedTree = mouldTree(mould, stateName)
+    const selectedTree = mould.states[stateName]
 
-    const onDragStart = info => {
+    const onDragStart = (info) => {
         console.log('start', info)
     }
 
-    const onDragEnter = info => {
+    const onDragEnter = (info) => {
         console.log('enter', info)
     }
 
-    const onDrop = info =>
+    const onDrop = (info) =>
         dispatch(
             sortTree({
                 info,
@@ -249,7 +206,7 @@ export const Explorer2 = () => {
 
     return (
         <div className="draggable-container">
-            <Tree
+            {/* <Tree
                 key={selection[0].join('/')}
                 draggable
                 defaultExpandAll
@@ -263,7 +220,7 @@ export const Explorer2 = () => {
                     path: [selection[0], []],
                     label: 'Root',
                 })}
-            </Tree>
+            </Tree> */}
         </div>
     )
 }

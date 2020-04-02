@@ -9,6 +9,7 @@ import {
     useIsSelectedState,
     useIsIncludePath,
     useIsSelectedPath,
+    rootTree,
 } from './utils'
 import { ResizableBox } from 'react-resizable'
 import { resizeView, dragView, selectComponent } from './appShell'
@@ -30,11 +31,16 @@ export const View = ({ viewId }: { viewId: string }) => {
         (state: EditorState) => state.views[viewId]
     )
     const moulds = useSelector((state: EditorState) => state.moulds)
+    const mould = moulds[mouldId]
     const [, drag] = useDrag({
-        item: { type: 'TREE', name: 'Mould', props: { __mouldId: mouldId } },
+        item: {
+            type: 'TREE',
+            name: 'Mould',
+            props: { __mouldId: mouldId, __state: state },
+            children: mould.states[state],
+        },
     })
     const path: Path = [[mouldId, state], []]
-    const mould = useSelector((state: EditorState) => state.moulds[mouldId])
     const included = useIsIncludePath(path)
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
@@ -175,11 +181,18 @@ export const View = ({ viewId }: { viewId: string }) => {
                 ref={viewRef}
                 boxShadow="0px 0px 5px #aaaaaa"
                 position="absolute"
-                width={width}
-                height={height}
-                bg="white"
-                left={x}
-                top={y}
+                // width={width}
+                // height={height}
+                // bg="white"
+                // left={x}
+                // top={y}
+                style={{
+                    width,
+                    height,
+                    left: x,
+                    top: y,
+                    background: 'transparent',
+                }}
                 onDoubleClickCapture={(event) => {
                     if (included) {
                         return

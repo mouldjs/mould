@@ -149,7 +149,7 @@ export const addState = createAction<AddStateAction>(ADD_STATE)
 export const handleAddState = handleAction<EditorState, AddStateAction>(
     ADD_STATE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].states[action.payload.state] = []
+        state.moulds[action.payload.mouldId].states[action.payload.state] = null
         const view: View = {
             id: nanoid(6),
             mouldId: action.payload.mouldId,
@@ -209,43 +209,43 @@ export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
     initialData
 )
 
-type AddMouldAction = Size & Vector
-const ADD_MOULD = 'ADD_MOULD'
-export const addMould = createAction<AddMouldAction>(ADD_MOULD)
-export const handleAddMould = handleAction<EditorState, AddMouldAction>(
-    ADD_MOULD,
-    (state, action) => {
-        const { width, height, x, y } = action.payload
-        const mouldId = nanoid(6)
-        const view: View = {
-            id: nanoid(6),
-            width,
-            height,
-            x,
-            y,
-            mouldId,
-            state: 'default',
-        }
-        const mould: Mould = {
-            id: mouldId,
-            name: `Mould ${Object.values(state.moulds).length + 1}`,
-            scope: [],
-            kits: [],
-            input: [],
-            states: {
-                default: [],
-            },
-            rootProps: {},
-        }
+// type AddMouldAction = Size & Vector
+// const ADD_MOULD = 'ADD_MOULD'
+// export const addMould = createAction<AddMouldAction>(ADD_MOULD)
+// export const handleAddMould = handleAction<EditorState, AddMouldAction>(
+//     ADD_MOULD,
+//     (state, action) => {
+//         const { width, height, x, y } = action.payload
+//         const mouldId = nanoid(6)
+//         const view: View = {
+//             id: nanoid(6),
+//             width,
+//             height,
+//             x,
+//             y,
+//             mouldId,
+//             state: 'default',
+//         }
+//         const mould: Mould = {
+//             id: mouldId,
+//             name: `Mould ${Object.values(state.moulds).length + 1}`,
+//             scope: [],
+//             kits: [],
+//             input: [],
+//             states: {
+//                 default: [],
+//             },
+//             rootProps: {},
+//         }
 
-        state.testWorkspace.views.push(view.id)
-        state.views[view.id] = view
-        state.moulds[mould.id] = mould
+//         state.testWorkspace.views.push(view.id)
+//         state.views[view.id] = view
+//         state.moulds[mould.id] = mould
 
-        return state
-    },
-    initialData
-)
+//         return state
+//     },
+//     initialData
+// )
 
 type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
 const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
@@ -259,8 +259,7 @@ export const handleModifyMouldTree = handleAction<
     MODIFY_MOULD_TREE,
     (state, action) => {
         const mould = state.moulds[action.payload.id]
-        mould.states[action.payload.state] = action.payload.tree.children || []
-        mould.rootProps = action.payload.tree.props
+        mould.states[action.payload.state] = action.payload.tree
 
         return state
     },
@@ -374,10 +373,9 @@ export const handleFinishCreating = handleAction<
                     kits: [],
                     input: [],
                     states: {},
-                    rootProps: {},
                 }
             }
-            state.moulds[creation.mouldId].states[creation.state] = []
+            state.moulds[creation.mouldId].states[creation.state] = null
         }
 
         state.creating = undefined
@@ -538,30 +536,37 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
                         children:
                             state.moulds[selection[0][0]].states[
                                 selection[0][1]
-                            ],
+                            ]?.children,
                     },
                     selection[1]
                 )
                 selection[1] = []
             } else {
-                delete state.moulds[selection[0][0]].states[selection[0][1]]
                 if (
-                    Object.keys(state.moulds[selection[0][0]].states).length ===
-                    0
+                    state.moulds[selection[0][0]].states[selection[0][1]] !==
+                    null
                 ) {
-                    delete state.moulds[selection[0][0]]
+                    state.moulds[selection[0][0]].states[selection[0][1]] = null
+                } else {
+                    delete state.moulds[selection[0][0]].states[selection[0][1]]
+                    if (
+                        Object.keys(state.moulds[selection[0][0]].states)
+                            .length === 0
+                    ) {
+                        delete state.moulds[selection[0][0]]
+                    }
+                    const view = Object.values(state.views).find(
+                        (view) =>
+                            view.mouldId === selection[0][0] &&
+                            view.state === selection[0][1]
+                    )
+                    delete state.views[view!.id]
+                    const index = state.testWorkspace.views.findIndex(
+                        (viewId) => view!.id === viewId
+                    )
+                    state.testWorkspace.views.splice(index, 1)
+                    state.selection = undefined
                 }
-                const view = Object.values(state.views).find(
-                    (view) =>
-                        view.mouldId === selection[0][0] &&
-                        view.state === selection[0][1]
-                )
-                delete state.views[view!.id]
-                const index = state.testWorkspace.views.findIndex(
-                    (viewId) => view!.id === viewId
-                )
-                state.testWorkspace.views.splice(index, 1)
-                state.selection = undefined
             }
         }
 
