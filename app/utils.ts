@@ -117,3 +117,6 @@ export const useCurrentState = () => {
 
     return selection[0][1]
 }
+
+export const pathToString = (path: Path) =>
+    path[0].join('/') + '/' + path[1].join('-')

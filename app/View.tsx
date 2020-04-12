@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react'
-import { View as ViewType, EditorState, Vector, Path } from './types'
+import { View as ViewType, EditorState, Vector, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
 import dynamic from 'next/dynamic'
@@ -12,10 +12,10 @@ import {
     rootTree,
 } from './utils'
 import { ResizableBox } from 'react-resizable'
-import { resizeView, dragView, selectComponent } from './appShell'
+import { resizeView, dragView, selectComponent, dragToView } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import Mould from './Mould'
-import { useDrag } from 'react-dnd'
+import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
 import { TitledBoard, Cell } from '../inspector/FormComponents'
 import { runtime } from '../runtime'
@@ -37,7 +37,47 @@ export const View = ({ viewId }: { viewId: string }) => {
             type: 'TREE',
             name: 'Mould',
             props: { __mouldId: mouldId, __state: state },
-            children: mould.states[state],
+            // children: mould.states[state],
+        },
+    })
+    const [{ isOver, canDrop }, drop] = useDrop<
+        { type: string; name: string; props?: object; children?: Component[] },
+        { res: boolean },
+        { isOver: boolean; canDrop: boolean }
+    >({
+        accept: 'TREE',
+        drop: (item, monitor) => {
+            if (monitor.getDropResult() && monitor.getDropResult().res) {
+                return { res: true }
+            }
+
+            if (!selected) {
+                return
+            }
+
+            dispatch(
+                dragToView({
+                    viewId,
+                    tree: {
+                        type: item.name,
+                        props: item.props || {},
+                        children: item.children,
+                    },
+                })
+            )
+
+            return { res: true }
+        },
+        collect: (monitor) => {
+            let canDrop = false
+            try {
+                canDrop = monitor.canDrop()
+            } catch (e) {}
+
+            return {
+                isOver: monitor.isOver(),
+                canDrop,
+            }
         },
     })
     const path: Path = [[mouldId, state], []]
@@ -47,24 +87,6 @@ export const View = ({ viewId }: { viewId: string }) => {
     const [paused, setPaused] = useState(true)
     const [inputValue, setInputValue] = useState({})
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
-
-    // const dispatch = useDispatch()
-    // const isSelectedState = useIsSelectedState(mouldId, state)
-    // const isSelectedMould = useIsSelectedMould(mouldId)
-
-    // return      <ResizableBox
-    //     width={width}
-    //     height={height}
-    //     onResize={(e, { size: { width, height } }) => {
-    //         dispatch(
-    //             resizeView({
-    //                 viewId,
-    //                 width,
-    //                 height,
-    //             })
-    //         )
-    //     }}
-    // >
 
     return (
         <>
@@ -178,7 +200,10 @@ export const View = ({ viewId }: { viewId: string }) => {
             )}
             <Box
                 // id={viewId}
-                ref={viewRef}
+                ref={(dom) => {
+                    drop(dom)
+                    viewRef.current = dom
+                }}
                 boxShadow="0px 0px 5px #aaaaaa"
                 position="absolute"
                 // width={width}

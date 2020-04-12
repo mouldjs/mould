@@ -139,7 +139,7 @@ const App = () => {
                     style={{
                         // zoom: selection ? 1 : 0.7,
                         transition: '0.3s',
-                        transform: selection ? 'scale(1)' : 'scale(0.75)',
+                        // transform: selection ? 'scale(1)' : 'scale(0.75)',
                         overflow: 'visible',
                     }}
                 >

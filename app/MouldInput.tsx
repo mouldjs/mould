@@ -19,8 +19,9 @@ export const MouldInput = () => {
         <div className="horizontal-tag-input">
             <TagInput
                 placeholder="add new input"
-                tags={input.map(input => ({ id: input, text: input }))}
-                handleAddition={tag => {
+                tags={input.map((input) => ({ id: input, text: input }))}
+                autofocus={false}
+                handleAddition={(tag) => {
                     dispatch(
                         modifyInput({
                             mouldId: mould.id,
@@ -28,7 +29,7 @@ export const MouldInput = () => {
                         })
                     )
                 }}
-                handleDelete={i => {
+                handleDelete={(i) => {
                     dispatch(
                         modifyInput({
                             mouldId: mould.id,

@@ -25,6 +25,7 @@ import {
     handleModifyInput,
     handleModifyMeta,
     handleModifyKit,
+    handleDragToView,
 } from './appShell'
 
 export default [
@@ -55,4 +56,5 @@ export default [
     handleModifyInput,
     handleModifyMeta,
     handleModifyKit,
+    handleDragToView,
 ]

@@ -9,6 +9,7 @@ import {
     Component,
     ID,
     Kit,
+    StateName,
 } from './types'
 import { initialData } from './utils'
 import nanoid from 'nanoid'
@@ -667,6 +668,25 @@ export const handleModifyKit = handleAction<EditorState, ModifyKitAction>(
     (state, { payload: { mouldId, kitName, ...rest } }) => {
         const kit = state.moulds[mouldId].kits.find((k) => k.name === kitName)
         Object.assign(kit, rest)
+
+        return state
+    },
+    initialData
+)
+
+type DragToViewAction = {
+    tree: Component
+    viewId: ID
+}
+const DRAG_TO_VIEW = 'DRAG_TO_VIEW'
+export const dragToView = createAction<DragToViewAction>(DRAG_TO_VIEW)
+export const handleDragToView = handleAction<EditorState, DragToViewAction>(
+    DRAG_TO_VIEW,
+    (state, { payload: { tree, viewId } }) => {
+        const view = state.views[viewId]
+        const stateName = view.state
+        const mould = state.moulds[view.mouldId]
+        mould.states[stateName] = tree
 
         return state
     },

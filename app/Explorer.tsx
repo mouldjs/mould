@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd'
 import { selectComponent, sortTree } from '../app/appShell'
-import { useIsSelectedPath } from './utils'
+import { useIsSelectedPath, pathToString } from './utils'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -71,8 +71,6 @@ const ComponentTree = ({
         </TreeView>
     )
 }
-
-const pathToString = (path: Path) => path[0].join('/') + '/' + path[1].join('-')
 
 const ComponentTree2 = ({
     comp,
@@ -191,10 +189,19 @@ export const Explorer2 = () => {
             </Box>
         )
 
+        // const resolveMouldChildren = (mouldComp: Component) => {
+        //     const mould = moulds[(comp.props as any).__mouldId]
+        //     const mouldChildren = mould.states[(comp.props as any).__state]?.children
+
+        //     return mouldChildren?.map(c => resolveMouldChildren())
+        // }
+
+        const children = comp.children
+
         return (
             <TreeNode key={`${path[1].join('-')}`} title={label}>
-                {comp.children &&
-                    comp.children.map((c, index) => {
+                {children &&
+                    children.map((c, index) => {
                         return renderComponentTree({
                             comp: c,
                             path: [path[0], [...path[1], index]],
@@ -206,7 +213,7 @@ export const Explorer2 = () => {
 
     return (
         <div className="draggable-container">
-            {/* <Tree
+            <Tree
                 key={selection[0].join('/')}
                 draggable
                 defaultExpandAll
@@ -215,12 +222,12 @@ export const Explorer2 = () => {
                 onDragEnter={onDragEnter}
                 onDrop={onDrop}
             >
-                {renderComponentTree({
-                    comp: selectedTree,
-                    path: [selection[0], []],
-                    label: 'Root',
-                })}
-            </Tree> */}
+                {selectedTree &&
+                    renderComponentTree({
+                        comp: selectedTree,
+                        path: [selection[0], []],
+                    })}
+            </Tree>
         </div>
     )
 }

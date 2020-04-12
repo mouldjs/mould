@@ -1,5 +1,6 @@
 import React, { forwardRef, Fragment } from 'react'
 import { useSelector } from 'react-redux'
+import { pick } from 'ramda'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
 import { Select, Input } from '@modulz/radix'
@@ -12,29 +13,104 @@ import {
     EditorState,
 } from '../app/types'
 import MouldContext from '../app/MouldContext'
-import { rootTree } from '../app/utils'
-import Tree from './Tree'
+import { rootTree, pathToString } from '../app/utils'
+import { Tree } from '../app/Tree'
+import Components from '.'
 
 const { Provider } = MouldContext
+
+type PropPatch = {
+    [path: string]: object
+}
 
 const Mould = forwardRef(
     (
         {
             __mouldId,
             __state,
+            __patches = {},
             children,
             requestUpdateProps,
+            onDoubleClickCapture,
             path,
             ...rest
         }: ComponentPropTypes &
-            ComponentProps & { __mouldId: string; __state: string },
+            ComponentProps & {
+                __mouldId: string
+                __state: string
+                __patches: PropPatch
+                onDoubleClickCapture: any
+            },
         ref
     ) => {
         const mould = useSelector((state: EditorState) => {
             return state.moulds[__mouldId]
         })
-        const { states, input } = mould
-        const stateNames = Object.keys(states)
+        const { states, input, kits } = mould
+        const tree = states[__state]
+
+        const renderTree = (
+            { type, children, props }: Component,
+            path,
+            isRoot = false
+        ) => {
+            const plugin = Components.find((c) => c.type === type)
+
+            if (!plugin) {
+                return null
+            }
+
+            const Comp = plugin.component
+
+            if (type === 'Kit') {
+                const pathStr = pathToString(path)
+                const kitName = (props as any).__kitName
+                const kit = kits.find((k) => k.name === kitName)
+                if (!kit) {
+                    return null
+                }
+                const fields = kit.dataMappingVector.map(
+                    ([propField]) => propField
+                )
+                const patch = pick(fields, __patches[pathStr] || {})
+
+                return (
+                    <Tree
+                        path={path}
+                        type={type}
+                        props={{ ...props, ...patch }}
+                        onChange={(tree) => {
+                            const patch = pick(fields, tree.props)
+                            requestUpdateProps &&
+                                requestUpdateProps({
+                                    __patches: {
+                                        ...__patches,
+                                        [pathStr]: patch,
+                                    },
+                                })
+                        }}
+                    >
+                        {children}
+                    </Tree>
+                )
+            }
+
+            return (
+                <Comp
+                    {...props}
+                    path={path}
+                    ref={isRoot ? ref : undefined}
+                    onDoubleClickCapture={
+                        isRoot ? onDoubleClickCapture : undefined
+                    }
+                >
+                    {children &&
+                        children.map((c, index) =>
+                            renderTree(c, [path[0], [...path[1], index]])
+                        )}
+                </Comp>
+            )
+        }
 
         return (
             <Fragment>
@@ -56,7 +132,9 @@ const Mould = forwardRef(
                         })}
                     </TitledBoard>
                 </ComponentInspector>
-                <Provider value={mould}>{children}</Provider>
+                <Provider value={mould}>
+                    {tree && renderTree(tree, path, true)}
+                </Provider>
             </Fragment>
         )
     }
