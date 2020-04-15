@@ -196,7 +196,41 @@ export const Explorer2 = () => {
         //     return mouldChildren?.map(c => resolveMouldChildren())
         // }
 
-        const children = comp.children
+        const transformChildren = (
+            children: Component[]
+        ): undefined | Component[] => {
+            let res: Component[] = []
+            children.forEach((c) => {
+                const nextChildren = transformChildren(c.children || [])
+                if (c.type === 'Kit') {
+                    if (nextChildren) {
+                        res.push({
+                            ...c,
+                            children: nextChildren,
+                        })
+                    } else {
+                        res.push(c)
+                    }
+                } else {
+                    if (nextChildren) {
+                        res = [...res, ...nextChildren]
+                    }
+                }
+            })
+
+            if (res.length) {
+                return res
+            }
+        }
+
+        const children =
+            comp.type === 'Mould'
+                ? transformChildren(
+                      moulds[(comp.props as any).__mouldId].states[
+                          (comp.props as any).__state
+                      ]?.children || []
+                  )
+                : comp.children
 
         return (
             <TreeNode key={`${path[1].join('-')}`} title={label}>

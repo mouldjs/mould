@@ -13,7 +13,7 @@ import {
     EditorState,
 } from '../app/types'
 import MouldContext from '../app/MouldContext'
-import { rootTree, pathToString } from '../app/utils'
+import { rootTree, pathToString, useCurrentMould } from '../app/utils'
 import { Tree } from '../app/Tree'
 import Components from '.'
 
@@ -95,6 +95,8 @@ const Mould = forwardRef(
                 )
             }
 
+            let index = 0
+
             return (
                 <Comp
                     {...props}
@@ -105,8 +107,14 @@ const Mould = forwardRef(
                     }
                 >
                     {children &&
-                        children.map((c, index) =>
-                            renderTree(c, [path[0], [...path[1], index]])
+                        children.map((c) =>
+                            renderTree(c, [
+                                path[0],
+                                [
+                                    ...path[1],
+                                    c.type === 'Kit' ? index++ : 10000000,
+                                ],
+                            ])
                         )}
                 </Comp>
             )

@@ -53,7 +53,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const creating = useSelector((state: EditorState) => {
         return state.creating
     })
-    const creation = creating && creating[1]
+    const creation = creating && creating.view
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
     const bind = useGesture(
@@ -84,7 +84,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                     })
                 )
             },
-            onMouseDown: event => {
+            onMouseDown: (event) => {
                 event.stopPropagation()
                 dispatch(
                     startCreating({
@@ -93,7 +93,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                     })
                 )
             },
-            onMouseUp: event => {
+            onMouseUp: (event) => {
                 // event.stopPropagation()
                 dispatch(finishCreating())
             },
@@ -105,7 +105,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
         }
     )
 
-    const vs = Object.values(views).map(viewId => {
+    const vs = Object.values(views).map((viewId) => {
         return <View key={viewId} viewId={viewId}></View>
     })
 

@@ -81,7 +81,12 @@ export type ComponentPropTypes = {
     path?: Path
 } & Component
 
-export type Creating = ['waiting' | 'start' | 'updating', View]
+// export type Creating = ['waiting' | 'start' | 'updating', View]
+export type Creating = {
+    status: 'waiting' | 'start' | 'updating'
+    view: View
+    beginAt: Vector
+}
 
 export type EditorState = {
     testWorkspace: Workspace

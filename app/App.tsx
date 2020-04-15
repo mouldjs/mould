@@ -57,7 +57,7 @@ const App = () => {
     const selection = useSelector((state: EditorState) => {
         return state.selection
     })
-    const creatingStep = creating && creating[0]
+    const creatingStep = creating && creating.status
 
     return (
         <Flex

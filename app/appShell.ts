@@ -278,9 +278,9 @@ export const handleWaitingForCreating = handleAction<
 >(
     WAITING_FOR_CREATING,
     (state, { payload: { mouldId, stateName } }) => {
-        state.creating = [
-            'waiting',
-            {
+        state.creating = {
+            status: 'waiting',
+            view: {
                 id: nanoid(6),
                 mouldId,
                 state: stateName,
@@ -289,7 +289,8 @@ export const handleWaitingForCreating = handleAction<
                 width: 0,
                 height: 0,
             },
-        ]
+            beginAt: { x: 0, y: 0 },
+        }
 
         return state
     },
@@ -305,10 +306,9 @@ export const handleStartCreating = handleAction<
 >(
     START_CREATING,
     (state, { payload: { x, y } }) => {
-        if (state.creating && state.creating[0] === 'waiting') {
-            state.creating[0] = 'start'
-            state.creating[1].x = x
-            state.creating[1].y = y
+        if (state.creating && state.creating.status === 'waiting') {
+            state.creating.status = 'start'
+            state.creating.beginAt = { x, y }
         }
 
         return state
@@ -329,13 +329,16 @@ export const handleUpdateCreating = handleAction<
     (state, { payload: { x, y } }) => {
         if (
             state.creating &&
-            (state.creating[0] === 'start' || state.creating[0] === 'updating')
+            (state.creating.status === 'start' ||
+                state.creating.status === 'updating')
         ) {
-            state.creating[0] = 'updating'
-            state.creating[1].width = Math.abs(x - state.creating[1].x)
-            state.creating[1].height = Math.abs(y - state.creating[1].y)
-            state.creating[1].x = Math.min(x, state.creating[1].x)
-            state.creating[1].y = Math.min(y, state.creating[1].y)
+            console.log(x, y)
+
+            state.creating.status = 'updating'
+            state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
+            state.creating.view.height = Math.abs(y - state.creating.beginAt.y)
+            state.creating.view.x = Math.min(x, state.creating.beginAt.x)
+            state.creating.view.y = Math.min(y, state.creating.beginAt.y)
         }
 
         return state
@@ -354,21 +357,18 @@ export const handleFinishCreating = handleAction<
 >(
     FINISH_CREATING,
     (state) => {
-        const [creatingStep, creation] = state.creating || []
+        const { status, view } = state.creating || {}
         if (
-            creatingStep === 'updating' &&
-            typeof creation === 'object' &&
-            creation.width !== 0 &&
-            creation.height !== 0
+            status === 'updating' &&
+            typeof view === 'object' &&
+            view.width !== 0 &&
+            view.height !== 0
         ) {
-            state.views[creation.id] = creation
-            state.testWorkspace.views = [
-                ...state.testWorkspace.views,
-                creation.id,
-            ]
-            if (!state.moulds[creation.mouldId]) {
-                state.moulds[creation.mouldId] = {
-                    id: creation.mouldId,
+            state.views[view.id] = view
+            state.testWorkspace.views = [...state.testWorkspace.views, view.id]
+            if (!state.moulds[view.mouldId]) {
+                state.moulds[view.mouldId] = {
+                    id: view.mouldId,
                     name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
                     kits: [],
@@ -376,7 +376,7 @@ export const handleFinishCreating = handleAction<
                     states: {},
                 }
             }
-            state.moulds[creation.mouldId].states[creation.state] = null
+            state.moulds[view.mouldId].states[view.state] = null
         }
 
         state.creating = undefined
