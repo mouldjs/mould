@@ -11,22 +11,71 @@ import {
     Kit,
     StateName,
 } from './types'
-import { initialData } from './utils'
+import { initialData, pathToString } from './utils'
 import nanoid from 'nanoid'
 
-type SelectComponentAction = { selection: Path }
+type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
-export const selectComponent = createAction(SELECT_COMPONENT)
+export const selectComponent = createAction<SelectComponentAction>(
+    SELECT_COMPONENT
+)
 export const handleSelectComponent = handleAction<
     EditorState,
     SelectComponentAction
 >(
     SELECT_COMPONENT,
-    (state, action) => {
-        if (action.payload.selection === state.selection) {
-            return state
+    (state, { payload: { pathes } }) => {
+        // if (action.payload.selection === state.selection) {
+        //     return state
+        // }
+        // state.selection = action.payload.selection
+        if (pathes.length === 0) {
+            state.selection = undefined
+        } else if (!state.selection) {
+            state.selection = pathes[0]
+        } else {
+            const index = pathes.findIndex(
+                (p) => pathToString(p) === pathToString(state.selection!)
+            )
+            if (index === -1) {
+                const selectionStr = pathToString(state.selection)
+                // let tempSelection
+                for (let path of pathes.reverse()) {
+                    const pathStr = pathToString(path)
+                    if (
+                        selectionStr.includes(pathStr) ||
+                        pathStr.slice(0, pathStr.length - 1) ===
+                            selectionStr.slice(0, selectionStr.length - 1)
+                    ) {
+                        state.selection = path
+                        break
+                    }
+                }
+            } else {
+                const nextSelection = pathes[index + 1]
+                if (nextSelection) {
+                    state.selection = nextSelection
+                }
+            }
         }
-        state.selection = action.payload.selection
+
+        return state
+    },
+    initialData
+)
+
+type SelectComponentFromTreeAction = { path: Path }
+const SELECT_COMPONENT_FROM_TREE = 'SELECT_COMPONENT_FROM_TREE'
+export const selectComponentFromTree = createAction<
+    SelectComponentFromTreeAction
+>(SELECT_COMPONENT_FROM_TREE)
+export const handleSelectComponentFromTree = handleAction<
+    EditorState,
+    SelectComponentFromTreeAction
+>(
+    SELECT_COMPONENT_FROM_TREE,
+    (state, { payload: { path } }) => {
+        state.selection = path
 
         return state
     },
@@ -332,8 +381,6 @@ export const handleUpdateCreating = handleAction<
             (state.creating.status === 'start' ||
                 state.creating.status === 'updating')
         ) {
-            console.log(x, y)
-
             state.creating.status = 'updating'
             state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
             state.creating.view.height = Math.abs(y - state.creating.beginAt.y)

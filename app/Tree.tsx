@@ -5,10 +5,9 @@ import MouldContext from './MouldContext'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
-import { useIsSelectedPath, useIsIncludePath } from './utils'
-import { Box } from '@modulz/radix'
+import { useIsSelectedPath, useIsIncludePath, pathToString } from './utils'
+import { tick } from './selectionTick'
 
 const { Provider } = MouldContext
 
@@ -201,13 +200,12 @@ export const Tree = ({
                 //             : `2px solid ${BLUE}`
                 //         : 'none'
                 // }
-                onDoubleClickCapture={(event) => {
-                    if (included) {
-                        return
-                    }
-                    event.stopPropagation()
-                    const selection = path
-                    dispatch(selectComponent({ selection }))
+                onDoubleClickCapture={() => {
+                    tick((tickData = []) => {
+                        tickData.push(path)
+
+                        return tickData
+                    })
                 }}
                 requestUpdateProps={(nextProps) => {
                     onChange({

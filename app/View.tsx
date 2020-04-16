@@ -19,6 +19,7 @@ import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
 import { TitledBoard, Cell } from '../inspector/FormComponents'
 import { runtime } from '../runtime'
+import { tick } from './selectionTick'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -219,12 +220,13 @@ export const View = ({ viewId }: { viewId: string }) => {
                     background: 'transparent',
                 }}
                 onDoubleClickCapture={(event) => {
-                    if (included) {
-                        return
+                    if (!mould.states[state]) {
+                        tick((tickData = []) => {
+                            tickData.push(path)
+
+                            return tickData
+                        })
                     }
-                    event.stopPropagation()
-                    const selection = path
-                    dispatch(selectComponent({ selection }))
                 }}
             >
                 <div style={{ cursor: 'grab', position: 'absolute', top: -20 }}>

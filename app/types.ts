@@ -29,12 +29,6 @@ export type View = {
 } & Size &
     Vector
 
-// export type ViewGroup = {
-//     id: ID
-//     views: { [key: string]: string }
-//     mouldId: MouldID
-// } & Vector
-
 export type Workspace = {
     id: ID
     views: ID[]

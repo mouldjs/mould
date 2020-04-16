@@ -7,7 +7,11 @@ import { Component, EditorState, Mould, Path } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd'
-import { selectComponent, sortTree } from '../app/appShell'
+import {
+    selectComponent,
+    sortTree,
+    selectComponentFromTree,
+} from '../app/appShell'
 import { useIsSelectedPath, pathToString } from './utils'
 
 const MouldLabel = (mould: Mould) => {
@@ -48,7 +52,7 @@ const ComponentTree = ({
             style={{
                 cursor: 'pointer',
             }}
-            onClick={() => dispatch(selectComponent({ selection: path }))}
+            onClick={() => dispatch(selectComponentFromTree({ path }))}
         >
             {label ||
                 (comp.type === 'Mould'
@@ -98,7 +102,7 @@ const ComponentTree2 = ({
             style={{
                 cursor: 'pointer',
             }}
-            onClick={() => dispatch(selectComponent({ selection: path }))}
+            onClick={() => dispatch(selectComponentFromTree({ path }))}
         >
             {label ||
                 (comp.type === 'Mould'
@@ -178,7 +182,7 @@ export const Explorer2 = () => {
                 style={{
                     cursor: 'pointer',
                 }}
-                onClick={() => dispatch(selectComponent({ selection: path }))}
+                onClick={() => dispatch(selectComponentFromTree({ path }))}
             >
                 {label ||
                     (comp.type === 'Mould'

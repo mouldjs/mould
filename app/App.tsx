@@ -1,16 +1,13 @@
 import dynamic from 'next/dynamic'
 import { Workspace } from './Workspaces'
 import { Provider, useSelector, useDispatch } from 'react-redux'
-import { createStore } from 'redux'
-import reducers from './reducers'
-import reduceReducers from 'reduce-reducers'
+import { getStore } from './store'
 import { RadixProvider, Flex, Box } from '@modulz/radix'
 import 'normalize.css'
-import { initialData } from './utils'
 import { EditorState } from './types'
 import './app.css'
 import { useEffect } from 'react'
-import { createProcessReducers, undo } from '../lib/undo-redux'
+import { undo } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
@@ -169,33 +166,8 @@ const App = () => {
 }
 
 export default () => {
-    const dev =
-        typeof window !== 'undefined' &&
-        (window as any).__REDUX_DEVTOOLS_EXTENSION__
-
     return (
-        <Provider
-            store={
-                dev
-                    ? createStore(
-                          reduceReducers(
-                              initialData,
-                              createProcessReducers<EditorState>()(
-                                  ...reducers
-                              ) as any
-                          ),
-                          (window as any).__REDUX_DEVTOOLS_EXTENSION__()
-                      )
-                    : createStore(
-                          reduceReducers(
-                              initialData,
-                              createProcessReducers<EditorState>()(
-                                  ...reducers
-                              ) as any
-                          )
-                      )
-            }
-        >
+        <Provider store={getStore()}>
             <DndProvider backend={HTML5Backend}>
                 <RadixProvider>
                     <App></App>
