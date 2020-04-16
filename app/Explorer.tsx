@@ -7,8 +7,12 @@ import { Component, EditorState, Mould, Path } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
 import { useDrag } from 'react-dnd'
-import { selectComponent, sortTree } from '../app/appShell'
-import { useIsSelectedPath, mouldTree } from './utils'
+import {
+    selectComponent,
+    sortTree,
+    selectComponentFromTree,
+} from '../app/appShell'
+import { useIsSelectedPath, pathToString } from './utils'
 
 const MouldLabel = (mould: Mould) => {
     const [, drag] = useDrag({
@@ -48,7 +52,7 @@ const ComponentTree = ({
             style={{
                 cursor: 'pointer',
             }}
-            onClick={() => dispatch(selectComponent({ selection: path }))}
+            onClick={() => dispatch(selectComponentFromTree({ path }))}
         >
             {label ||
                 (comp.type === 'Mould'
@@ -71,51 +75,6 @@ const ComponentTree = ({
         </TreeView>
     )
 }
-
-export const Explorer = () => {
-    const moulds = useSelector((state: EditorState) => {
-        return state.moulds
-    })
-
-    return (
-        <Fragment>
-            {Object.values(moulds).map(mould => {
-                return (
-                    <TreeView
-                        key={mould.id}
-                        nodeLabel={<MouldLabel {...mould}></MouldLabel>}
-                    >
-                        {Object.keys(mould.states).map(state => {
-                            // return
-                            // <TreeView key={state} nodeLabel={state}>
-                            //     {mould.states[state] && (
-                            //         <ComponentTree
-                            //             comp={
-                            //                 mould.states[state] as Component
-                            //             }
-                            //             path={[[mould.id, state], []]}
-                            //         ></ComponentTree>
-                            //     )}
-                            // </TreeView>
-                            return (
-                                mould.states[state] && (
-                                    <ComponentTree
-                                        key={state}
-                                        comp={mouldTree(mould, state)}
-                                        path={[[mould.id, state], []]}
-                                        label={state}
-                                    ></ComponentTree>
-                                )
-                            )
-                        })}
-                    </TreeView>
-                )
-            })}
-        </Fragment>
-    )
-}
-
-const pathToString = (path: Path) => path[0].join('/') + '/' + path[1].join('-')
 
 const ComponentTree2 = ({
     comp,
@@ -143,7 +102,7 @@ const ComponentTree2 = ({
             style={{
                 cursor: 'pointer',
             }}
-            onClick={() => dispatch(selectComponent({ selection: path }))}
+            onClick={() => dispatch(selectComponentFromTree({ path }))}
         >
             {label ||
                 (comp.type === 'Mould'
@@ -184,17 +143,17 @@ export const Explorer2 = () => {
     const mould = moulds[selection[0][0]]
     const stateName = selection[0][1]
 
-    const selectedTree = mouldTree(mould, stateName)
+    const selectedTree = mould.states[stateName]
 
-    const onDragStart = info => {
+    const onDragStart = (info) => {
         console.log('start', info)
     }
 
-    const onDragEnter = info => {
+    const onDragEnter = (info) => {
         console.log('enter', info)
     }
 
-    const onDrop = info =>
+    const onDrop = (info) =>
         dispatch(
             sortTree({
                 info,
@@ -223,7 +182,7 @@ export const Explorer2 = () => {
                 style={{
                     cursor: 'pointer',
                 }}
-                onClick={() => dispatch(selectComponent({ selection: path }))}
+                onClick={() => dispatch(selectComponentFromTree({ path }))}
             >
                 {label ||
                     (comp.type === 'Mould'
@@ -234,10 +193,53 @@ export const Explorer2 = () => {
             </Box>
         )
 
+        // const resolveMouldChildren = (mouldComp: Component) => {
+        //     const mould = moulds[(comp.props as any).__mouldId]
+        //     const mouldChildren = mould.states[(comp.props as any).__state]?.children
+
+        //     return mouldChildren?.map(c => resolveMouldChildren())
+        // }
+
+        const transformChildren = (
+            children: Component[]
+        ): undefined | Component[] => {
+            let res: Component[] = []
+            children.forEach((c) => {
+                const nextChildren = transformChildren(c.children || [])
+                if (c.type === 'Kit') {
+                    if (nextChildren) {
+                        res.push({
+                            ...c,
+                            children: nextChildren,
+                        })
+                    } else {
+                        res.push(c)
+                    }
+                } else {
+                    if (nextChildren) {
+                        res = [...res, ...nextChildren]
+                    }
+                }
+            })
+
+            if (res.length) {
+                return res
+            }
+        }
+
+        const children =
+            comp.type === 'Mould'
+                ? transformChildren(
+                      moulds[(comp.props as any).__mouldId].states[
+                          (comp.props as any).__state
+                      ]?.children || []
+                  )
+                : comp.children
+
         return (
             <TreeNode key={`${path[1].join('-')}`} title={label}>
-                {comp.children &&
-                    comp.children.map((c, index) => {
+                {children &&
+                    children.map((c, index) => {
                         return renderComponentTree({
                             comp: c,
                             path: [path[0], [...path[1], index]],
@@ -258,11 +260,11 @@ export const Explorer2 = () => {
                 onDragEnter={onDragEnter}
                 onDrop={onDrop}
             >
-                {renderComponentTree({
-                    comp: selectedTree,
-                    path: [selection[0], []],
-                    label: 'Root',
-                })}
+                {selectedTree &&
+                    renderComponentTree({
+                        comp: selectedTree,
+                        path: [selection[0], []],
+                    })}
             </Tree>
         </div>
     )

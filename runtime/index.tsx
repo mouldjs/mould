@@ -24,13 +24,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
             ref
         ) => {
             const __mouldProps = moulds[__mouldId]
-            const {
-                input,
-                rootProps,
-                states,
-                kits,
-                hookFunctionName,
-            } = __mouldProps
+            const { input, states, kits, hookFunctionName } = __mouldProps
             let useScope: useScopeFn =
                 hookFunctionName && window[hookFunctionName]
 
@@ -110,9 +104,18 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                 })
             }
 
+            const rootComponent = states[currentState]
+            if (!rootComponent) {
+                return null
+            }
+            const RootComp = Components.find(
+                (c) => c.type === rootComponent.type
+            )!.component
+
             return (
-                <RootComp {...rootProps} ref={ref}>
-                    {renderChildren(states[currentState])}
+                <RootComp {...rootComponent.props} ref={ref}>
+                    {rootComponent.children &&
+                        renderChildren(rootComponent.children)}
                 </RootComp>
             )
         }

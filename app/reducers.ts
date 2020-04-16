@@ -1,6 +1,7 @@
 import { handleMoveWorkspace, handleZoomWorkspace } from './Workspaces'
 import {
     handleSelectComponent,
+    handleSelectComponentFromTree,
     handleAddInput,
     handleRemoveInput,
     handleModifyInputDescription,
@@ -10,7 +11,7 @@ import {
     handleAddState,
     handleRemoveState,
     handleResizeView,
-    handleAddMould,
+    // handleAddMould,
     handleModifyMouldTree,
     handleWaitingForCreating,
     handleStartCreating,
@@ -25,13 +26,15 @@ import {
     handleModifyInput,
     handleModifyMeta,
     handleModifyKit,
+    handleDragToView,
 } from './appShell'
 
-export default [
+export default () => [
     handleMoveWorkspace,
     handleZoomWorkspace,
     handleModifyMouldTree,
     handleSelectComponent,
+    handleSelectComponentFromTree,
     handleAddInput,
     handleRemoveInput,
     handleModifyInputDescription,
@@ -41,7 +44,7 @@ export default [
     handleAddState,
     handleRemoveState,
     handleResizeView,
-    handleAddMould,
+    // handleAddMould,
     handleWaitingForCreating,
     handleStartCreating,
     handleUpdateCreating,
@@ -55,4 +58,5 @@ export default [
     handleModifyInput,
     handleModifyMeta,
     handleModifyKit,
+    handleDragToView,
 ]

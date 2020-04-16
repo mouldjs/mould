@@ -1,7 +1,6 @@
 import React, { useState, useRef, DOMElement, useEffect } from 'react'
 import { Box } from '@modulz/radix'
 import { Workspace as WorkspaceType, EditorState, Vector } from './types'
-// import { ViewGroup } from './ViewGroup'
 import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,6 +13,7 @@ import {
     updateCreating,
 } from './appShell'
 import { View } from './View'
+import { tick } from './selectionTick'
 
 type MoveWorkspaceActionType = { id: string } & Vector
 const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
@@ -53,7 +53,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const creating = useSelector((state: EditorState) => {
         return state.creating
     })
-    const creation = creating && creating[1]
+    const creation = creating && creating.view
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)
     const bind = useGesture(
@@ -84,7 +84,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                     })
                 )
             },
-            onMouseDown: event => {
+            onMouseDown: (event) => {
                 event.stopPropagation()
                 dispatch(
                     startCreating({
@@ -93,7 +93,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                     })
                 )
             },
-            onMouseUp: event => {
+            onMouseUp: (event) => {
                 // event.stopPropagation()
                 dispatch(finishCreating())
             },
@@ -105,7 +105,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
         }
     )
 
-    const vs = Object.values(views).map(viewId => {
+    const vs = Object.values(views).map((viewId) => {
         return <View key={viewId} viewId={viewId}></View>
     })
 
@@ -115,8 +115,8 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             height="100vh"
             position="relative"
             {...bind()}
-            onDoubleClick={() => {
-                dispatch(selectComponent({ selection: undefined }))
+            onDoubleClickCapture={() => {
+                tick((data = []) => data)
             }}
         >
             <div

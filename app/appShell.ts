@@ -9,23 +9,73 @@ import {
     Component,
     ID,
     Kit,
+    StateName,
 } from './types'
-import { initialData } from './utils'
+import { initialData, pathToString } from './utils'
 import nanoid from 'nanoid'
 
-type SelectComponentAction = { selection: Path }
+type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
-export const selectComponent = createAction(SELECT_COMPONENT)
+export const selectComponent = createAction<SelectComponentAction>(
+    SELECT_COMPONENT
+)
 export const handleSelectComponent = handleAction<
     EditorState,
     SelectComponentAction
 >(
     SELECT_COMPONENT,
-    (state, action) => {
-        if (action.payload.selection === state.selection) {
-            return state
+    (state, { payload: { pathes } }) => {
+        // if (action.payload.selection === state.selection) {
+        //     return state
+        // }
+        // state.selection = action.payload.selection
+        if (pathes.length === 0) {
+            state.selection = undefined
+        } else if (!state.selection) {
+            state.selection = pathes[0]
+        } else {
+            const index = pathes.findIndex(
+                (p) => pathToString(p) === pathToString(state.selection!)
+            )
+            if (index === -1) {
+                const selectionStr = pathToString(state.selection)
+                // let tempSelection
+                for (let path of pathes.reverse()) {
+                    const pathStr = pathToString(path)
+                    if (
+                        selectionStr.includes(pathStr) ||
+                        pathStr.slice(0, pathStr.length - 1) ===
+                            selectionStr.slice(0, selectionStr.length - 1)
+                    ) {
+                        state.selection = path
+                        break
+                    }
+                }
+            } else {
+                const nextSelection = pathes[index + 1]
+                if (nextSelection) {
+                    state.selection = nextSelection
+                }
+            }
         }
-        state.selection = action.payload.selection
+
+        return state
+    },
+    initialData
+)
+
+type SelectComponentFromTreeAction = { path: Path }
+const SELECT_COMPONENT_FROM_TREE = 'SELECT_COMPONENT_FROM_TREE'
+export const selectComponentFromTree = createAction<
+    SelectComponentFromTreeAction
+>(SELECT_COMPONENT_FROM_TREE)
+export const handleSelectComponentFromTree = handleAction<
+    EditorState,
+    SelectComponentFromTreeAction
+>(
+    SELECT_COMPONENT_FROM_TREE,
+    (state, { payload: { path } }) => {
+        state.selection = path
 
         return state
     },
@@ -149,7 +199,7 @@ export const addState = createAction<AddStateAction>(ADD_STATE)
 export const handleAddState = handleAction<EditorState, AddStateAction>(
     ADD_STATE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].states[action.payload.state] = []
+        state.moulds[action.payload.mouldId].states[action.payload.state] = null
         const view: View = {
             id: nanoid(6),
             mouldId: action.payload.mouldId,
@@ -209,43 +259,43 @@ export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
     initialData
 )
 
-type AddMouldAction = Size & Vector
-const ADD_MOULD = 'ADD_MOULD'
-export const addMould = createAction<AddMouldAction>(ADD_MOULD)
-export const handleAddMould = handleAction<EditorState, AddMouldAction>(
-    ADD_MOULD,
-    (state, action) => {
-        const { width, height, x, y } = action.payload
-        const mouldId = nanoid(6)
-        const view: View = {
-            id: nanoid(6),
-            width,
-            height,
-            x,
-            y,
-            mouldId,
-            state: 'default',
-        }
-        const mould: Mould = {
-            id: mouldId,
-            name: `Mould ${Object.values(state.moulds).length + 1}`,
-            scope: [],
-            kits: [],
-            input: [],
-            states: {
-                default: [],
-            },
-            rootProps: {},
-        }
+// type AddMouldAction = Size & Vector
+// const ADD_MOULD = 'ADD_MOULD'
+// export const addMould = createAction<AddMouldAction>(ADD_MOULD)
+// export const handleAddMould = handleAction<EditorState, AddMouldAction>(
+//     ADD_MOULD,
+//     (state, action) => {
+//         const { width, height, x, y } = action.payload
+//         const mouldId = nanoid(6)
+//         const view: View = {
+//             id: nanoid(6),
+//             width,
+//             height,
+//             x,
+//             y,
+//             mouldId,
+//             state: 'default',
+//         }
+//         const mould: Mould = {
+//             id: mouldId,
+//             name: `Mould ${Object.values(state.moulds).length + 1}`,
+//             scope: [],
+//             kits: [],
+//             input: [],
+//             states: {
+//                 default: [],
+//             },
+//             rootProps: {},
+//         }
 
-        state.testWorkspace.views.push(view.id)
-        state.views[view.id] = view
-        state.moulds[mould.id] = mould
+//         state.testWorkspace.views.push(view.id)
+//         state.views[view.id] = view
+//         state.moulds[mould.id] = mould
 
-        return state
-    },
-    initialData
-)
+//         return state
+//     },
+//     initialData
+// )
 
 type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
 const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
@@ -259,8 +309,7 @@ export const handleModifyMouldTree = handleAction<
     MODIFY_MOULD_TREE,
     (state, action) => {
         const mould = state.moulds[action.payload.id]
-        mould.states[action.payload.state] = action.payload.tree.children || []
-        mould.rootProps = action.payload.tree.props
+        mould.states[action.payload.state] = action.payload.tree
 
         return state
     },
@@ -278,9 +327,9 @@ export const handleWaitingForCreating = handleAction<
 >(
     WAITING_FOR_CREATING,
     (state, { payload: { mouldId, stateName } }) => {
-        state.creating = [
-            'waiting',
-            {
+        state.creating = {
+            status: 'waiting',
+            view: {
                 id: nanoid(6),
                 mouldId,
                 state: stateName,
@@ -289,7 +338,8 @@ export const handleWaitingForCreating = handleAction<
                 width: 0,
                 height: 0,
             },
-        ]
+            beginAt: { x: 0, y: 0 },
+        }
 
         return state
     },
@@ -305,10 +355,9 @@ export const handleStartCreating = handleAction<
 >(
     START_CREATING,
     (state, { payload: { x, y } }) => {
-        if (state.creating && state.creating[0] === 'waiting') {
-            state.creating[0] = 'start'
-            state.creating[1].x = x
-            state.creating[1].y = y
+        if (state.creating && state.creating.status === 'waiting') {
+            state.creating.status = 'start'
+            state.creating.beginAt = { x, y }
         }
 
         return state
@@ -329,13 +378,14 @@ export const handleUpdateCreating = handleAction<
     (state, { payload: { x, y } }) => {
         if (
             state.creating &&
-            (state.creating[0] === 'start' || state.creating[0] === 'updating')
+            (state.creating.status === 'start' ||
+                state.creating.status === 'updating')
         ) {
-            state.creating[0] = 'updating'
-            state.creating[1].width = Math.abs(x - state.creating[1].x)
-            state.creating[1].height = Math.abs(y - state.creating[1].y)
-            state.creating[1].x = Math.min(x, state.creating[1].x)
-            state.creating[1].y = Math.min(y, state.creating[1].y)
+            state.creating.status = 'updating'
+            state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
+            state.creating.view.height = Math.abs(y - state.creating.beginAt.y)
+            state.creating.view.x = Math.min(x, state.creating.beginAt.x)
+            state.creating.view.y = Math.min(y, state.creating.beginAt.y)
         }
 
         return state
@@ -354,30 +404,26 @@ export const handleFinishCreating = handleAction<
 >(
     FINISH_CREATING,
     (state) => {
-        const [creatingStep, creation] = state.creating || []
+        const { status, view } = state.creating || {}
         if (
-            creatingStep === 'updating' &&
-            typeof creation === 'object' &&
-            creation.width !== 0 &&
-            creation.height !== 0
+            status === 'updating' &&
+            typeof view === 'object' &&
+            view.width !== 0 &&
+            view.height !== 0
         ) {
-            state.views[creation.id] = creation
-            state.testWorkspace.views = [
-                ...state.testWorkspace.views,
-                creation.id,
-            ]
-            if (!state.moulds[creation.mouldId]) {
-                state.moulds[creation.mouldId] = {
-                    id: creation.mouldId,
+            state.views[view.id] = view
+            state.testWorkspace.views = [...state.testWorkspace.views, view.id]
+            if (!state.moulds[view.mouldId]) {
+                state.moulds[view.mouldId] = {
+                    id: view.mouldId,
                     name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
                     kits: [],
                     input: [],
                     states: {},
-                    rootProps: {},
                 }
             }
-            state.moulds[creation.mouldId].states[creation.state] = []
+            state.moulds[view.mouldId].states[view.state] = null
         }
 
         state.creating = undefined
@@ -538,30 +584,37 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
                         children:
                             state.moulds[selection[0][0]].states[
                                 selection[0][1]
-                            ],
+                            ]?.children,
                     },
                     selection[1]
                 )
                 selection[1] = []
             } else {
-                delete state.moulds[selection[0][0]].states[selection[0][1]]
                 if (
-                    Object.keys(state.moulds[selection[0][0]].states).length ===
-                    0
+                    state.moulds[selection[0][0]].states[selection[0][1]] !==
+                    null
                 ) {
-                    delete state.moulds[selection[0][0]]
+                    state.moulds[selection[0][0]].states[selection[0][1]] = null
+                } else {
+                    delete state.moulds[selection[0][0]].states[selection[0][1]]
+                    if (
+                        Object.keys(state.moulds[selection[0][0]].states)
+                            .length === 0
+                    ) {
+                        delete state.moulds[selection[0][0]]
+                    }
+                    const view = Object.values(state.views).find(
+                        (view) =>
+                            view.mouldId === selection[0][0] &&
+                            view.state === selection[0][1]
+                    )
+                    delete state.views[view!.id]
+                    const index = state.testWorkspace.views.findIndex(
+                        (viewId) => view!.id === viewId
+                    )
+                    state.testWorkspace.views.splice(index, 1)
+                    state.selection = undefined
                 }
-                const view = Object.values(state.views).find(
-                    (view) =>
-                        view.mouldId === selection[0][0] &&
-                        view.state === selection[0][1]
-                )
-                delete state.views[view!.id]
-                const index = state.testWorkspace.views.findIndex(
-                    (viewId) => view!.id === viewId
-                )
-                state.testWorkspace.views.splice(index, 1)
-                state.selection = undefined
             }
         }
 
@@ -662,6 +715,25 @@ export const handleModifyKit = handleAction<EditorState, ModifyKitAction>(
     (state, { payload: { mouldId, kitName, ...rest } }) => {
         const kit = state.moulds[mouldId].kits.find((k) => k.name === kitName)
         Object.assign(kit, rest)
+
+        return state
+    },
+    initialData
+)
+
+type DragToViewAction = {
+    tree: Component
+    viewId: ID
+}
+const DRAG_TO_VIEW = 'DRAG_TO_VIEW'
+export const dragToView = createAction<DragToViewAction>(DRAG_TO_VIEW)
+export const handleDragToView = handleAction<EditorState, DragToViewAction>(
+    DRAG_TO_VIEW,
+    (state, { payload: { tree, viewId } }) => {
+        const view = state.views[viewId]
+        const stateName = view.state
+        const mould = state.moulds[view.mouldId]
+        mould.states[stateName] = tree
 
         return state
     },

@@ -5,10 +5,9 @@ import MouldContext from './MouldContext'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectComponent } from './appShell'
 import { useHover, useGesture } from 'react-use-gesture'
-import { useIsSelectedPath, useIsIncludePath } from './utils'
-import { Box } from '@modulz/radix'
+import { useIsSelectedPath, useIsIncludePath, pathToString } from './utils'
+import { tick } from './selectionTick'
 
 const { Provider } = MouldContext
 
@@ -97,6 +96,7 @@ export const Tree = ({
             if (!selected) {
                 return
             }
+
             onChange({
                 type,
                 props,
@@ -134,22 +134,25 @@ export const Tree = ({
     const Comp = plugin.component
 
     let inside =
-        children &&
-        children.map((tree, index) => (
-            <Tree
-                path={[path[0], [...path[1], index]] as Path}
-                onChange={(tree) => {
-                    const nextChildren = [...children]
-                    nextChildren[index] = tree
-                    onChange({
-                        type,
-                        props,
-                        children: nextChildren,
-                    })
-                }}
-                {...tree}
-            ></Tree>
-        ))
+        Array.isArray(children) && children.length
+            ? children.map((tree, index) => {
+                  return (
+                      <Tree
+                          path={[path[0], [...path[1], index]] as Path}
+                          onChange={(tree) => {
+                              const nextChildren = [...children]
+                              nextChildren[index] = tree
+                              onChange({
+                                  type,
+                                  props,
+                                  children: nextChildren,
+                              })
+                          }}
+                          {...tree}
+                      ></Tree>
+                  )
+              })
+            : null
 
     if (inside && canDrop) {
         const handleDrop = (index) => (droppedType) => {
@@ -197,13 +200,12 @@ export const Tree = ({
                 //             : `2px solid ${BLUE}`
                 //         : 'none'
                 // }
-                onDoubleClickCapture={(event) => {
-                    if (included) {
-                        return
-                    }
-                    event.stopPropagation()
-                    const selection = path
-                    dispatch(selectComponent({ selection }))
+                onDoubleClickCapture={() => {
+                    tick((tickData = []) => {
+                        tickData.push(path)
+
+                        return tickData
+                    })
                 }}
                 requestUpdateProps={(nextProps) => {
                     onChange({

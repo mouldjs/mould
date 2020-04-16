@@ -29,12 +29,6 @@ export type View = {
 } & Size &
     Vector
 
-// export type ViewGroup = {
-//     id: ID
-//     views: { [key: string]: string }
-//     mouldId: MouldID
-// } & Vector
-
 export type Workspace = {
     id: ID
     views: ID[]
@@ -70,8 +64,7 @@ export type Mould = {
     kits: Kit[]
     // input: { [key: string]: Desc }
     input: string[]
-    states: { [key: string]: Component[] }
-    rootProps: ComponentProps
+    states: { [key: string]: Component | null }
 }
 
 export type ComponentPropTypes = {
@@ -82,7 +75,12 @@ export type ComponentPropTypes = {
     path?: Path
 } & Component
 
-export type Creating = ['waiting' | 'start' | 'updating', View]
+// export type Creating = ['waiting' | 'start' | 'updating', View]
+export type Creating = {
+    status: 'waiting' | 'start' | 'updating'
+    view: View
+    beginAt: Vector
+}
 
 export type EditorState = {
     testWorkspace: Workspace
@@ -91,8 +89,6 @@ export type EditorState = {
     selection?: Path //[mouldId, state, ...path]
     creating?: Creating
 }
-
-export type RootType = 'root'
 
 export type AtomicComponent = {
     type: string
