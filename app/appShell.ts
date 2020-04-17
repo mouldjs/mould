@@ -11,7 +11,7 @@ import {
     Kit,
     StateName,
 } from './types'
-import { initialData, pathToString } from './utils'
+import { initialData, pathToString, viewPathToString } from './utils'
 import nanoid from 'nanoid'
 
 type SelectComponentAction = { pathes: Path[] }
@@ -33,13 +33,17 @@ export const handleSelectComponent = handleAction<
             state.selection = undefined
         } else if (!state.selection) {
             state.selection = pathes[0]
+        } else if (
+            viewPathToString(pathes[0]) !== viewPathToString(state.selection)
+        ) {
+            state.selection = pathes[0]
         } else {
             const index = pathes.findIndex(
                 (p) => pathToString(p) === pathToString(state.selection!)
             )
             if (index === -1) {
                 const selectionStr = pathToString(state.selection)
-                // let tempSelection
+
                 for (let path of pathes.reverse()) {
                     const pathStr = pathToString(path)
                     if (

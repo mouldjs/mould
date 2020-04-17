@@ -120,3 +120,5 @@ export const useCurrentState = () => {
 
 export const pathToString = (path: Path) =>
     path[0].join('/') + '/' + path[1].join('-')
+
+export const viewPathToString = (path: Path) => path[0].join('/')

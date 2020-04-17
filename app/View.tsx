@@ -12,7 +12,7 @@ import {
     rootTree,
 } from './utils'
 import { ResizableBox } from 'react-resizable'
-import { resizeView, dragView, selectComponent, dragToView } from './appShell'
+import { resizeView, dragView, dragToView } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import Mould from './Mould'
 import { useDrag, useDrop } from 'react-dnd'
@@ -219,7 +219,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                     top: y,
                     background: 'transparent',
                 }}
-                onDoubleClickCapture={(event) => {
+                onDoubleClickCapture={() => {
                     if (!mould.states[state]) {
                         tick((tickData = []) => {
                             tickData.push(path)

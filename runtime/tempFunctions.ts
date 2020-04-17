@@ -2,6 +2,9 @@ import { useState } from 'react'
 
 if (typeof window !== 'undefined') {
     const global = window as any
+
+    global.useState = useState
+
     global.awesome = () => {
         const [times, setTimes] = useState(0)
 
