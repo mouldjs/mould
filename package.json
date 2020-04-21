@@ -8,6 +8,7 @@
         "start": "next start"
     },
     "dependencies": {
+        "@blueprintjs/core": "^3.25.0",
         "@modulz/radix": "^0.0.1-beta.22",
         "@types/ramda": "^0.26.33",
         "@types/react-resizable": "^1.7.1",
