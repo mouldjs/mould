@@ -12,3 +12,7 @@ div[data-focus-lock-disabled] > div:first-child {
 radix-portal div {
     z-index: 100;
 }
+
+.bp3-fill {
+    height: 100%;
+}

@@ -102,7 +102,7 @@ export default forwardRef(
                 {children}
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <TitledBoard title="List" collspae>
+                        <TitledBoard title="List">
                             <Cell label="length">
                                 <Slider
                                     value={children?.length}
@@ -130,12 +130,7 @@ export default forwardRef(
                         </TitledBoard>
                         <TitledBoard
                             title="Stack"
-                            collspae
-                            renderTitle={(collspaed) => {
-                                if (collspaed) {
-                                    return null
-                                }
-
+                            renderTitle={() => {
                                 return (
                                     <div ref={buttonRef}>
                                         <Sliders

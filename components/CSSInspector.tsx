@@ -12,18 +12,18 @@ const StyleEditor = dynamic(() => import('react-style-editor'), {
 }) as any
 
 function hyphenate(str) {
-    return (str + '').replace(/[A-Z]/g, function(match) {
+    return (str + '').replace(/[A-Z]/g, function (match) {
         return '-' + match.toLowerCase()
     })
 }
 
 const convertReactStyleToCSS = (style: ComponentProps) =>
     `style{${Object.keys(style)
-        .map(k => `${hyphenate(k)}:${style[k]};`)
+        .map((k) => `${hyphenate(k)}:${style[k]};`)
         .join('')}}`
 
 function camelize(str) {
-    return (str + '').replace(/-\D/g, function(match) {
+    return (str + '').replace(/-\D/g, function (match) {
         return match.charAt(1).toUpperCase()
     })
 }
@@ -32,11 +32,11 @@ function camelize(str) {
 
 function pick(obj, keys) {
     return keys
-        .map(k => (k in obj ? { [k]: obj[k] } : {}))
+        .map((k) => (k in obj ? { [k]: obj[k] } : {}))
         .reduce((res, o) => Object.assign(res, o), {})
 }
 
-const pickStyle = obj => pick(obj, Object.keys(CSSProperties._def.shape))
+const pickStyle = (obj) => pick(obj, Object.keys(CSSProperties._def.shape))
 
 export const CSSInspector = ({ style, requestUpdateProps }) => {
     style = pickStyle(style)
@@ -46,13 +46,13 @@ export const CSSInspector = ({ style, requestUpdateProps }) => {
     const css = style ? convertReactStyleToCSS(style) : 'style{color}'
 
     return (
-        <TitledBoard title="Style" collspae>
+        <TitledBoard title="Style">
             <StyleEditor
                 // defaultValue={css}
-                onChange={css => {
+                onChange={(css) => {
                     const rules = analyze(css) as any[]
                     const styleRule = rules.find(
-                        rule =>
+                        (rule) =>
                             rule.type === 'rule' &&
                             rule.isValid &&
                             rule.selector.trim() === 'style'

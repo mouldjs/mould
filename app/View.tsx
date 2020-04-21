@@ -158,11 +158,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                     <DebugPanel.Source>
                         <TitledBoard
                             title="Debug"
-                            renderTitle={(collspaed) => {
-                                if (collspaed) {
-                                    return null
-                                }
-
+                            renderTitle={() => {
                                 return (
                                     <div onClick={() => setPaused(!paused)}>
                                         {paused ? (
