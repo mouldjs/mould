@@ -1,5 +1,5 @@
 import React, { ReactNode, Fragment, useState } from 'react'
-import { Flex, Text, Box, Tooltip } from '@modulz/radix'
+import { Flex, Text, Box, Tooltip, FlexProps } from '@modulz/radix'
 import { Plus } from 'react-feather'
 
 export const Cell = ({
@@ -33,11 +33,12 @@ export const Head = ({
     title,
     desc,
     children,
+    ...rest
 }: {
     title: string
     desc?: string
     children: ReactNode
-}) => {
+} & FlexProps) => {
     return (
         <Flex
             backgroundColor="#eeeeee"
@@ -45,9 +46,7 @@ export const Head = ({
             alignItems="center"
             paddingX={12}
             paddingY="8px"
-            onDBClick={e => {
-                console.log('heade')
-            }}
+            {...rest}
         >
             {desc && (
                 <Tooltip label={desc} side="bottom" align="start">
@@ -67,17 +66,21 @@ export const Head = ({
 }
 
 export const Board = ({ children }) => {
-    return <Box borderY="1px solid #c7c7c7">{children}</Box>
+    return (
+        <Box borderY="1px solid #c7c7c7" padding={8}>
+            {children}
+        </Box>
+    )
 }
 
 const CollspaedHead = ({
     title,
     desc,
-    onOpen,
+    renderTitle,
 }: {
     title: string
     desc?: string
-    onOpen: () => void
+    renderTitle?: () => ReactNode
 }) => {
     return (
         <Board>
@@ -86,7 +89,6 @@ const CollspaedHead = ({
                 alignItems="center"
                 paddingX={12}
                 paddingY="8px"
-                onClick={() => onOpen()}
             >
                 {desc && (
                     <Tooltip label={desc} side="bottom" align="start">
@@ -100,57 +102,87 @@ const CollspaedHead = ({
                         {title}
                     </Text>
                 )}
-                <Plus color="#959595" size={16}></Plus>
+                {renderTitle && renderTitle()}
             </Flex>
         </Board>
     )
 }
 
 export const TitledBoard = ({
-    collspae = false,
+    collspaed = false,
     title,
     desc,
     renderTitle = () => null,
     children,
 }: {
-    collspae?: boolean
-    renderTitle?: (collspaed: boolean) => ReactNode
+    collspaed?: boolean
+    renderTitle?: () => ReactNode
     children: ReactNode
     title: string
     desc?: string
 }) => {
-    const [collspaed, setCollspaed] = useState(false)
+    // let [collspaed, setCollspaed] = useState(false)
 
-    if (collspae) {
-        return !collspaed ? (
-            <Fragment>
-                <Head title={title} desc={desc}>
-                    <Flex alignItems="center">
-                        {renderTitle(collspaed)}
+    // if (collspae) {
+    return !collspaed ? (
+        <Fragment>
+            <Head title={title} desc={desc}>
+                <Flex alignItems="center">
+                    {renderTitle ? (
+                        renderTitle()
+                    ) : (
                         <Plus
                             color="#959595"
                             size={16}
-                            onClick={() => setCollspaed(true)}
+                            // onClick={() => setCollspaed(true)}
                         ></Plus>
-                    </Flex>
-                </Head>
-                <Board>{children}</Board>
-            </Fragment>
-        ) : (
-            <CollspaedHead
-                title={title}
-                desc={desc}
-                onOpen={() => setCollspaed(false)}
-            ></CollspaedHead>
-        )
-    }
-
-    return (
-        <Fragment>
-            <Head title={title} desc={desc}>
-                {renderTitle(false)}
+                    )}
+                </Flex>
             </Head>
             <Board>{children}</Board>
         </Fragment>
+    ) : (
+        <Head
+            title={title}
+            desc={desc}
+            borderBottom="1px solid rgba(170, 170, 170, 0.5)"
+        >
+            <Flex alignItems="center">
+                {renderTitle ? (
+                    renderTitle()
+                ) : (
+                    <Plus
+                        color="#959595"
+                        size={16}
+                        // onClick={() => setCollspaed(true)}
+                    ></Plus>
+                )}
+            </Flex>
+        </Head>
     )
+    // }
+
+    // return (
+    //     <Fragment>
+    //         <Head title={title} desc={desc}>
+    //             {renderTitle(false)}
+    //         </Head>
+    //         <Board>{children}</Board>
+    //     </Fragment>
+    // )
 }
+
+export const ControlGrid = ({ children, ...restStyle }) => (
+    <div
+        style={{
+            display: 'grid',
+            gridGap: '8px',
+            gridTemplateColumns: '16px 36px 72px 48px',
+            gridTemplateRows: '24px',
+            gridTemplateAreas: `"active visual value control"`,
+            ...restStyle,
+        }}
+    >
+        {children}
+    </div>
+)

@@ -42,7 +42,7 @@ export default forwardRef(
                 ></BaseBox>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <TitledBoard title="Text" collspae>
+                        <TitledBoard title="Text">
                             <Cell label="Value">
                                 <Input
                                     value={value}

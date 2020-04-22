@@ -4,12 +4,12 @@ import { Cell, TitledBoard } from '../inspector/FormComponents'
 
 export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
     const space = (
-        <TitledBoard title="Space" collspae>
+        <TitledBoard title="Space">
             <Cell label="ml">
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.marginLeft || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             marginLeft: parseInt(e.target.value),
                         })
@@ -20,7 +20,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.marginTop || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             marginTop: parseInt(e.target.value),
                         })
@@ -31,7 +31,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.marginRight || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             marginRight: parseInt(e.target.value),
                         })
@@ -42,7 +42,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.marginBottom || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             marginBottom: parseInt(e.target.value),
                         })
@@ -53,7 +53,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.paddingLeft || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             paddingLeft: parseInt(e.target.value),
                         })
@@ -64,7 +64,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.paddingTop || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             paddingTop: parseInt(e.target.value),
                         })
@@ -75,7 +75,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.paddingRight || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             paddingRight: parseInt(e.target.value),
                         })
@@ -86,7 +86,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.paddingBottom || 0}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             paddingBottom: parseInt(e.target.value),
                         })
@@ -96,12 +96,12 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
         </TitledBoard>
     )
     const color = (
-        <TitledBoard title="Color" collspae>
+        <TitledBoard title="Color">
             <Cell label="color">
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.color || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             color: e.target.value,
                         })
@@ -112,7 +112,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.opacity || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             opacity: e.target.value,
                         })
@@ -123,7 +123,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.opacity || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             opacity: e.target.value,
                         })
@@ -134,7 +134,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.background || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             background: e.target.value,
                         })
@@ -144,12 +144,12 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
         </TitledBoard>
     )
     const typography = (
-        <TitledBoard title="Typography" collspae>
+        <TitledBoard title="Typography">
             <Cell label="fontFamily">
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.fontFamily || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             fontFamily: e.target.value,
                         })
@@ -160,7 +160,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.fontSize || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             fontSize: e.target.value,
                         })
@@ -171,7 +171,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.fontWeight || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             fontWeight: e.target.value,
                         })
@@ -182,7 +182,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.lineHeight || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             lineHeight: e.target.value,
                         })
@@ -193,7 +193,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.letterSpacing || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             letterSpacing: e.target.value,
                         })
@@ -204,7 +204,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.textAlign || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             textAlign: e.target.value,
                         })
@@ -215,7 +215,7 @@ export const GeneralStyleInspector = ({ style, requestUpdateProps }) => {
                 <Input
                     style={{ background: 'hsl(210,10%,99%)' }}
                     value={style.fontStyle || ''}
-                    onChange={e =>
+                    onChange={(e) =>
                         requestUpdateProps({
                             fontStyle: e.target.value,
                         })

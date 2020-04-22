@@ -31,13 +31,13 @@ export default forwardRef(
                 {content}
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <TitledBoard title="Text" collspae>
+                        <TitledBoard title="Text">
                             <Cell label="Content">
                                 <Input
                                     value={content}
                                     placeholder="Input your content"
                                     variant="fade"
-                                    onChange={e => {
+                                    onChange={(e) => {
                                         requestUpdateProps({
                                             content: e.target.value,
                                         })

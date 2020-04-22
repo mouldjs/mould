@@ -42,7 +42,7 @@ const Alignment = z.union([
     z.literal('stretch'),
 ])
 
-const alignments = Array.from(Alignment._def.options).map(a => a._def.value)
+const alignments = Array.from(Alignment._def.options).map((a) => a._def.value)
 
 export const rootProps = z
     .object({
@@ -97,12 +97,7 @@ export default forwardRef(
                     <ComponentInspector path={path}>
                         <TitledBoard
                             title="Stack"
-                            collspae
-                            renderTitle={collspaed => {
-                                if (collspaed) {
-                                    return null
-                                }
-
+                            renderTitle={() => {
                                 return (
                                     <div ref={buttonRef}>
                                         <Sliders
@@ -119,7 +114,7 @@ export default forwardRef(
                             <Cell label="Direction" desc="Flex direction">
                                 <ToggleButtonGroup
                                     value={direction}
-                                    onChange={value => {
+                                    onChange={(value) => {
                                         requestUpdateProps({ direction: value })
                                     }}
                                 >
@@ -140,14 +135,14 @@ export default forwardRef(
                             <Cell label="Vertical align">
                                 <ToggleButtonGroup
                                     value={verticalAlign}
-                                    onChange={value => {
+                                    onChange={(value) => {
                                         requestUpdateProps({
                                             verticalAlign: value,
                                         })
                                     }}
                                 >
                                     <Flex flexWrap="wrap">
-                                        {alignments.map(alignment => (
+                                        {alignments.map((alignment) => (
                                             <ToggleButton
                                                 key={alignment}
                                                 style={{
@@ -165,14 +160,14 @@ export default forwardRef(
                             <Cell label="Horizontal align">
                                 <ToggleButtonGroup
                                     value={horizontalAlign}
-                                    onChange={value => {
+                                    onChange={(value) => {
                                         requestUpdateProps({
                                             horizontalAlign: value,
                                         })
                                     }}
                                 >
                                     <Flex flexWrap="wrap">
-                                        {alignments.map(alignment => (
+                                        {alignments.map((alignment) => (
                                             <ToggleButton
                                                 key={alignment}
                                                 style={{
@@ -212,7 +207,7 @@ export default forwardRef(
                             >
                                 <Checkbox
                                     checked={grow}
-                                    onChange={e =>
+                                    onChange={(e) =>
                                         requestUpdateProps({
                                             grow: e.target.checked,
                                         })
@@ -222,7 +217,7 @@ export default forwardRef(
                                 </Checkbox>
                                 <Checkbox
                                     checked={shrink}
-                                    onChange={e =>
+                                    onChange={(e) =>
                                         requestUpdateProps({
                                             shrink: e.target.checked,
                                         })
@@ -232,7 +227,7 @@ export default forwardRef(
                                 </Checkbox>
                                 <Checkbox
                                     checked={wrap}
-                                    onChange={e =>
+                                    onChange={(e) =>
                                         requestUpdateProps({
                                             wrap: e.target.checked,
                                         })

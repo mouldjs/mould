@@ -1,11 +1,14 @@
+import 'normalize.css'
+import '@blueprintjs/core/lib/css/blueprint.css'
+import './blueprint.scss'
+// import '@blueprintjs/icons/lib/css/blueprint-icons.css'
+import './app.css'
 import dynamic from 'next/dynamic'
 import { Workspace } from './Workspaces'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
 import { RadixProvider, Flex, Box } from '@modulz/radix'
-import 'normalize.css'
 import { EditorState } from './types'
-import './app.css'
 import { useEffect } from 'react'
 import { undo } from '../lib/undo-redux'
 import { Toolbar } from './Toolbar'
@@ -155,7 +158,7 @@ const App = () => {
                     borderLeft="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"
                 >
-                    <TitledBoard title="Hierarchy" collspae>
+                    <TitledBoard title="Hierarchy">
                         <Explorer2></Explorer2>
                     </TitledBoard>
                     <PropertyToolBar.Target />
