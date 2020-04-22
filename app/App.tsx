@@ -16,14 +16,16 @@ import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import { cancelCreating, deleteNode } from './appShell'
+import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
+import { MouldStates } from './MouldStates'
 import { MouldKits } from './MouldKits'
 import { ArcherContainer } from 'react-archer'
 import { MouldInput } from './MouldInput'
 import DebugPanel from './DebugPanel'
+import nanoid from 'nanoid'
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -79,6 +81,17 @@ const App = () => {
                 }}
             />
             <KeyboardEventHandler
+                handleKeys={['m']}
+                onKeyEvent={() => {
+                    dispatch(
+                        waitingForCreating({
+                            mouldId: nanoid(6),
+                            stateName: 'state 0',
+                        })
+                    )
+                }}
+            />
+            <KeyboardEventHandler
                 handleKeys={['meta+z']}
                 onKeyEvent={() => dispatch(undo())}
             ></KeyboardEventHandler>
@@ -124,6 +137,7 @@ const App = () => {
                         strokeWidth={1}
                     >
                         <MouldScope></MouldScope>
+                        <MouldStates></MouldStates>
                         <TitledBoard title="Kits">
                             <MouldKits></MouldKits>
                         </TitledBoard>
