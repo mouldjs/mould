@@ -7,8 +7,9 @@ import {
     HTMLSelect,
     ControlGroup,
 } from '@blueprintjs/core'
+import { Text } from '@modulz/radix'
 import { Plus, Minus } from 'react-feather'
-import { TitledBoard, ControlGrid } from './FormComponents'
+import { TitledBoard, ControlGrid, ControlGridItem } from './FormComponents'
 import { ColorControl, Color, transformColorToStr } from './Color'
 import { BorderAll, BorderOutside } from '../resources/Icons'
 import { Checkbox } from './Checkbox'
@@ -332,48 +333,44 @@ export const BorderInspector = ({
                                 </div>
                             </ControlGrid>
                             <ControlGrid>
-                                <div
-                                    style={{
-                                        gridArea:
-                                            'value/ value / control / control',
-                                        height: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <div
+                                <ControlGridItem area="value / value / control / control">
+                                    <Text
+                                        size={0}
                                         style={{
                                             width: '100%',
                                             textAlign: 'center',
                                         }}
                                     >
                                         T
-                                    </div>
-                                    <div
+                                    </Text>
+                                    <Text
+                                        size={0}
                                         style={{
                                             width: '100%',
                                             textAlign: 'center',
                                         }}
                                     >
                                         R
-                                    </div>
-                                    <div
+                                    </Text>
+                                    <Text
+                                        size={0}
                                         style={{
                                             width: '100%',
                                             textAlign: 'center',
                                         }}
                                     >
                                         B
-                                    </div>
-                                    <div
+                                    </Text>
+                                    <Text
+                                        size={0}
                                         style={{
                                             width: '100%',
                                             textAlign: 'center',
                                         }}
                                     >
                                         L
-                                    </div>
-                                </div>
+                                    </Text>
+                                </ControlGridItem>
                             </ControlGrid>
                         </>
                     )}

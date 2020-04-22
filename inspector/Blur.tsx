@@ -11,12 +11,14 @@ export type BlurPropTypes = {
     active: boolean
     blurStyle: BlurStyle
     blurAmount: number
+    unit: 'px'
 }
 
 const initialData: BlurPropTypes = {
     active: true,
     blurStyle: 'Layer',
     blurAmount: 12,
+    unit: 'px',
 }
 
 export const BlurInspector = ({

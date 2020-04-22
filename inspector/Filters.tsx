@@ -2,7 +2,7 @@ import React from 'react'
 import { omit } from 'ramda'
 import { TitledBoard, ControlGrid, ControlGridItem } from './FormComponents'
 import { Plus, Minus } from 'react-feather'
-import { HTMLSelect, NumericInput, Tag } from '@blueprintjs/core'
+import { NumericInput, Tag } from '@blueprintjs/core'
 import {
     Slider,
     Text,
@@ -13,7 +13,7 @@ import {
 } from '@modulz/radix'
 import { Checkbox } from './Checkbox'
 
-type FilterType =
+export type FilterType =
     | 'Brightness'
     | 'Contrast'
     | 'Grayscale'
@@ -85,6 +85,7 @@ const FiltersConfig: {
 type FilterData = {
     active: boolean
     amount: number
+    unit: string
 }
 
 export type FilterPropTypes = {
@@ -154,6 +155,10 @@ export const FiltersInspector = ({
                                                                 FiltersConfig[
                                                                     filterType
                                                                 ].default,
+                                                            unit:
+                                                                FiltersConfig[
+                                                                    filterType
+                                                                ].unit,
                                                         },
                                                     })
                                                 }}

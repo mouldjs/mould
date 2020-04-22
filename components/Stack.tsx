@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from 'react'
+import React, { useState, useRef, forwardRef, CSSProperties } from 'react'
 import { ComponentInspector } from '../app/Inspectors'
 import {
     Input,
@@ -29,7 +29,13 @@ import {
     transformBorderProps,
 } from '../inspector/Border'
 import { BlurInspector, BlurPropTypes } from '../inspector/Blur'
-import { FiltersInspector, FilterPropTypes } from '../inspector/Filters'
+import {
+    FiltersInspector,
+    FilterPropTypes,
+    FilterType,
+} from '../inspector/Filters'
+import { ShadowsPropTypes, ShadowsInspector } from '../inspector/Shadows'
+import { transformColorToStr } from '../inspector/Color'
 
 const Direction = z.union([
     z.literal('column'),
@@ -70,6 +76,65 @@ type StylePropertys = {
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
+    shadowsProps?: ShadowsPropTypes
+    innerShadowsProps?: ShadowsPropTypes
+}
+
+const transformStyles = ({
+    borderProps,
+    blurProps,
+    filtersProps,
+    shadowsProps,
+    innerShadowsProps,
+}: StylePropertys) => {
+    let res: CSSProperties = {}
+    if (borderProps) {
+        res = { ...res, ...transformBorderProps(borderProps) }
+    }
+    if (filtersProps) {
+        let filterStr = ''
+        Object.keys(filtersProps).forEach((filterType: FilterType) => {
+            const filterData = filtersProps[filterType]!
+            if (filterData.active) {
+                filterStr = `${filterStr} ${filterType
+                    .toLowerCase()
+                    .split(' ')
+                    .join('-')}(${filterData.amount}${filterData.unit})`
+            }
+        })
+        res.filter = filterStr.trim()
+    }
+    if (blurProps && blurProps.active) {
+        const blurStr = `blur(${blurProps.blurAmount}${blurProps.unit})`
+        if (blurProps.blurStyle === 'Background') {
+            res.backdropFilter = blurStr
+        } else {
+            res.filter = `${blurStr} ${res.filter || ''}`.trim()
+        }
+    }
+    let shadowStr = ''
+    const handleShadow = (shadows: ShadowsPropTypes) => {
+        shadows.forEach((shadow) => {
+            if (shadow.active) {
+                shadowStr = `${shadowStr}${shadowStr ? ' ,' : ''}${
+                    shadow.x
+                }px ${shadow.y}px ${shadow.blur}px ${
+                    shadow.spread
+                }px ${transformColorToStr(shadow.color)}`
+            }
+        })
+    }
+    if (shadowsProps) {
+        handleShadow(shadowsProps)
+    }
+    if (innerShadowsProps) {
+        handleShadow(innerShadowsProps)
+    }
+    if (shadowStr) {
+        res.boxShadow = shadowStr
+    }
+
+    return res
 }
 
 export default forwardRef(
@@ -87,6 +152,8 @@ export default forwardRef(
             borderProps,
             blurProps,
             filtersProps,
+            shadowsProps,
+            innerShadowsProps,
             ...rest
         }: ComponentPropTypes & PropType & StylePropertys,
         ref
@@ -105,9 +172,13 @@ export default forwardRef(
                 ref={ref}
                 height="100%"
                 width="100%"
-                style={{
-                    ...transformBorderProps(borderProps),
-                }}
+                style={transformStyles({
+                    borderProps,
+                    blurProps,
+                    filtersProps,
+                    shadowsProps,
+                    innerShadowsProps,
+                })}
                 // style={style}
                 {...rest}
             >
@@ -209,6 +280,20 @@ export default forwardRef(
                                 requestUpdateProps({ borderProps: data })
                             }}
                         ></BorderInspector>
+                        <ShadowsInspector
+                            title="Shadows"
+                            data={shadowsProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ shadowsProps: data })
+                            }}
+                        ></ShadowsInspector>
+                        <ShadowsInspector
+                            title="Inner Shadows"
+                            data={innerShadowsProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ innerShadowsProps: data })
+                            }}
+                        ></ShadowsInspector>
                         <BlurInspector
                             data={blurProps}
                             onChange={(data) => {
