@@ -11,7 +11,7 @@ import { RadixProvider, Flex, Box } from '@modulz/radix'
 import { EditorState } from './types'
 import { useEffect } from 'react'
 import { undo } from '../lib/undo-redux'
-import { Toolbar } from './Toolbar'
+import Toolbar from './Toolbar/index'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
@@ -82,7 +82,7 @@ const App = () => {
                 handleKeys={['meta+z']}
                 onKeyEvent={() => dispatch(undo())}
             ></KeyboardEventHandler>
-            <Box width="100vw" height={50}>
+            <Box width="100vw">
                 <Toolbar></Toolbar>
             </Box>
 
