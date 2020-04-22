@@ -113,22 +113,22 @@ const transformStyles = ({
         }
     }
     let shadowStr = ''
-    const handleShadow = (shadows: ShadowsPropTypes) => {
+    const handleShadow = (shadows: ShadowsPropTypes, inset: boolean) => {
         shadows.forEach((shadow) => {
             if (shadow.active) {
                 shadowStr = `${shadowStr}${shadowStr ? ' ,' : ''}${
-                    shadow.x
-                }px ${shadow.y}px ${shadow.blur}px ${
+                    inset ? 'inset ' : ''
+                }${shadow.x}px ${shadow.y}px ${shadow.blur}px ${
                     shadow.spread
                 }px ${transformColorToStr(shadow.color)}`
             }
         })
     }
     if (shadowsProps) {
-        handleShadow(shadowsProps)
+        handleShadow(shadowsProps, false)
     }
     if (innerShadowsProps) {
-        handleShadow(innerShadowsProps)
+        handleShadow(innerShadowsProps, true)
     }
     if (shadowStr) {
         res.boxShadow = shadowStr

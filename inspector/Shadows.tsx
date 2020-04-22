@@ -54,11 +54,10 @@ export const ShadowsInspector = ({
                         {inactiveShadows.length > 0 && (
                             <Minus
                                 onClick={() => {
-                                    onChange(
-                                        (data || []).filter(
-                                            (shadow) => shadow.active
-                                        )
+                                    const next = (data || []).filter(
+                                        (shadow) => shadow.active
                                     )
+                                    onChange(next.length ? next : undefined)
                                 }}
                                 color="#959595"
                                 size={16}
