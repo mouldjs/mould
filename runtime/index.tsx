@@ -1,12 +1,9 @@
 import React, { forwardRef } from 'react'
 import { pick } from 'ramda'
 import { Mould, ComponentProps, useScopeFn, Component, ID } from '../app/types'
-import Root from '../components/Root'
 import Components from '../components'
 import List from '../components/List'
 import './tempFunctions'
-
-const RootComp = Root as any
 
 const returnEmptyObject = (defaultState) => (): [string, object] => {
     return [defaultState, {}]

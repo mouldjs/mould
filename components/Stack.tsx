@@ -28,6 +28,8 @@ import {
     BorderPropTypes,
     transformBorderProps,
 } from '../inspector/Border'
+import { BlurInspector, BlurPropTypes } from '../inspector/Blur'
+import { FiltersInspector, FilterPropTypes } from '../inspector/Filters'
 
 const Direction = z.union([
     z.literal('column'),
@@ -64,6 +66,12 @@ const ToggleButton = OToggleButton as any
 
 const alignments = Array.from(Alignment._def.options).map((a) => a._def.value)
 
+type StylePropertys = {
+    borderProps?: BorderPropTypes
+    blurProps?: BlurPropTypes
+    filtersProps?: FilterPropTypes
+}
+
 export default forwardRef(
     (
         {
@@ -77,8 +85,10 @@ export default forwardRef(
             grow = true,
             shrink = true,
             borderProps,
+            blurProps,
+            filtersProps,
             ...rest
-        }: ComponentPropTypes & PropType & { borderProps?: BorderPropTypes },
+        }: ComponentPropTypes & PropType & StylePropertys,
         ref
     ) => {
         const [isOpen, setIsOpen] = useState(false)
@@ -199,6 +209,18 @@ export default forwardRef(
                                 requestUpdateProps({ borderProps: data })
                             }}
                         ></BorderInspector>
+                        <BlurInspector
+                            data={blurProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ blurProps: data })
+                            }}
+                        ></BlurInspector>
+                        <FiltersInspector
+                            data={filtersProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ filtersProps: data })
+                            }}
+                        ></FiltersInspector>
                         <CSSInspector
                             style={rest}
                             requestUpdateProps={requestUpdateProps}

@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import * as z from 'zod'
 import {
-    Checkbox,
     NumericInput,
     ButtonGroup,
     Button,
@@ -12,6 +11,7 @@ import { Plus, Minus } from 'react-feather'
 import { TitledBoard, ControlGrid } from './FormComponents'
 import { ColorControl, Color, transformColorToStr } from './Color'
 import { BorderAll, BorderOutside } from '../resources/Icons'
+import { Checkbox } from './Checkbox'
 
 const BorderSplittedWidth = z.object({
     l: z.number(),
@@ -143,22 +143,24 @@ export const BorderInspector = ({
             {data ? (
                 <>
                     <ControlGrid>
-                        <Checkbox
-                            checked={data.active}
-                            onChange={(event) => {
-                                onChange({
-                                    ...data,
-                                    active: (event.target as any).checked,
-                                })
-                            }}
-                            large
+                        <div
                             style={{
                                 gridArea: 'active',
                                 height: '100%',
                                 display: 'flex',
                                 alignItems: 'center',
                             }}
-                        ></Checkbox>
+                        >
+                            <Checkbox
+                                checked={data.active}
+                                onChange={(event) =>
+                                    onChange({
+                                        ...data,
+                                        active: (event.target as any).checked,
+                                    })
+                                }
+                            ></Checkbox>
+                        </div>
                         <div
                             style={{
                                 gridArea: 'visual',
