@@ -50,19 +50,13 @@ const App = () => {
         }
     }, [])
     const dispatch = useDispatch()
-    const testWorkspace = useSelector((state: EditorState) => {
-        return state.testWorkspace
-    })
-    const creating = useSelector((state: EditorState) => {
-        return state.creating
-    })
-    const selection = useSelector((state: EditorState) => {
-        return state.selection
-    })
-    const [mould] = useSelector((state: EditorState) => {
-        const [[mouldId, currentState]] = state.selection || [[]]
+    const { testWorkspace, creating, selection } = useSelector(
+        (state: EditorState) => state
+    )
+    const mould = useSelector((state: EditorState) => {
+        const [[mouldId]] = state.selection || [[]]
 
-        return [state.moulds[mouldId || -1], currentState]
+        return state.moulds[mouldId || -1]
     })
 
     const creatingStep = creating && creating.status
