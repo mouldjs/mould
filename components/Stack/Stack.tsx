@@ -1,5 +1,5 @@
 import React, { useState, useRef, forwardRef, CSSProperties } from 'react'
-import { ComponentInspector } from '../app/Inspectors'
+import { ComponentInspector } from '../../app/Inspectors'
 import {
     Input,
     ToggleButton as OToggleButton,
@@ -17,25 +17,27 @@ import {
     Sliders,
     Props,
 } from 'react-feather'
-import { Cell, TitledBoard } from '../inspector/FormComponents'
-import { BaseFlex } from './BaseComponents'
-import { GeneralStyleInspector } from './GeneralStyleInspector'
-import { CSSInspector } from './CSSInspector'
+import { Cell, TitledBoard } from '../../inspector/FormComponents'
+import { BaseFlex } from '../BaseComponents'
+import { GeneralStyleInspector } from '../GeneralStyleInspector'
+import { CSSInspector } from '../CSSInspector'
 import * as z from 'zod'
-import { ComponentPropTypes, zodComponentProps } from '../app/types'
+import { ComponentPropTypes, zodComponentProps } from '../../app/types'
 import {
     BorderInspector,
     BorderPropTypes,
     transformBorderProps,
-} from '../inspector/Border'
-import { BlurInspector, BlurPropTypes } from '../inspector/Blur'
+} from '../../inspector/Border'
+import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
 import {
     FiltersInspector,
     FilterPropTypes,
     FilterType,
-} from '../inspector/Filters'
-import { ShadowsPropTypes, ShadowsInspector } from '../inspector/Shadows'
-import { transformColorToStr } from '../inspector/Color'
+} from '../../inspector/Filters'
+import { ShadowsPropTypes, ShadowsInspector } from '../../inspector/Shadows'
+import { transformColorToStr } from '../../inspector/Color'
+import { StackPropTypes, StackInspector } from './Inspector'
+import { LayoutPropTypes, LayoutInspector } from '../../inspector/Layout'
 
 const Direction = z.union([
     z.literal('column'),
@@ -72,12 +74,17 @@ const ToggleButton = OToggleButton as any
 
 const alignments = Array.from(Alignment._def.options).map((a) => a._def.value)
 
-type StylePropertys = {
+type StyleProperties = {
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
     shadowsProps?: ShadowsPropTypes
     innerShadowsProps?: ShadowsPropTypes
+}
+
+type StackProperties = {
+    stackProps?: StackPropTypes
+    layoutProps?: LayoutPropTypes
 }
 
 const transformStyles = ({
@@ -86,7 +93,7 @@ const transformStyles = ({
     filtersProps,
     shadowsProps,
     innerShadowsProps,
-}: StylePropertys) => {
+}: StyleProperties) => {
     let res: CSSProperties = {}
     if (borderProps) {
         res = { ...res, ...transformBorderProps(borderProps) }
@@ -154,8 +161,10 @@ export default forwardRef(
             filtersProps,
             shadowsProps,
             innerShadowsProps,
+            stackProps,
+            layoutProps,
             ...rest
-        }: ComponentPropTypes & PropType & StylePropertys,
+        }: ComponentPropTypes & PropType & StyleProperties & StackProperties,
         ref
     ) => {
         const [isOpen, setIsOpen] = useState(false)
@@ -185,7 +194,7 @@ export default forwardRef(
                 {children}
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <TitledBoard
+                        {/* <TitledBoard
                             title="Stack"
                             renderTitle={() => {
                                 return (
@@ -273,7 +282,21 @@ export default forwardRef(
                                     </Flex>
                                 </ToggleButtonGroup>
                             </Cell>
-                        </TitledBoard>
+                        </TitledBoard> */}
+                        <LayoutInspector
+                            title="Layout"
+                            data={layoutProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ layoutProps: data })
+                            }}
+                        ></LayoutInspector>
+                        <StackInspector
+                            title="Stack"
+                            data={stackProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ stackProps: data })
+                            }}
+                        ></StackInspector>
                         <BorderInspector
                             data={borderProps}
                             onChange={(data) => {
