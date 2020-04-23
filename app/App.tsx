@@ -11,19 +11,21 @@ import { RadixProvider, Flex, Box } from '@modulz/radix'
 import { EditorState } from './types'
 import { useEffect } from 'react'
 import { undo } from '../lib/undo-redux'
-import { Toolbar } from './Toolbar'
+import Toolbar from './Toolbar/index'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import { cancelCreating, deleteNode } from './appShell'
+import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
+import { MouldStates } from './MouldStates'
 import { MouldKits } from './MouldKits'
 import { ArcherContainer } from 'react-archer'
 import { MouldInput } from './MouldInput'
 import DebugPanel from './DebugPanel'
+import nanoid from 'nanoid'
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -57,6 +59,12 @@ const App = () => {
     const selection = useSelector((state: EditorState) => {
         return state.selection
     })
+    const [mould] = useSelector((state: EditorState) => {
+        const [[mouldId, currentState]] = state.selection || [[]]
+
+        return [state.moulds[mouldId || -1], currentState]
+    })
+
     const creatingStep = creating && creating.status
 
     return (
@@ -78,11 +86,37 @@ const App = () => {
                     dispatch(deleteNode())
                 }}
             />
+            {/* hit m to easy add a new mould */}
+            <KeyboardEventHandler
+                handleKeys={['m']}
+                onKeyEvent={() => {
+                    dispatch(
+                        waitingForCreating({
+                            mouldId: nanoid(6),
+                            stateName: 'state 0',
+                        })
+                    )
+                }}
+            />
+            {/* hit s to easy add a new mould */}
+            <KeyboardEventHandler
+                handleKeys={['s']}
+                onKeyEvent={() => {
+                    dispatch(
+                        waitingForCreating({
+                            mouldId: mould.id,
+                            stateName: `state ${
+                                Object.keys(mould.states).length
+                            }`,
+                        })
+                    )
+                }}
+            />
             <KeyboardEventHandler
                 handleKeys={['meta+z']}
                 onKeyEvent={() => dispatch(undo())}
             ></KeyboardEventHandler>
-            <Box width="100vw" height={50}>
+            <Box width="100vw">
                 <Toolbar></Toolbar>
             </Box>
 
@@ -96,6 +130,7 @@ const App = () => {
                     position: 'relative',
                 }}
             >
+                <MouldStates></MouldStates>
                 <Box
                     width={215}
                     style={{
