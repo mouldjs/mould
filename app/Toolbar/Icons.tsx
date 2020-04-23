@@ -19,6 +19,7 @@ const getIcon = (name) => {
                         Create a {name}
                     </Text>
                     <Text
+                        size={2}
                         as="p"
                         mt={10}
                         sx={{ color: '#666', lineHeight: '1.3' }}
@@ -41,6 +42,7 @@ const getIcon = (name) => {
                         Create a {name}
                     </Text>
                     <Text
+                        size={2}
                         as="p"
                         mt={10}
                         sx={{ color: '#666', lineHeight: '1.3' }}
@@ -63,6 +65,7 @@ const getIcon = (name) => {
                         Create a {name}
                     </Text>
                     <Text
+                        size={2}
                         as="p"
                         mt={10}
                         sx={{ color: '#666', lineHeight: '1.3' }}
@@ -85,6 +88,7 @@ const getIcon = (name) => {
                         Create a {name}
                     </Text>
                     <Text
+                        size={2}
                         as="p"
                         mt={10}
                         sx={{ color: '#666', lineHeight: '1.3' }}

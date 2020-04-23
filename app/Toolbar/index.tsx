@@ -1,5 +1,4 @@
 import AddMouldTrigger from './AddMouldTrigger'
-import MouldStates from './MouldStates'
 import { Flex } from '@modulz/radix'
 import Icons from './Icons'
 
@@ -13,7 +12,6 @@ const Toolbar = () => {
         >
             <AddMouldTrigger></AddMouldTrigger>
             <Flex> {Icons} </Flex>
-            <MouldStates></MouldStates>
         </Flex>
     )
 }

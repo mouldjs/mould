@@ -59,6 +59,12 @@ const App = () => {
     const selection = useSelector((state: EditorState) => {
         return state.selection
     })
+    const [mould] = useSelector((state: EditorState) => {
+        const [[mouldId, currentState]] = state.selection || [[]]
+
+        return [state.moulds[mouldId || -1], currentState]
+    })
+
     const creatingStep = creating && creating.status
 
     return (
@@ -80,6 +86,7 @@ const App = () => {
                     dispatch(deleteNode())
                 }}
             />
+            {/* hit m to easy add a new mould */}
             <KeyboardEventHandler
                 handleKeys={['m']}
                 onKeyEvent={() => {
@@ -87,6 +94,20 @@ const App = () => {
                         waitingForCreating({
                             mouldId: nanoid(6),
                             stateName: 'state 0',
+                        })
+                    )
+                }}
+            />
+            {/* hit s to easy add a new mould */}
+            <KeyboardEventHandler
+                handleKeys={['s']}
+                onKeyEvent={() => {
+                    dispatch(
+                        waitingForCreating({
+                            mouldId: mould.id,
+                            stateName: `state ${
+                                Object.keys(mould.states).length
+                            }`,
                         })
                     )
                 }}
@@ -109,6 +130,7 @@ const App = () => {
                     position: 'relative',
                 }}
             >
+                <MouldStates></MouldStates>
                 <Box
                     width={215}
                     style={{
@@ -137,7 +159,6 @@ const App = () => {
                         strokeWidth={1}
                     >
                         <MouldScope></MouldScope>
-                        <MouldStates></MouldStates>
                         <TitledBoard title="Kits">
                             <MouldKits></MouldKits>
                         </TitledBoard>

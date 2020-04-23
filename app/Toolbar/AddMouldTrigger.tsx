@@ -45,7 +45,12 @@ const AddMouldTrigger = () => {
                 >
                     Create a Mould view.
                 </Text>
-                <Text as="p" mt={10} sx={{ color: '#666', lineHeight: '1.3' }}>
+                <Text
+                    as="p"
+                    size={2}
+                    mt={10}
+                    sx={{ color: '#666', lineHeight: '1.3' }}
+                >
                     Hit M and click anywhere in workspace to start drag a new
                     Mould view, also you can drag a box after cursor change to
                     +.
