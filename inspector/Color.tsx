@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as z from 'zod'
 import { Popover } from '@blueprintjs/core'
 import { ChromePicker } from 'react-color'
@@ -47,6 +47,11 @@ export const ColorControl = ({
     color?: ColorType
     onChange?: (color: ColorType) => void
 }) => {
+    const [localColor, setLocalColor] = useState(color)
+    useEffect(() => {
+        setLocalColor(color)
+    }, [color])
+
     return (
         <Popover fill targetProps={{ style: { height: '100%' } }}>
             <div
@@ -69,7 +74,10 @@ export const ColorControl = ({
                 ></div>
             </div>
             <ChromePicker
-                color={color}
+                color={localColor}
+                onChange={(c) => {
+                    setLocalColor(c[c.source])
+                }}
                 onChangeComplete={(c) => {
                     onChange(c[c.source])
                 }}

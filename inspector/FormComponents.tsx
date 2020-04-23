@@ -177,7 +177,7 @@ export const ControlGrid = ({ children, ...restStyle }) => (
         style={{
             display: 'grid',
             gridGap: '8px',
-            gridTemplateColumns: '16px 36px 72px 48px',
+            gridTemplateColumns: '16px 36px 60px 60px',
             gridTemplateRows: '24px',
             gridTemplateAreas: `"active visual value control"`,
             ...restStyle,
@@ -186,3 +186,24 @@ export const ControlGrid = ({ children, ...restStyle }) => (
         {children}
     </div>
 )
+
+export const ControlGridItem = ({
+    area,
+    children,
+}: {
+    area: string
+    children: ReactNode
+}) => {
+    return (
+        <div
+            style={{
+                gridArea: area,
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+            }}
+        >
+            {children}
+        </div>
+    )
+}

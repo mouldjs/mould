@@ -13,7 +13,6 @@ import Stack, { stackProps } from './Stack'
 import Mould from './Mould'
 import Text, { textProps } from './Text'
 import Input, { inputProps } from './Input'
-import Root, { rootProps } from './Root'
 import Kit from './Kit'
 
 export default [
@@ -46,12 +45,6 @@ export default [
         component: Input,
         icon: Italic,
         propType: inputProps,
-    },
-    {
-        type: 'Root',
-        component: Root,
-        icon: Package,
-        propType: rootProps,
     },
     {
         type: 'Kit',
