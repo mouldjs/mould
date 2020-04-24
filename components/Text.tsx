@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useState } from 'react'
 import * as z from 'zod'
 import { ComponentInspector } from '../app/Inspectors'
 import { Input, Box } from '@modulz/radix'
@@ -15,6 +15,34 @@ export const textProps = z
 
 type PropType = z.TypeOf<typeof textProps>
 
+const TextContent = (props) => {
+    const { content, onChange } = props
+    const [editing, setEditing] = useState(false)
+    if (editing) {
+        return (
+            <Input
+                value={content}
+                placeholder="Input your content"
+                variant="fade"
+                onChange={onChange}
+                onBlur={() => {
+                    setEditing(false)
+                }}
+            ></Input>
+        )
+    } else {
+        return (
+            <span
+                onDoubleClick={() => {
+                    setEditing(true)
+                }}
+            >
+                {content}
+            </span>
+        )
+    }
+}
+
 export default forwardRef(
     (
         {
@@ -28,7 +56,14 @@ export default forwardRef(
     ) => {
         return (
             <BaseBox ref={ref} as="span" {...rest}>
-                {content}
+                {requestUpdateProps && (
+                    <TextContent
+                        content={content}
+                        onChange={(event) => {
+                            requestUpdateProps({ content: event.target.value })
+                        }}
+                    ></TextContent>
+                )}
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
                         <TitledBoard title="Text">
