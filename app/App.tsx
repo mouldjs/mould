@@ -96,14 +96,15 @@ const App = () => {
             <KeyboardEventHandler
                 handleKeys={['s']}
                 onKeyEvent={() => {
-                    dispatch(
-                        waitingForCreating({
-                            mouldId: mould.id,
-                            stateName: `state ${
-                                Object.keys(mould.states).length
-                            }`,
-                        })
-                    )
+                    mould &&
+                        dispatch(
+                            waitingForCreating({
+                                mouldId: mould.id,
+                                stateName: `state ${
+                                    Object.keys(mould.states).length
+                                }`,
+                            })
+                        )
                 }}
             />
             <KeyboardEventHandler
