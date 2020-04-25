@@ -134,8 +134,11 @@ const isSelectedPath = (path: Path, currentPath: Path | undefined) =>
 
 export const Explorer2 = () => {
     const dispatch = useDispatch()
-    const { moulds, selection } = useSelector((state: EditorState) => {
-        return { moulds: state.moulds, selection: state.selection }
+    const moulds = useSelector((state: EditorState) => {
+        return state.moulds
+    })
+    const selection = useSelector((state: EditorState) => {
+        return state.selection
     })
     if (!selection) {
         return null

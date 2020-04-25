@@ -12,6 +12,7 @@ import {
     Button,
 } from '@modulz/radix'
 import { Checkbox } from './Checkbox'
+import { Inspector } from '../app/types'
 
 export type FilterType =
     | 'Brightness'
@@ -92,17 +93,20 @@ export type FilterPropTypes = {
     [key in FilterType]?: FilterData
 }
 
-export const FiltersInspector = ({
+export const FiltersInspector: Inspector<FilterPropTypes> = ({
     data,
     onChange,
-}: {
-    data: FilterPropTypes | undefined
-    onChange: (data?: FilterPropTypes) => void
+    title,
+    connectedFields,
 }) => {
+    if (connectedFields && !connectedFields.includes('filter')) {
+        return null
+    }
+
     return (
         <TitledBoard
             collspaed={!data}
-            title="Filters"
+            title={title || 'Filters'}
             renderTitle={() => {
                 const restFilters = Object.keys(
                     omit(Object.keys(data || {}), FiltersConfig)
@@ -120,7 +124,7 @@ export const FiltersInspector = ({
                                 onClick={() => {
                                     const nextData = omit(inactiveFilters, data)
                                     if (Object.keys(nextData).length === 0) {
-                                        onChange()
+                                        onChange(undefined)
                                     } else {
                                         onChange(nextData)
                                     }

@@ -1,26 +1,5 @@
-import React, { useState, useRef, forwardRef, CSSProperties } from 'react'
+import React, { forwardRef, CSSProperties } from 'react'
 import { ComponentInspector } from '../../app/Inspectors'
-import {
-    Input,
-    ToggleButton as OToggleButton,
-    ToggleButtonGroup,
-    Flex,
-    Box,
-    Popover,
-    Checkbox,
-} from '@modulz/radix'
-import {
-    ArrowLeft,
-    ArrowRight,
-    ArrowDown,
-    ArrowUp,
-    Sliders,
-    Props,
-} from 'react-feather'
-import { Cell, TitledBoard } from '../../inspector/FormComponents'
-import { BaseFlex } from '../BaseComponents'
-import { GeneralStyleInspector } from '../GeneralStyleInspector'
-import { CSSInspector } from '../CSSInspector'
 import * as z from 'zod'
 import { ComponentPropTypes, zodComponentProps } from '../../app/types'
 import {
@@ -36,8 +15,16 @@ import {
 } from '../../inspector/Filters'
 import { ShadowsPropTypes, ShadowsInspector } from '../../inspector/Shadows'
 import { transformColorToStr } from '../../inspector/Color'
-import { StackPropTypes, StackInspector } from './Inspector'
+import {
+    StackPropTypes,
+    StackInspector,
+    StackDistribution,
+    StackAlignment,
+} from './Inspector'
 import { LayoutPropTypes, LayoutInspector } from '../../inspector/Layout'
+import { nameToParam } from '../../app/utils'
+import { initialData } from './Inspector'
+import { RawStack } from './RawStack'
 
 const Direction = z.union([
     z.literal('column'),
@@ -68,12 +55,6 @@ export const stackProps = z
     })
     .merge(zodComponentProps)
 
-type PropType = z.TypeOf<typeof stackProps>
-
-const ToggleButton = OToggleButton as any
-
-const alignments = Array.from(Alignment._def.options).map((a) => a._def.value)
-
 type StyleProperties = {
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
@@ -82,7 +63,7 @@ type StyleProperties = {
     innerShadowsProps?: ShadowsPropTypes
 }
 
-type StackProperties = {
+type StackProps = {
     stackProps?: StackPropTypes
     layoutProps?: LayoutPropTypes
 }
@@ -144,18 +125,85 @@ const transformStyles = ({
     return res
 }
 
+const mapDistribution: {
+    [distribution in StackDistribution]: string
+} = {
+    Start: 'flex-start',
+    Center: 'center',
+    End: 'flex-end',
+    'Space Between': 'space-between',
+    'Space Around': 'space-around',
+    'Space Evenly': 'space-evenly',
+}
+
+const mapAlignment: {
+    [alignment in StackAlignment]: string
+} = {
+    Start: 'flex-start',
+    Center: 'center',
+    End: 'flex-end',
+}
+
+const transformStackContent = ({
+    direction,
+    distribute,
+    alignment,
+    gap,
+    padding,
+    active,
+}: StackPropTypes) => {
+    const paddingParam =
+        typeof padding === 'object'
+            ? {
+                  paddingTop: padding.t,
+                  paddingRight: padding.r,
+                  paddingBottom: padding.b,
+                  paddingLeft: padding.l,
+              }
+            : {
+                  padding,
+              }
+
+    return {
+        ...paddingParam,
+        flexDirection: direction === 'Vertical' ? 'column' : 'row',
+        justifyContent: mapDistribution[distribute],
+        alignItems: mapAlignment[alignment],
+        // gap,
+    }
+}
+
+const transformLayout = ({
+    width,
+    height,
+    lockProportion,
+    overflow,
+    opacity,
+    rotation,
+    radius,
+}: LayoutPropTypes) => {
+    const radiusStr =
+        typeof radius === 'object'
+            ? `${radius.t}px ${radius.r}px ${radius.b}px ${radius.l}px`
+            : `${radius}px`
+
+    return {
+        width: `${width.amount}${width.unit}`,
+        height: `${height.amount}${height.unit}`,
+        overflow: nameToParam(overflow),
+        opacity: `${opacity}%`,
+        rotate: rotation,
+        borderRadius: radiusStr,
+    } as any
+}
+
 export default forwardRef(
     (
         {
             requestUpdateProps,
             children,
             path,
-            direction = 'column',
-            horizontalAlign = 'flex-start',
-            verticalAlign = 'flex-start',
-            wrap = false,
-            grow = true,
-            shrink = true,
+            connectedFields,
             borderProps,
             blurProps,
             filtersProps,
@@ -164,131 +212,20 @@ export default forwardRef(
             stackProps,
             layoutProps,
             ...rest
-        }: ComponentPropTypes & PropType & StyleProperties & StackProperties,
+        }: ComponentPropTypes & StyleProperties & StackProps,
         ref
     ) => {
-        const [isOpen, setIsOpen] = useState(false)
-        const buttonRef = useRef(null)
-
         return (
-            <BaseFlex
-                flexDirection={direction}
-                justifyContent={verticalAlign}
-                alignItems={horizontalAlign}
-                flexWrap={wrap && 'wrap'}
-                flexGrow={grow && 1}
-                flexShrink={shrink && 1}
-                ref={ref}
-                height="100%"
-                width="100%"
-                style={transformStyles({
-                    borderProps,
-                    blurProps,
-                    filtersProps,
-                    shadowsProps,
-                    innerShadowsProps,
-                })}
-                // style={style}
-                {...rest}
-            >
-                {children}
+            <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        {/* <TitledBoard
-                            title="Stack"
-                            renderTitle={() => {
-                                return (
-                                    <div ref={buttonRef}>
-                                        <Sliders
-                                            size={14}
-                                            color="#959595"
-                                            onClick={() => {
-                                                setIsOpen(true)
-                                            }}
-                                        ></Sliders>
-                                    </div>
-                                )
-                            }}
-                        >
-                            <Cell label="Direction" desc="Flex direction">
-                                <ToggleButtonGroup
-                                    value={direction}
-                                    onChange={(value) => {
-                                        requestUpdateProps({ direction: value })
-                                    }}
-                                >
-                                    <ToggleButton value="column">
-                                        <ArrowDown size={12}></ArrowDown>
-                                    </ToggleButton>
-                                    <ToggleButton value="row">
-                                        <ArrowRight size={12}></ArrowRight>
-                                    </ToggleButton>
-                                    <ToggleButton value="column-reverse">
-                                        <ArrowUp size={12}></ArrowUp>
-                                    </ToggleButton>
-                                    <ToggleButton value="row-reverse">
-                                        <ArrowLeft size={12}></ArrowLeft>
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
-                            </Cell>
-                            <Cell label="Vertical align">
-                                <ToggleButtonGroup
-                                    value={verticalAlign}
-                                    onChange={(value) => {
-                                        requestUpdateProps({
-                                            verticalAlign: value,
-                                        })
-                                    }}
-                                >
-                                    <Flex flexWrap="wrap">
-                                        {alignments.map((alignment) => (
-                                            <ToggleButton
-                                                key={alignment}
-                                                style={{
-                                                    minWidth: 40,
-                                                    marginBottom: 12,
-                                                }}
-                                                value={alignment}
-                                            >
-                                                {alignment}
-                                            </ToggleButton>
-                                        ))}
-                                    </Flex>
-                                </ToggleButtonGroup>
-                            </Cell>
-                            <Cell label="Horizontal align">
-                                <ToggleButtonGroup
-                                    value={horizontalAlign}
-                                    onChange={(value) => {
-                                        requestUpdateProps({
-                                            horizontalAlign: value,
-                                        })
-                                    }}
-                                >
-                                    <Flex flexWrap="wrap">
-                                        {alignments.map((alignment) => (
-                                            <ToggleButton
-                                                key={alignment}
-                                                style={{
-                                                    minWidth: 40,
-                                                    marginBottom: 12,
-                                                    zIndex: 0,
-                                                }}
-                                                value={alignment}
-                                            >
-                                                {alignment}
-                                            </ToggleButton>
-                                        ))}
-                                    </Flex>
-                                </ToggleButtonGroup>
-                            </Cell>
-                        </TitledBoard> */}
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
                             onChange={(data) => {
                                 requestUpdateProps({ layoutProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></LayoutInspector>
                         <StackInspector
                             title="Stack"
@@ -296,12 +233,15 @@ export default forwardRef(
                             onChange={(data) => {
                                 requestUpdateProps({ stackProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></StackInspector>
                         <BorderInspector
                             data={borderProps}
                             onChange={(data) => {
                                 requestUpdateProps({ borderProps: data })
                             }}
+                            title="Border"
+                            connectedFields={connectedFields}
                         ></BorderInspector>
                         <ShadowsInspector
                             title="Shadows"
@@ -309,6 +249,7 @@ export default forwardRef(
                             onChange={(data) => {
                                 requestUpdateProps({ shadowsProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></ShadowsInspector>
                         <ShadowsInspector
                             title="Inner Shadows"
@@ -316,75 +257,61 @@ export default forwardRef(
                             onChange={(data) => {
                                 requestUpdateProps({ innerShadowsProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></ShadowsInspector>
                         <BlurInspector
+                            title="Blur"
                             data={blurProps}
                             onChange={(data) => {
                                 requestUpdateProps({ blurProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></BlurInspector>
                         <FiltersInspector
                             data={filtersProps}
+                            title="Filters"
                             onChange={(data) => {
                                 requestUpdateProps({ filtersProps: data })
                             }}
+                            connectedFields={connectedFields}
                         ></FiltersInspector>
-                        <CSSInspector
-                            style={rest}
-                            requestUpdateProps={requestUpdateProps}
-                        ></CSSInspector>
-                        {/* <GeneralStyleInspector
-                        style={rest}
-                        requestUpdateProps={requestUpdateProps}
-                    ></GeneralStyleInspector> */}
-                        <Popover
-                            targetRef={buttonRef}
-                            isOpen={isOpen}
-                            onClose={() => setIsOpen(false)}
-                            side="bottom"
-                            align="end"
-                            style={{ zIndex: 10000 }}
-                        >
-                            <Flex
-                                padding={12}
-                                justifyContent="space-between"
-                                alignItems="center"
-                            >
-                                <Checkbox
-                                    checked={grow}
-                                    onChange={(e) =>
-                                        requestUpdateProps({
-                                            grow: e.target.checked,
-                                        })
-                                    }
-                                >
-                                    Grow
-                                </Checkbox>
-                                <Checkbox
-                                    checked={shrink}
-                                    onChange={(e) =>
-                                        requestUpdateProps({
-                                            shrink: e.target.checked,
-                                        })
-                                    }
-                                >
-                                    Shrink
-                                </Checkbox>
-                                <Checkbox
-                                    checked={wrap}
-                                    onChange={(e) =>
-                                        requestUpdateProps({
-                                            wrap: e.target.checked,
-                                        })
-                                    }
-                                >
-                                    Wrap
-                                </Checkbox>
-                            </Flex>
-                        </Popover>
                     </ComponentInspector>
                 )}
-            </BaseFlex>
+                <RawStack
+                    ref={ref as any}
+                    style={{
+                        ...transformStyles({
+                            borderProps,
+                            blurProps,
+                            filtersProps,
+                            shadowsProps,
+                            innerShadowsProps,
+                        }),
+                        ...transformStackContent(stackProps || initialData),
+                        ...transformLayout(
+                            layoutProps || {
+                                width: {
+                                    amount: 100,
+                                    unit: '%',
+                                },
+                                height: {
+                                    amount: 100,
+                                    unit: '%',
+                                },
+                                lockProportion: false,
+                                overflow: 'Visible',
+                                opacity: 100,
+                                rotation: 0,
+                                radius: 0,
+                            }
+                        ),
+                        display: 'flex',
+                    }}
+                    {...rest}
+                >
+                    {children}
+                </RawStack>
+            </>
         )
     }
 )

@@ -35,6 +35,9 @@ export default forwardRef(
                     ref={ref}
                     requestUpdateProps={requestUpdateProps}
                     path={path}
+                    connectedFields={kit.dataMappingVector.map(
+                        ([field]) => field
+                    )}
                     {...mouldProp}
                     {...rest}
                 >
@@ -55,6 +58,7 @@ export default forwardRef(
                 ref={ref}
                 requestUpdateProps={requestUpdateProps}
                 path={path}
+                connectedFields={kit.dataMappingVector.map(([field]) => field)}
                 {...mouldProp}
                 {...rest}
             >

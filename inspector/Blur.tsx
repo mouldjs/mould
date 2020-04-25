@@ -4,6 +4,7 @@ import { Plus, Minus } from 'react-feather'
 import { HTMLSelect, NumericInput } from '@blueprintjs/core'
 import { Slider, Text } from '@modulz/radix'
 import { Checkbox } from './Checkbox'
+import { Inspector } from '../app/types'
 
 type BlurStyle = 'Layer' | 'Background'
 
@@ -21,17 +22,20 @@ const initialData: BlurPropTypes = {
     unit: 'px',
 }
 
-export const BlurInspector = ({
+export const BlurInspector: Inspector<BlurPropTypes> = ({
     data,
     onChange,
-}: {
-    data: BlurPropTypes | undefined
-    onChange: (data?: BlurPropTypes) => void
+    title,
+    connectedFields,
 }) => {
+    if (connectedFields && !connectedFields.includes('filter')) {
+        return null
+    }
+
     return (
         <TitledBoard
             collspaed={!data}
-            title="Blur"
+            title={title || 'Blur'}
             renderTitle={() => {
                 return !data ? (
                     <Plus
@@ -47,7 +51,7 @@ export const BlurInspector = ({
                         onChange={(event) => {
                             const value = event.target.value
                             if (value === 'Remove') {
-                                onChange()
+                                onChange(undefined)
                             } else {
                                 onChange({
                                     ...data,
@@ -72,7 +76,7 @@ export const BlurInspector = ({
                     </HTMLSelect>
                 ) : (
                     <Minus
-                        onClick={() => onChange()}
+                        onClick={() => onChange(undefined)}
                         color="#959595"
                         size={16}
                     ></Minus>

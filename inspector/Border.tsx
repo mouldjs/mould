@@ -1,5 +1,6 @@
 import React from 'react'
 import * as z from 'zod'
+import { intersection } from 'ramda'
 import {
     NumericInput,
     ButtonGroup,
@@ -13,6 +14,7 @@ import { TitledBoard, ControlGrid, ControlGridItem } from './FormComponents'
 import { ColorControl, Color, transformColorToStr } from './Color'
 import { BorderAll, BorderOutside } from '../resources/Icons'
 import { Checkbox } from './Checkbox'
+import { Inspector } from '../app/types'
 
 const BorderSplittedWidth = z.object({
     l: z.number(),
@@ -69,13 +71,22 @@ export const transformBorderProps = (data: BorderPropTypes | undefined) => {
     }
 }
 
-export const BorderInspector = ({
+export const BorderInspector: Inspector<BorderPropTypes> = ({
     data,
     onChange,
-}: {
-    data: BorderPropTypes | undefined
-    onChange: (data?: BorderPropTypes) => void
+    title,
+    connectedFields,
 }) => {
+    const fields = intersection(connectedFields || [], [
+        'border',
+        'borderWidth',
+        'borderStyle',
+        'borderColor',
+    ])
+    if (connectedFields && !fields.length) {
+        return null
+    }
+
     const splittedWidth = typeof data?.borderWidth === 'object'
     const borderWidth = splittedWidth
         ? (data?.borderWidth as BorderSplittedWidthType)
@@ -84,7 +95,7 @@ export const BorderInspector = ({
     return (
         <TitledBoard
             collspaed={!data}
-            title="Border"
+            title={title || 'Border'}
             renderTitle={() => {
                 return !data ? (
                     <Plus
@@ -100,7 +111,7 @@ export const BorderInspector = ({
                         onChange={(event) => {
                             const value = event.target.value
                             if (value === 'Remove') {
-                                onChange()
+                                onChange(undefined)
                             } else {
                                 onChange({
                                     ...data,
@@ -133,7 +144,7 @@ export const BorderInspector = ({
                 ) : (
                     <Minus
                         onClick={() => {
-                            onChange()
+                            onChange(undefined)
                         }}
                         color="#959595"
                         size={16}

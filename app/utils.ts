@@ -96,10 +96,12 @@ export const rootTree = (props: ComponentProps, children: Component[]) => {
 }
 
 export const useCurrentMould = () => {
-    const [selection, moulds] = useSelector((state: EditorState) => [
-        state.selection,
-        state.moulds,
-    ])
+    const moulds = useSelector((state: EditorState) => {
+        return state.moulds
+    })
+    const selection = useSelector((state: EditorState) => {
+        return state.selection
+    })
 
     if (!selection) {
         return
@@ -122,3 +124,8 @@ export const pathToString = (path: Path) =>
     path[0].join('/') + '/' + path[1].join('-')
 
 export const viewPathToString = (path: Path) => path[0].join('/')
+
+//Abc Cba -> abc-cba
+export const nameToParam = (name: string): string => {
+    return name.toLowerCase().split(' ').join('-')
+}

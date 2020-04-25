@@ -1,16 +1,14 @@
 import React from 'react'
 import { PlusCircle } from 'react-feather'
-import { useSelector, useDispatch } from 'react-redux'
-import { EditorState } from './types'
+import { useDispatch } from 'react-redux'
 import { waitingForCreating } from './appShell'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Text } from '@modulz/radix'
-export const MouldStates = () => {
-    const [mould, state] = useSelector((state: EditorState) => {
-        const [[mouldId, currentState]] = state.selection || [[]]
+import { useCurrentMould, useCurrentState } from './utils'
 
-        return [state.moulds[mouldId || -1], currentState]
-    })
+export const MouldStates = () => {
+    const mould = useCurrentMould()
+    const state = useCurrentState()
     const dispatch = useDispatch()
 
     const wrapperStyle = {
