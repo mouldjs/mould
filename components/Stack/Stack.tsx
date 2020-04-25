@@ -25,6 +25,7 @@ import { LayoutPropTypes, LayoutInspector } from '../../inspector/Layout'
 import { nameToParam } from '../../app/utils'
 import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
+import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 
 const Direction = z.union([
     z.literal('column'),
@@ -56,6 +57,7 @@ export const stackProps = z
     .merge(zodComponentProps)
 
 type StyleProperties = {
+    fillProps?: FillPropTypes
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
@@ -69,6 +71,7 @@ type StackProps = {
 }
 
 const transformStyles = ({
+    fillProps,
     borderProps,
     blurProps,
     filtersProps,
@@ -76,6 +79,9 @@ const transformStyles = ({
     innerShadowsProps,
 }: StyleProperties) => {
     let res: CSSProperties = {}
+    if (fillProps && fillProps.active) {
+        res = { ...res, background: transformColorToStr(fillProps.color) }
+    }
     if (borderProps) {
         res = { ...res, ...transformBorderProps(borderProps) }
     }
@@ -204,6 +210,7 @@ export default forwardRef(
             children,
             path,
             connectedFields,
+            fillProps,
             borderProps,
             blurProps,
             filtersProps,
@@ -235,6 +242,14 @@ export default forwardRef(
                             }}
                             connectedFields={connectedFields}
                         ></StackInspector>
+                        <FillInspector
+                            title="Fill"
+                            data={fillProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ fillProps: data })
+                            }}
+                            connectedFields={connectedFields}
+                        ></FillInspector>
                         <BorderInspector
                             data={borderProps}
                             onChange={(data) => {
@@ -281,6 +296,7 @@ export default forwardRef(
                     ref={ref as any}
                     style={{
                         ...transformStyles({
+                            fillProps,
                             borderProps,
                             blurProps,
                             filtersProps,
