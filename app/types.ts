@@ -1,4 +1,4 @@
-import { ComponentType, ForwardRefExoticComponent } from 'react'
+import { ComponentType, ForwardRefExoticComponent, SFC } from 'react'
 import * as z from 'zod'
 import { DOMAttributes } from '../lib/zodTypes'
 
@@ -45,7 +45,7 @@ export type Component = {
     children?: Component[]
 }
 
-//[scope-field, prop-field]
+//[prop-field, scope-field]
 export type DataMappingVector = [string, string]
 
 export type Kit = {
@@ -73,6 +73,7 @@ export type ComponentPropTypes = {
         updateChildren: (children?: Component[]) => Component[] | undefined
     ) => void
     path?: Path
+    connectedFields?: string[]
 } & Component
 
 // export type Creating = ['waiting' | 'start' | 'updating', View]
@@ -98,3 +99,12 @@ export type AtomicComponent = {
 }
 
 export type useScopeFn = (input: object) => [StateName, object]
+
+export type InspectorProps<T> = {
+    data: T | undefined
+    onChange: (data: T | undefined) => void
+    title?: string
+    connectedFields?: string[]
+}
+
+export type Inspector<T> = SFC<InspectorProps<T>>

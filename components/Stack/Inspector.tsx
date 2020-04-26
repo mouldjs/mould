@@ -23,10 +23,12 @@ import {
     HTMLSelect,
 } from '@blueprintjs/core'
 import { Text, Slider } from '@modulz/radix'
+import { Inspector } from '../../app/types'
+import { intersection } from 'ramda'
 
 type StackDirection = 'Horizontal' | 'Vertical'
 
-type StackDistribution =
+export type StackDistribution =
     | 'Start'
     | 'Center'
     | 'End'
@@ -34,7 +36,7 @@ type StackDistribution =
     | 'Space Around'
     | 'Space Evenly'
 
-type StackAlignment = 'Start' | 'Center' | 'End'
+export type StackAlignment = 'Start' | 'Center' | 'End'
 
 type Padding =
     | number
@@ -54,7 +56,7 @@ export type StackPropTypes = {
     active: boolean
 }
 
-const initialData: StackPropTypes = {
+export const initialData: StackPropTypes = {
     direction: 'Horizontal',
     distribute: 'Start',
     alignment: 'Start',
@@ -63,20 +65,42 @@ const initialData: StackPropTypes = {
     active: true,
 }
 
-export const StackInspector = ({
+const mutedFields = [
+    'flexDirection',
+    'justifyContent',
+    'alignItems',
+    'padding',
+    'paddingLeft',
+    'paddingRight',
+    'paddingTop',
+    'paddingBottom',
+]
+
+export const StackInspector: Inspector<StackPropTypes> = ({
     title,
     data,
     onChange,
-}: {
-    title: string
-    data: StackPropTypes | undefined
-    onChange: (data?: StackPropTypes) => void
+    connectedFields,
 }) => {
+    const fields = connectedFields
+        ? intersection(connectedFields, mutedFields)
+        : mutedFields
+    if (connectedFields && !fields.length) {
+        return null
+    }
+
     const splittedPadding = typeof data?.padding === 'object'
+    const usePadding = !!intersection(fields, [
+        'padding',
+        'paddingLeft',
+        'paddingTop',
+        'paddingRight',
+        'paddingBottom',
+    ]).length
 
     return (
         <TitledBoard
-            title={title}
+            title={title || 'Stack'}
             collspaed={!data || !data.active}
             renderTitle={() => {
                 return !data || !data.active ? (
@@ -102,7 +126,7 @@ export const StackInspector = ({
         >
             {data && (
                 <>
-                    <ControlGrid>
+                    <ControlGrid show={fields.includes('flexDirection')}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Direction</Text>
                         </ControlGridItem>
@@ -139,7 +163,10 @@ export const StackInspector = ({
                             </ButtonGroup>
                         </ControlGridItem>
                     </ControlGrid>
-                    <ControlGrid marginTop={8}>
+                    <ControlGrid
+                        show={fields.includes('justifyContent')}
+                        marginTop={8}
+                    >
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Distribute</Text>
                         </ControlGridItem>
@@ -171,7 +198,10 @@ export const StackInspector = ({
                             ></HTMLSelect>
                         </ControlGridItem>
                     </ControlGrid>
-                    <ControlGrid marginTop={8}>
+                    <ControlGrid
+                        show={fields.includes('alignItems')}
+                        marginTop={8}
+                    >
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Align</Text>
                         </ControlGridItem>
@@ -222,7 +252,7 @@ export const StackInspector = ({
                             </ButtonGroup>
                         </ControlGridItem>
                     </ControlGrid>
-                    <ControlGrid marginTop={8}>
+                    <ControlGrid show={fields.includes('gap')} marginTop={8}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Gap</Text>
                         </ControlGridItem>
@@ -253,7 +283,7 @@ export const StackInspector = ({
                             ></Slider>
                         </ControlGridItem>
                     </ControlGrid>
-                    <ControlGrid marginTop={8}>
+                    <ControlGrid show={usePadding} marginTop={8}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Padding</Text>
                         </ControlGridItem>
@@ -310,7 +340,7 @@ export const StackInspector = ({
                             </ButtonGroup>
                         </ControlGridItem>
                     </ControlGrid>
-                    {splittedPadding && (
+                    {splittedPadding && usePadding && (
                         <>
                             <ControlGrid marginTop={8}>
                                 <ControlGridItem area="value / value / control / control">

@@ -172,20 +172,21 @@ export const TitledBoard = ({
     // )
 }
 
-export const ControlGrid = ({ children, ...restStyle }) => (
-    <div
-        style={{
-            display: 'grid',
-            gridGap: '8px',
-            gridTemplateColumns: '16px 36px 60px 60px',
-            gridTemplateRows: '24px',
-            gridTemplateAreas: `"active visual value control"`,
-            ...restStyle,
-        }}
-    >
-        {children}
-    </div>
-)
+export const ControlGrid = ({ show = true, children, ...restStyle }) =>
+    !show ? null : (
+        <div
+            style={{
+                display: 'grid',
+                gridGap: '8px',
+                gridTemplateColumns: '16px 36px 60px 60px',
+                gridTemplateRows: '24px',
+                gridTemplateAreas: `"active visual value control"`,
+                ...restStyle,
+            }}
+        >
+            {children}
+        </div>
+    )
 
 export const ControlGridItem = ({
     area,

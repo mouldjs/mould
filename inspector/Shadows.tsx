@@ -5,6 +5,8 @@ import { NumericInput, ControlGroup } from '@blueprintjs/core'
 import { Text } from '@modulz/radix'
 import { Checkbox } from './Checkbox'
 import { ColorType, ColorControl } from './Color'
+import { Inspector } from '../app/types'
+import { intersection } from 'ramda'
 
 type ShadowType = {
     active: boolean
@@ -31,19 +33,21 @@ const initialData: ShadowType = {
     spread: 0,
 }
 
-export const ShadowsInspector = ({
+export const ShadowsInspector: Inspector<ShadowsPropTypes> = ({
     title,
     data,
     onChange,
-}: {
-    title: string
-    data: ShadowsPropTypes | undefined
-    onChange: (data?: ShadowsPropTypes) => void
+    connectedFields,
 }) => {
+    const fields = intersection(connectedFields || [], ['shadow'])
+    if (connectedFields && !fields.length) {
+        return null
+    }
+
     return (
         <TitledBoard
             collspaed={!data}
-            title={title}
+            title={title || 'Shadows'}
             renderTitle={() => {
                 const inactiveShadows = (data || []).filter(
                     (shadow) => !shadow.active

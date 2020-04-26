@@ -19,6 +19,8 @@ import {
     HTMLSelect,
 } from '@blueprintjs/core'
 import { Text, Slider } from '@modulz/radix'
+import { Inspector } from '../app/types'
+import { intersection } from 'ramda'
 
 type LayoutSizeUnit = 'px' | '%' | 'fr'
 
@@ -51,11 +53,11 @@ export type LayoutPropTypes = {
 const initialData: LayoutPropTypes = {
     width: {
         amount: 100,
-        unit: 'px',
+        unit: '%',
     },
     height: {
         amount: 100,
-        unit: 'px',
+        unit: '%',
     },
     lockProportion: false,
     overflow: 'Visible',
@@ -72,20 +74,32 @@ const unitMapDefaultAmount: {
     fr: 1,
 }
 
-export const LayoutInspector = ({
+export const LayoutInspector: Inspector<LayoutPropTypes> = ({
     title,
     data = initialData,
     onChange,
-}: {
-    title: string
-    data: LayoutPropTypes | undefined
-    onChange: (data: LayoutPropTypes) => void
+    connectedFields,
 }) => {
+    const mutedFields = [
+        'width',
+        'height',
+        'overflow',
+        'opacity',
+        'borderRadius',
+        'rotate',
+    ]
+    const fields = connectedFields
+        ? intersection(connectedFields, mutedFields)
+        : mutedFields
+    if (connectedFields && !fields.length) {
+        return null
+    }
+
     const splittedRadius = typeof data.radius === 'object'
 
     return (
-        <TitledBoard title={title}>
-            <ControlGrid>
+        <TitledBoard title={title || 'Layout'}>
+            <ControlGrid show={fields.includes('width')}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Width</Text>
                 </ControlGridItem>
@@ -126,7 +140,7 @@ export const LayoutInspector = ({
                     ></HTMLSelect>
                 </ControlGridItem>
             </ControlGrid>
-            <ControlGrid marginTop={8}>
+            <ControlGrid show={fields.includes('height')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Height</Text>
                 </ControlGridItem>
@@ -165,7 +179,7 @@ export const LayoutInspector = ({
                     ></HTMLSelect>
                 </ControlGridItem>
             </ControlGrid>
-            <ControlGrid marginTop={8}>
+            <ControlGrid show={fields.includes('overflow')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Overflow</Text>
                 </ControlGridItem>
@@ -196,7 +210,7 @@ export const LayoutInspector = ({
                     </ButtonGroup>
                 </ControlGridItem>
             </ControlGrid>
-            <ControlGrid marginTop={8}>
+            <ControlGrid show={fields.includes('opacity')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Opacity</Text>
                 </ControlGridItem>
@@ -228,7 +242,7 @@ export const LayoutInspector = ({
                     ></Slider>
                 </ControlGridItem>
             </ControlGrid>
-            <ControlGrid marginTop={8}>
+            <ControlGrid show={fields.includes('rotation')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Rotation</Text>
                 </ControlGridItem>
@@ -258,7 +272,7 @@ export const LayoutInspector = ({
                     ></Slider>
                 </ControlGridItem>
             </ControlGrid>
-            <ControlGrid marginTop={8}>
+            <ControlGrid show={fields.includes('borderRadius')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
                     <Text size={1}>Radius</Text>
                 </ControlGridItem>
@@ -308,7 +322,7 @@ export const LayoutInspector = ({
                     </ButtonGroup>
                 </ControlGridItem>
             </ControlGrid>
-            {splittedRadius && (
+            {splittedRadius && fields.includes('borderRadius') && (
                 <>
                     <ControlGrid marginTop={8}>
                         <ControlGridItem area="value / value / control / control">
