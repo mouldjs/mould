@@ -5,6 +5,7 @@ import { waitingForCreating } from './appShell'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Text } from '@modulz/radix'
 import { useCurrentMould, useCurrentState } from './utils'
+import { tick } from './selectionTick'
 
 export const MouldStates = () => {
     const mould = useCurrentMould()
@@ -45,6 +46,7 @@ export const MouldStates = () => {
         justifyContent: 'center',
         alignItems: 'center',
         pointerEvents: 'auto',
+        cursor: 'pointer',
     } as React.CSSProperties
 
     const currentMouldStyle = {
@@ -52,12 +54,14 @@ export const MouldStates = () => {
         color: '#000',
         fontSize: '16px',
         borderBottom: '1px solid #e0e0e0',
+        cursor: 'default',
     } as React.CSSProperties
 
     const currentStateStyle = {
         ...listItemStyle,
         fontWeight: 700,
         color: '#333',
+        cursor: 'default',
     } as React.CSSProperties
 
     return mould ? (
@@ -69,6 +73,14 @@ export const MouldStates = () => {
                         ...Object.keys(mould.states || {}).map((s) => {
                             return (
                                 <li
+                                    onClick={() => {
+                                        if (state && s !== state) {
+                                            tick((data = []) => {
+                                                data.push([[mould.id, s], []])
+                                                return data
+                                            })
+                                        }
+                                    }}
                                     style={
                                         s === state
                                             ? currentStateStyle
