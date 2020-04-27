@@ -31,7 +31,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     const { mouldId, state, x, y, width, height } = useSelector(
         (state: EditorState) => state.views[viewId]
     )
-    const moulds = useSelector((state: EditorState) => state.moulds)
+    const { moulds } = useSelector((state: EditorState) => state)
     const mould = moulds[mouldId]
     const [, drag] = useDrag({
         item: {
@@ -225,7 +225,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                     }
                 }}
             >
-                <div style={{ cursor: 'grab', position: 'absolute', top: -20 }}>
+                <div style={{ cursor: 'grab', position: 'absolute', top: -25 }}>
                     <Text
                         ref={drag}
                         truncate

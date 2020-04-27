@@ -208,6 +208,7 @@ export const handleAddState = handleAction<EditorState, AddStateAction>(
             id: nanoid(6),
             mouldId: action.payload.mouldId,
             state: action.payload.state,
+            name: action.payload.state,
             width: 300,
             height: 500,
             x: 100,
@@ -337,6 +338,7 @@ export const handleWaitingForCreating = handleAction<
                 id: nanoid(6),
                 mouldId,
                 state: stateName,
+                name: stateName,
                 x: 0,
                 y: 0,
                 width: 0,
@@ -738,6 +740,30 @@ export const handleDragToView = handleAction<EditorState, DragToViewAction>(
         const stateName = view.state
         const mould = state.moulds[view.mouldId]
         mould.states[stateName] = tree
+
+        return state
+    },
+    initialData
+)
+
+type ModifyStateName = {
+    mouldId: string
+    stateName: string
+    name: string
+}
+const MODIFY_STATENAME = 'STATE_NAME'
+export const modifyStateName = createAction<ModifyStateName>(MODIFY_STATENAME)
+export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
+    MODIFY_STATENAME,
+    (state, { payload: { mouldId, stateName, name } }) => {
+        const currentMould = state.moulds[mouldId]
+        currentMould.states[name] = currentMould.states[stateName]
+        delete currentMould.states[stateName]
+
+        const view = Object.values(state.views).find(
+            (view) => view.state === stateName
+        )
+        if (view) view.state = name
 
         return state
     },

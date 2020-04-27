@@ -26,6 +26,7 @@ export type View = {
     id: ID
     mouldId: MouldID
     state: StateName
+    name: string
 } & Size &
     Vector
 
