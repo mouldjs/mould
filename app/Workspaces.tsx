@@ -53,6 +53,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const creating = useSelector((state: EditorState) => {
         return state.creating
     })
+
     const creation = creating && creating.view
     const [xy, setXY] = useState([x, y])
     const [scale, setScale] = useState(zoom)

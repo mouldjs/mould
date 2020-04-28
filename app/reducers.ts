@@ -25,6 +25,7 @@ import {
     handleConnectScopeToKit,
     handleModifyInput,
     handleModifyMeta,
+    handleModifyStateName,
     handleModifyKit,
     handleDragToView,
 } from './appShell'
@@ -57,6 +58,7 @@ export default () => [
     handleConnectScopeToKit,
     handleModifyInput,
     handleModifyMeta,
+    handleModifyStateName,
     handleModifyKit,
     handleDragToView,
 ]
