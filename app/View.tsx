@@ -15,6 +15,7 @@ import { ResizableBox } from 'react-resizable'
 import { resizeView, dragView, dragToView } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import Mould from './Mould'
+import { ViewContext } from './Contexts'
 import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
 import { TitledBoard, Cell } from '../inspector/FormComponents'
@@ -26,11 +27,12 @@ const Moveable = dynamic(() => import('react-moveable'), {
     loading: () => null,
 })
 
+const ViewContextProvider = ViewContext.Provider
+
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
-    const { mouldId, state, x, y, width, height } = useSelector(
-        (state: EditorState) => state.views[viewId]
-    )
+    const view = useSelector((state: EditorState) => state.views[viewId])
+    const { mouldId, state, x, y, width, height } = view
     const { moulds } = useSelector((state: EditorState) => state)
     const mould = moulds[mouldId]
     const [, drag] = useDrag({
@@ -195,56 +197,57 @@ export const View = ({ viewId }: { viewId: string }) => {
                     </DebugPanel.Source>
                 </>
             )}
-            <Box
-                // id={viewId}
-                ref={(dom) => {
-                    drop(dom)
-                    viewRef.current = dom
-                }}
-                boxShadow="0px 0px 5px #aaaaaa"
-                position="absolute"
-                // width={width}
-                // height={height}
-                // bg="white"
-                // left={x}
-                // top={y}
-                style={{
-                    width,
-                    height,
-                    left: x,
-                    top: y,
-                    background: 'transparent',
-                }}
-                onDoubleClickCapture={() => {
-                    if (!mould.states[state]) {
-                        tick((tickData = []) => {
-                            tickData.push(path)
+            <ViewContextProvider value={view}>
+                <Box
+                    ref={(dom) => {
+                        drop(dom)
+                        viewRef.current = dom
+                    }}
+                    boxShadow="0px 0px 5px #aaaaaa"
+                    position="absolute"
+                    style={{
+                        width,
+                        height,
+                        left: x,
+                        top: y,
+                        background: 'transparent',
+                    }}
+                    onDoubleClickCapture={() => {
+                        if (!mould.states[state]) {
+                            tick((tickData = []) => {
+                                tickData.push(path)
 
-                            return tickData
-                        })
-                    }
-                }}
-            >
-                <div style={{ cursor: 'grab', position: 'absolute', top: -25 }}>
-                    <Text
-                        ref={drag}
-                        truncate
-                        size={1}
-                        textColor="rgb(132,132,132)"
+                                return tickData
+                            })
+                        }
+                    }}
+                >
+                    <div
+                        style={{
+                            cursor: 'grab',
+                            position: 'absolute',
+                            top: -25,
+                        }}
                     >
-                        {state}
-                    </Text>
-                </div>
-                {/* <Mould {...mould} currentState={state}></Mould> */}
-                {paused ? (
-                    <Mould {...mould} currentState={state}></Mould>
-                ) : (
-                    <RuntimeMould
-                        __mouldId={mould.id}
-                        {...inputValue}
-                    ></RuntimeMould>
-                )}
-            </Box>
+                        <Text
+                            ref={drag}
+                            truncate
+                            size={1}
+                            textColor="rgb(132,132,132)"
+                        >
+                            {state}
+                        </Text>
+                    </div>
+                    {paused ? (
+                        <Mould {...mould} currentState={state}></Mould>
+                    ) : (
+                        <RuntimeMould
+                            __mouldId={mould.id}
+                            {...inputValue}
+                        ></RuntimeMould>
+                    )}
+                </Box>
+            </ViewContextProvider>
         </>
     )
     // </ResizableBox>

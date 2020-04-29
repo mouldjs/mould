@@ -1,4 +1,5 @@
-import React, { forwardRef, CSSProperties } from 'react'
+import React, { forwardRef, CSSProperties, useEffect } from 'react'
+import { pick } from 'ramda'
 import { ComponentInspector } from '../../app/Inspectors'
 import * as z from 'zod'
 import { ComponentPropTypes, zodComponentProps } from '../../app/types'
@@ -157,7 +158,7 @@ const transformStackContent = ({
     gap,
     padding,
     active,
-}: StackPropTypes) => {
+}: StackPropTypes = initialData) => {
     const paddingParam =
         typeof padding === 'object'
             ? {
@@ -179,15 +180,31 @@ const transformStackContent = ({
     }
 }
 
-const transformLayout = ({
-    width,
-    height,
-    lockProportion,
-    overflow,
-    opacity,
-    rotation,
-    radius,
-}: LayoutPropTypes) => {
+const transformLayout = (
+    {
+        width,
+        height,
+        lockProportion,
+        overflow,
+        opacity,
+        rotation,
+        radius,
+    }: LayoutPropTypes = {
+        width: {
+            amount: 100,
+            unit: '%',
+        },
+        height: {
+            amount: 100,
+            unit: '%',
+        },
+        lockProportion: false,
+        overflow: 'Visible',
+        opacity: 100,
+        rotation: 0,
+        radius: 0,
+    }
+) => {
     const radiusStr =
         typeof radius === 'object'
             ? `${radius.t}px ${radius.r}px ${radius.b}px ${radius.l}px`
@@ -201,6 +218,31 @@ const transformLayout = ({
         rotate: rotation,
         borderRadius: radiusStr,
     } as any
+}
+
+const transform = ({
+    fillProps,
+    borderProps,
+    blurProps,
+    filtersProps,
+    shadowsProps,
+    innerShadowsProps,
+    stackProps,
+    layoutProps,
+}: StyleProperties & StackProps = {}) => {
+    return {
+        ...transformStyles({
+            fillProps,
+            borderProps,
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+        }),
+        ...transformStackContent(stackProps),
+        ...transformLayout(layoutProps),
+        display: 'flex',
+    }
 }
 
 export default forwardRef(
@@ -222,6 +264,17 @@ export default forwardRef(
         }: ComponentPropTypes & StyleProperties & StackProps,
         ref
     ) => {
+        const style = transform({
+            fillProps,
+            borderProps,
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+            stackProps,
+            layoutProps,
+        })
+
         return (
             <>
                 {requestUpdateProps && path && (
@@ -292,39 +345,7 @@ export default forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawStack
-                    ref={ref as any}
-                    style={{
-                        ...transformStyles({
-                            fillProps,
-                            borderProps,
-                            blurProps,
-                            filtersProps,
-                            shadowsProps,
-                            innerShadowsProps,
-                        }),
-                        ...transformStackContent(stackProps || initialData),
-                        ...transformLayout(
-                            layoutProps || {
-                                width: {
-                                    amount: 100,
-                                    unit: '%',
-                                },
-                                height: {
-                                    amount: 100,
-                                    unit: '%',
-                                },
-                                lockProportion: false,
-                                overflow: 'Visible',
-                                opacity: 100,
-                                rotation: 0,
-                                radius: 0,
-                            }
-                        ),
-                        display: 'flex',
-                    }}
-                    {...rest}
-                >
+                <RawStack ref={ref as any} style={style} {...rest}>
                     {children}
                 </RawStack>
             </>
