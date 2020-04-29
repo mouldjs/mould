@@ -12,7 +12,7 @@ import {
     Component,
     EditorState,
 } from '../app/types'
-import MouldContext from '../app/MouldContext'
+import { MouldContext } from '../app/Contexts'
 import { rootTree, pathToString, useCurrentMould } from '../app/utils'
 import { Tree } from '../app/Tree'
 import Components from '.'
@@ -72,7 +72,7 @@ const Mould = forwardRef(
                 const fields = kit.dataMappingVector.map(
                     ([propField]) => propField
                 )
-                const patch = pick(fields, __patches[pathStr] || {})
+                const patch = __patches[pathStr] || {}
 
                 return (
                     <Tree
@@ -80,14 +80,14 @@ const Mould = forwardRef(
                         type={type}
                         props={{ ...props, ...patch }}
                         onChange={(tree) => {
-                            const patch = pick(fields, tree.props)
-                            requestUpdateProps &&
-                                requestUpdateProps({
-                                    __patches: {
-                                        ...__patches,
-                                        [pathStr]: patch,
-                                    },
-                                })
+                            const patch = tree.props
+                            const nextPatch = {
+                                __patches: {
+                                    ...__patches,
+                                    [pathStr]: patch,
+                                },
+                            }
+                            requestUpdateProps && requestUpdateProps(nextPatch)
                         }}
                     >
                         {children}

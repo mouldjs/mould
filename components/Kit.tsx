@@ -1,7 +1,7 @@
 import React, { forwardRef, useContext } from 'react'
-import { Kit, ComponentPropTypes } from '../app/types'
+import { ComponentPropTypes } from '../app/types'
 import components from './'
-import MouldContext from '../app/MouldContext'
+import { MouldContext, ViewContext } from '../app/Contexts'
 import List from './List'
 
 export default forwardRef(
@@ -16,9 +16,11 @@ export default forwardRef(
         ref
     ) => {
         const mould = useContext(MouldContext)
-        if (!mould) {
+        const view = useContext(ViewContext)
+        if (!mould || !view) {
             return null
         }
+        const isHostMould = mould.id === view.mouldId
         const kit = mould.kits.find((kit) => kit.name === __kitName)
         if (!kit) {
             return null
@@ -27,6 +29,9 @@ export default forwardRef(
         const mouldProp = isMould
             ? { __mouldId: (kit.param as any).mouldId }
             : {}
+        const connectedFields = isHostMould
+            ? undefined
+            : kit.dataMappingVector.map(([field]) => field)
         if (kit.isList) {
             const Comp = List
 
@@ -35,9 +40,7 @@ export default forwardRef(
                     ref={ref}
                     requestUpdateProps={requestUpdateProps}
                     path={path}
-                    connectedFields={kit.dataMappingVector.map(
-                        ([field]) => field
-                    )}
+                    connectedFields={connectedFields}
                     {...mouldProp}
                     {...rest}
                 >
@@ -58,7 +61,7 @@ export default forwardRef(
                 ref={ref}
                 requestUpdateProps={requestUpdateProps}
                 path={path}
-                connectedFields={kit.dataMappingVector.map(([field]) => field)}
+                connectedFields={connectedFields}
                 {...mouldProp}
                 {...rest}
             >

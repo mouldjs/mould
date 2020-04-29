@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, EditorState, Path } from './types'
-import MouldContext from './MouldContext'
+import { MouldContext } from './Contexts'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
