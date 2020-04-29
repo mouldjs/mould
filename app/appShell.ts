@@ -769,3 +769,47 @@ export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
     },
     initialData
 )
+
+type ModifyKitNameAction = {
+    mouldId: ID
+    kitName: string
+    newKitName: string
+    stateName: string
+}
+const MODIFY_KITNAME = 'MODIFY_KITNAME'
+export const modifyKitName = createAction<ModifyKitNameAction>(MODIFY_KITNAME)
+export const handleModifyKitName = handleAction<
+    EditorState,
+    ModifyKitNameAction
+>(
+    MODIFY_KITNAME,
+    (state, { payload: { mouldId, kitName, newKitName, stateName } }) => {
+        const { kits, states } = state.moulds[mouldId]
+        const currentKit = kits.find((k) => k.name === kitName)
+        const currentState = states[stateName]
+        const recursiveUpdate = (children, propSet) => {
+            const { key, oldValue, newValue } = propSet
+            children.forEach((child) => {
+                if (child.children && Array.isArray(child.children)) {
+                    recursiveUpdate(child.children, propSet)
+                }
+                if (child.props[key] === oldValue) {
+                    child.props[key] = newValue
+                }
+            })
+        }
+
+        if (currentState?.children) {
+            recursiveUpdate(currentState.children, {
+                key: '__kitName',
+                oldValue: kitName,
+                newValue: newKitName,
+            })
+        }
+
+        Object.assign(currentKit, { name: newKitName })
+
+        return state
+    },
+    initialData
+)
