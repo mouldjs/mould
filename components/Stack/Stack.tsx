@@ -275,16 +275,6 @@ export default forwardRef(
             layoutProps,
         })
 
-        if (connectedFields && requestUpdateProps) {
-            const tempRequest = requestUpdateProps
-            requestUpdateProps = (props: object) => {
-                tempRequest({
-                    ...props,
-                    ...pick(connectedFields, transform(props)),
-                })
-            }
-        }
-
         return (
             <>
                 {requestUpdateProps && path && (
@@ -293,7 +283,7 @@ export default forwardRef(
                             title="Layout"
                             data={layoutProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ layoutProps: data })
+                                requestUpdateProps({ layoutProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></LayoutInspector>
@@ -301,7 +291,7 @@ export default forwardRef(
                             title="Stack"
                             data={stackProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ stackProps: data })
+                                requestUpdateProps({ stackProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></StackInspector>
@@ -309,14 +299,14 @@ export default forwardRef(
                             title="Fill"
                             data={fillProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ fillProps: data })
+                                requestUpdateProps({ fillProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></FillInspector>
                         <BorderInspector
                             data={borderProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ borderProps: data })
+                                requestUpdateProps({ borderProps: data })
                             }}
                             title="Border"
                             connectedFields={connectedFields}
@@ -325,7 +315,7 @@ export default forwardRef(
                             title="Shadows"
                             data={shadowsProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ shadowsProps: data })
+                                requestUpdateProps({ shadowsProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></ShadowsInspector>
@@ -333,7 +323,7 @@ export default forwardRef(
                             title="Inner Shadows"
                             data={innerShadowsProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ innerShadowsProps: data })
+                                requestUpdateProps({ innerShadowsProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></ShadowsInspector>
@@ -341,7 +331,7 @@ export default forwardRef(
                             title="Blur"
                             data={blurProps}
                             onChange={(data) => {
-                                requestUpdateProps!({ blurProps: data })
+                                requestUpdateProps({ blurProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></BlurInspector>
@@ -349,17 +339,13 @@ export default forwardRef(
                             data={filtersProps}
                             title="Filters"
                             onChange={(data) => {
-                                requestUpdateProps!({ filtersProps: data })
+                                requestUpdateProps({ filtersProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawStack
-                    ref={ref as any}
-                    style={{ ...style, ...rest }}
-                    {...rest}
-                >
+                <RawStack ref={ref as any} style={style} {...rest}>
                     {children}
                 </RawStack>
             </>
