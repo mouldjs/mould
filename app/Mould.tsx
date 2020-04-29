@@ -4,7 +4,7 @@ import { Tree } from './Tree'
 import { useDispatch } from 'react-redux'
 import { modifyMouldTree } from './appShell'
 import { rootTree } from './utils'
-import MouldContext from './MouldContext'
+import { MouldContext } from './Contexts'
 
 const { Provider } = MouldContext
 

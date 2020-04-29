@@ -1,4 +1,5 @@
-import React, { forwardRef, CSSProperties } from 'react'
+import React, { forwardRef, CSSProperties, useEffect } from 'react'
+import { pick } from 'ramda'
 import { ComponentInspector } from '../../app/Inspectors'
 import * as z from 'zod'
 import { ComponentPropTypes, zodComponentProps } from '../../app/types'
@@ -157,7 +158,7 @@ const transformStackContent = ({
     gap,
     padding,
     active,
-}: StackPropTypes) => {
+}: StackPropTypes = initialData) => {
     const paddingParam =
         typeof padding === 'object'
             ? {
@@ -179,15 +180,31 @@ const transformStackContent = ({
     }
 }
 
-const transformLayout = ({
-    width,
-    height,
-    lockProportion,
-    overflow,
-    opacity,
-    rotation,
-    radius,
-}: LayoutPropTypes) => {
+const transformLayout = (
+    {
+        width,
+        height,
+        lockProportion,
+        overflow,
+        opacity,
+        rotation,
+        radius,
+    }: LayoutPropTypes = {
+        width: {
+            amount: 100,
+            unit: '%',
+        },
+        height: {
+            amount: 100,
+            unit: '%',
+        },
+        lockProportion: false,
+        overflow: 'Visible',
+        opacity: 100,
+        rotation: 0,
+        radius: 0,
+    }
+) => {
     const radiusStr =
         typeof radius === 'object'
             ? `${radius.t}px ${radius.r}px ${radius.b}px ${radius.l}px`
@@ -201,6 +218,31 @@ const transformLayout = ({
         rotate: rotation,
         borderRadius: radiusStr,
     } as any
+}
+
+const transform = ({
+    fillProps,
+    borderProps,
+    blurProps,
+    filtersProps,
+    shadowsProps,
+    innerShadowsProps,
+    stackProps,
+    layoutProps,
+}: StyleProperties & StackProps = {}) => {
+    return {
+        ...transformStyles({
+            fillProps,
+            borderProps,
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+        }),
+        ...transformStackContent(stackProps),
+        ...transformLayout(layoutProps),
+        display: 'flex',
+    }
 }
 
 export default forwardRef(
@@ -222,6 +264,27 @@ export default forwardRef(
         }: ComponentPropTypes & StyleProperties & StackProps,
         ref
     ) => {
+        const style = transform({
+            fillProps,
+            borderProps,
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+            stackProps,
+            layoutProps,
+        })
+
+        if (connectedFields && requestUpdateProps) {
+            const tempRequest = requestUpdateProps
+            requestUpdateProps = (props: object) => {
+                tempRequest({
+                    ...props,
+                    ...pick(connectedFields, transform(props)),
+                })
+            }
+        }
+
         return (
             <>
                 {requestUpdateProps && path && (
@@ -230,7 +293,7 @@ export default forwardRef(
                             title="Layout"
                             data={layoutProps}
                             onChange={(data) => {
-                                requestUpdateProps({ layoutProps: data })
+                                requestUpdateProps!({ layoutProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></LayoutInspector>
@@ -238,7 +301,7 @@ export default forwardRef(
                             title="Stack"
                             data={stackProps}
                             onChange={(data) => {
-                                requestUpdateProps({ stackProps: data })
+                                requestUpdateProps!({ stackProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></StackInspector>
@@ -246,14 +309,14 @@ export default forwardRef(
                             title="Fill"
                             data={fillProps}
                             onChange={(data) => {
-                                requestUpdateProps({ fillProps: data })
+                                requestUpdateProps!({ fillProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></FillInspector>
                         <BorderInspector
                             data={borderProps}
                             onChange={(data) => {
-                                requestUpdateProps({ borderProps: data })
+                                requestUpdateProps!({ borderProps: data })
                             }}
                             title="Border"
                             connectedFields={connectedFields}
@@ -262,7 +325,7 @@ export default forwardRef(
                             title="Shadows"
                             data={shadowsProps}
                             onChange={(data) => {
-                                requestUpdateProps({ shadowsProps: data })
+                                requestUpdateProps!({ shadowsProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></ShadowsInspector>
@@ -270,7 +333,7 @@ export default forwardRef(
                             title="Inner Shadows"
                             data={innerShadowsProps}
                             onChange={(data) => {
-                                requestUpdateProps({ innerShadowsProps: data })
+                                requestUpdateProps!({ innerShadowsProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></ShadowsInspector>
@@ -278,7 +341,7 @@ export default forwardRef(
                             title="Blur"
                             data={blurProps}
                             onChange={(data) => {
-                                requestUpdateProps({ blurProps: data })
+                                requestUpdateProps!({ blurProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></BlurInspector>
@@ -286,7 +349,7 @@ export default forwardRef(
                             data={filtersProps}
                             title="Filters"
                             onChange={(data) => {
-                                requestUpdateProps({ filtersProps: data })
+                                requestUpdateProps!({ filtersProps: data })
                             }}
                             connectedFields={connectedFields}
                         ></FiltersInspector>
@@ -294,35 +357,7 @@ export default forwardRef(
                 )}
                 <RawStack
                     ref={ref as any}
-                    style={{
-                        ...transformStyles({
-                            fillProps,
-                            borderProps,
-                            blurProps,
-                            filtersProps,
-                            shadowsProps,
-                            innerShadowsProps,
-                        }),
-                        ...transformStackContent(stackProps || initialData),
-                        ...transformLayout(
-                            layoutProps || {
-                                width: {
-                                    amount: 100,
-                                    unit: '%',
-                                },
-                                height: {
-                                    amount: 100,
-                                    unit: '%',
-                                },
-                                lockProportion: false,
-                                overflow: 'Visible',
-                                opacity: 100,
-                                rotation: 0,
-                                radius: 0,
-                            }
-                        ),
-                        display: 'flex',
-                    }}
+                    style={{ ...style, ...rest }}
                     {...rest}
                 >
                     {children}
