@@ -804,7 +804,6 @@ export const handleModifyKitName = handleAction<
         const { kits, states } = state.moulds[mouldId]
         const currentKit = kits.find((k) => k.name === kitName)
         const currentState = states[stateName]
-
         const recursiveUpdate = (children, propSet) => {
             const { key, oldValue, newValue } = propSet
             children.forEach((child) => {
