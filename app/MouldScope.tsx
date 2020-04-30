@@ -70,7 +70,11 @@ export const MouldScope = () => {
                         ></PlusCircle>
                     )}
                     {scopes.length > 0 && !editMode && (
-                        <Text sx={{ color: '#7B7B7B' }} as="p" size={0}>
+                        <Text
+                            sx={{ display: 'block', color: '#7B7B7B' }}
+                            as="span"
+                            size={0}
+                        >
                             Grab one of the scopes to kit to get binding
                         </Text>
                     )}
