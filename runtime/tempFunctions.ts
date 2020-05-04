@@ -17,11 +17,11 @@ if (typeof window !== 'undefined') {
         ]
     }
 
-    global.label = ({ label }) => {
+    global.equal = ({ input }) => {
         return [
             'state 0',
             {
-                label,
+                scope: input,
             },
         ]
     }

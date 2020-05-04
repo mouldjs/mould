@@ -1,7 +1,12 @@
 import React, { forwardRef, Fragment } from 'react'
 import { useSelector } from 'react-redux'
 import { pick } from 'ramda'
-import { Cell, TitledBoard } from '../inspector/FormComponents'
+import {
+    Cell,
+    TitledBoard,
+    ControlGridItem,
+    ControlGrid,
+} from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
 import { Select, Input } from '@modulz/radix'
 import * as z from 'zod'
@@ -16,6 +21,7 @@ import { MouldContext } from '../app/Contexts'
 import { rootTree, pathToString, useCurrentMould } from '../app/utils'
 import { Tree } from '../app/Tree'
 import Components from '.'
+import Controls from '../controls'
 
 const { Provider } = MouldContext
 
@@ -124,18 +130,28 @@ const Mould = forwardRef(
             <Fragment>
                 <ComponentInspector path={path}>
                     <TitledBoard title="Mould">
-                        {input.map((i) => {
+                        {Object.keys(input).map((name, index) => {
+                            const isFirst = index === 0
+                            const config = input[name]
+                            const Control = Controls[config.type].Renderer
+
                             return (
-                                <Cell label={i}>
-                                    <Input
-                                        value={rest[i]}
-                                        onChange={(e) =>
-                                            requestUpdateProps!({
-                                                [i]: e.target.value,
-                                            })
-                                        }
-                                    ></Input>
-                                </Cell>
+                                <ControlGrid marginTop={isFirst ? 0 : 8}>
+                                    <ControlGridItem area="active / active / visual / visual">
+                                        {name}
+                                    </ControlGridItem>
+                                    <ControlGridItem area="value / value / control / control">
+                                        <Control
+                                            config={config}
+                                            data={rest[name]}
+                                            onChange={(value) => {
+                                                requestUpdateProps!({
+                                                    [name]: value,
+                                                })
+                                            }}
+                                        ></Control>
+                                    </ControlGridItem>
+                                </ControlGrid>
                             )
                         })}
                     </TitledBoard>

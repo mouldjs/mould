@@ -12,15 +12,29 @@ import {
     rootTree,
 } from './utils'
 import { ResizableBox } from 'react-resizable'
-import { resizeView, dragView, dragToView } from './appShell'
+import {
+    resizeView,
+    dragView,
+    dragToView,
+    modifyInput,
+    removeInput,
+} from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import Mould from './Mould'
 import { ViewContext } from './Contexts'
 import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
-import { TitledBoard, Cell } from '../inspector/FormComponents'
+import {
+    TitledBoard,
+    Cell,
+    ControlGrid,
+    ControlGridItem,
+} from '../inspector/FormComponents'
 import { runtime } from '../runtime'
 import { tick } from './selectionTick'
+import Controls from '../controls'
+import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
+import { MouldInput } from './MouldInput'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -89,6 +103,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     const viewRef = useRef()
     const [paused, setPaused] = useState(true)
     const [inputValue, setInputValue] = useState({})
+    const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
     return (
@@ -158,44 +173,134 @@ export const View = ({ viewId }: { viewId: string }) => {
                         }}
                     ></Moveable>
                     <DebugPanel.Source>
-                        <TitledBoard
-                            title="Debug"
-                            renderTitle={() => {
-                                return (
-                                    <div onClick={() => setPaused(!paused)}>
-                                        {paused ? (
-                                            <Play
-                                                size={14}
-                                                color="#959595"
-                                            ></Play>
-                                        ) : (
-                                            <Pause
-                                                size={14}
-                                                color="#959595"
-                                            ></Pause>
-                                        )}
-                                    </div>
-                                )
+                        <div
+                            onDoubleClickCapture={(e) => {
+                                e.stopPropagation()
                             }}
                         >
-                            {mould.input.map((input) => {
-                                return (
-                                    <Cell label={input}>
-                                        <Input
-                                            value={inputValue[input]}
-                                            onChange={(e) => {
-                                                setInputValue({
-                                                    ...inputValue,
-                                                    [input]: e.target.value,
-                                                })
-                                            }}
-                                        ></Input>
-                                    </Cell>
-                                )
-                            })}
-                        </TitledBoard>
+                            <TitledBoard
+                                title="Debug"
+                                renderTitle={() => {
+                                    return (
+                                        <div onClick={() => setPaused(!paused)}>
+                                            {paused ? (
+                                                <Play
+                                                    size={14}
+                                                    color="#959595"
+                                                ></Play>
+                                            ) : (
+                                                <Pause
+                                                    size={14}
+                                                    color="#959595"
+                                                ></Pause>
+                                            )}
+                                        </div>
+                                    )
+                                }}
+                            >
+                                {Object.keys(mould.input).map(
+                                    (input, index) => {
+                                        const isFirst = index === 0
+                                        const config = mould.input[input]
+                                        const Control =
+                                            Controls[config.type].Renderer
+
+                                        return (
+                                            <div
+                                                onContextMenu={(event) => {
+                                                    event.preventDefault()
+                                                    ContextMenu.show(
+                                                        <Menu>
+                                                            <MenuItem
+                                                                onClick={() => {
+                                                                    setEditControlName(
+                                                                        input
+                                                                    )
+                                                                }}
+                                                                icon="edit"
+                                                                text="Edit"
+                                                            ></MenuItem>
+                                                            <MenuItem
+                                                                onClick={() => {
+                                                                    dispatch(
+                                                                        removeInput(
+                                                                            {
+                                                                                mouldId,
+                                                                                inputKey: input,
+                                                                            }
+                                                                        )
+                                                                    )
+                                                                }}
+                                                                icon="remove"
+                                                                text="Remove"
+                                                            ></MenuItem>
+                                                        </Menu>,
+                                                        {
+                                                            left: event.clientX,
+                                                            top: event.clientY,
+                                                        }
+                                                    )
+                                                }}
+                                            >
+                                                <ControlGrid
+                                                    marginTop={isFirst ? 0 : 8}
+                                                >
+                                                    <ControlGridItem area="active / active / visual / visual">
+                                                        {input}
+                                                    </ControlGridItem>
+                                                    <ControlGridItem area="value / value / control / control">
+                                                        <Control
+                                                            config={config}
+                                                            data={
+                                                                inputValue[
+                                                                    input
+                                                                ]
+                                                            }
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                setInputValue({
+                                                                    ...inputValue,
+                                                                    [input]: value,
+                                                                })
+                                                            }}
+                                                        ></Control>
+                                                    </ControlGridItem>
+                                                </ControlGrid>
+                                            </div>
+                                        )
+                                    }
+                                )}
+                            </TitledBoard>
+                        </div>
                     </DebugPanel.Source>
                 </>
+            )}
+            {editControlName && (
+                <MouldInput
+                    isOpen={!!(editControlName as any)}
+                    onClose={() => {
+                        setEditControlName(null)
+                    }}
+                    name={editControlName}
+                    onSubmit={(name, config) => {
+                        if (name !== editControlName) {
+                            dispatch(
+                                removeInput({
+                                    inputKey: editControlName,
+                                    mouldId,
+                                })
+                            )
+                        }
+                        dispatch(
+                            modifyInput({
+                                inputKey: name,
+                                config,
+                                mouldId,
+                            })
+                        )
+                    }}
+                ></MouldInput>
             )}
             <ViewContextProvider value={view}>
                 <Box

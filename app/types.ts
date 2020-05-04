@@ -26,7 +26,6 @@ export type View = {
     id: ID
     mouldId: MouldID
     state: StateName
-    name: string
 } & Size &
     Vector
 
@@ -57,14 +56,17 @@ export type Kit = {
     dataMappingVector: DataMappingVector[]
 }
 
+export type InputConfig<Config = any> = {
+    type: string
+} & Config
+
 export type Mould = {
     id: string
     name?: string
     hookFunctionName?: string
     scope: string[]
     kits: Kit[]
-    // input: { [key: string]: Desc }
-    input: string[]
+    input: { [key: string]: InputConfig }
     states: { [key: string]: Component | null }
 }
 
