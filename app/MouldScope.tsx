@@ -1,12 +1,12 @@
 import './react-tags.css'
 import React, { useState } from 'react'
 import { Text } from '@modulz/radix'
-import { PlusCircle, CheckCircle } from 'react-feather'
+import { PlusCircle, CheckCircle, Edit } from 'react-feather'
 import { useCurrentMould } from './utils'
 import { ArcherElement } from 'react-archer'
 import { WithOutContext as TagInput } from 'b1ncer-react-tag-input'
 import { useDispatch } from 'react-redux'
-import { modifyScope } from './appShell'
+import { modifyScope, deleteScope } from './appShell'
 import { useDrag } from 'react-dnd'
 
 const ScopeItem = ({ scope }: { scope: string }) => {
@@ -63,12 +63,24 @@ export const MouldScope = () => {
                     onClick={() => setEditMode(!editMode)}
                 >
                     Scopes
-                    {!editMode && (
-                        <PlusCircle
-                            size={15}
-                            style={{ display: 'inline-block', marginLeft: 6 }}
-                        ></PlusCircle>
-                    )}
+                    {!editMode &&
+                        (scopes.length > 0 ? (
+                            <Edit
+                                size={15}
+                                style={{
+                                    display: 'inline-block',
+                                    marginLeft: 6,
+                                }}
+                            ></Edit>
+                        ) : (
+                            <PlusCircle
+                                size={15}
+                                style={{
+                                    display: 'inline-block',
+                                    marginLeft: 6,
+                                }}
+                            ></PlusCircle>
+                        ))}
                     {scopes.length > 0 && !editMode && (
                         <Text
                             sx={{ display: 'block', color: '#7B7B7B' }}
@@ -99,11 +111,9 @@ export const MouldScope = () => {
                             }
                             handleDelete={(i) => {
                                 dispatch(
-                                    modifyScope({
+                                    deleteScope({
                                         mouldId: mould.id,
-                                        scope: mould.scope.filter(
-                                            (s, index) => i !== index
-                                        ),
+                                        scopeName: mould.scope[i],
                                     })
                                 )
                             }}

@@ -137,6 +137,35 @@ export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
     initialData
 )
 
+type DeleteScopeAction = {
+    mouldId: string
+    scopeName: string
+}
+const DELETE_SCOPE = 'DELETE_SCOPE'
+export const deleteScope = createAction<DeleteScopeAction>(DELETE_SCOPE)
+export const handleDeleteScope = handleAction<EditorState, DeleteScopeAction>(
+    DELETE_SCOPE,
+    (state, { payload: { mouldId, scopeName } }) => {
+        state.moulds[mouldId].scope = state.moulds[mouldId].scope.filter(
+            (name) => name !== scopeName
+        )
+
+        const kits = state.moulds[mouldId].kits.filter((k) =>
+            k.dataMappingVector.flat().includes(scopeName)
+        )
+        kits.forEach((kit) => {
+            Object.assign(kit, {
+                dataMappingVector: kit.dataMappingVector.filter(
+                    ([, target]) => target !== scopeName
+                ),
+            })
+        })
+
+        return state
+    },
+    initialData
+)
+
 type AddScopeAction = {
     mouldId: string
     scope: string
