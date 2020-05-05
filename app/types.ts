@@ -44,6 +44,7 @@ export type Component = {
     type: string
     props: ComponentProps
     children?: Component[]
+    kits?: Component[]
 }
 
 //[prop-field, scope-field]
