@@ -10,6 +10,7 @@ import {
     ID,
     Kit,
     StateName,
+    InputConfig,
 } from './types'
 import { initialData, pathToString, viewPathToString } from './utils'
 import nanoid from 'nanoid'
@@ -86,14 +87,17 @@ export const handleSelectComponentFromTree = handleAction<
     initialData
 )
 
-type AddInputAction = { mouldId: string; inputKey: string }
+type AddInputAction = { mouldId: string; inputKey: string; config: InputConfig }
 const ADD_INPUT = 'ADD_INPUT'
 export const addInput = createAction<AddInputAction>(ADD_INPUT)
 export const handleAddInput = handleAction<EditorState, AddInputAction>(
     ADD_INPUT,
     (state, action) => {
+        if (!state.moulds[action.payload.mouldId].input) {
+            state.moulds[action.payload.mouldId].input = {}
+        }
         state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
-            'text'
+            action.payload.config
 
         return state
     },
@@ -106,35 +110,12 @@ export const removeInput = createAction<RemoveInputAction>(REMOVE_INPUT)
 export const handleRemoveInput = handleAction<EditorState, RemoveInputAction>(
     REMOVE_INPUT,
     (state = initialData, action) => {
-        // state.moulds[action.payload.mouldId].input[
-        //     action.payload.inputKey
-        // ] = undefined
+        state.moulds[action.payload.mouldId].input[
+            action.payload.inputKey
+        ] = undefined
         delete state.moulds[action.payload.mouldId].input[
             action.payload.inputKey
         ]
-
-        return state
-    },
-    initialData
-)
-
-type ModifyInputDescriptionAction = {
-    mouldId: string
-    inputKey: string
-    description: string
-}
-const MODIFY_INPUT_DESCRIPTION = 'MODIFY_INPUT_DESCRIPTION'
-export const modifyInputDescription = createAction<
-    ModifyInputDescriptionAction
->(MODIFY_INPUT_DESCRIPTION)
-export const handleModifyInputDescription = handleAction<
-    EditorState,
-    ModifyInputDescriptionAction
->(
-    MODIFY_INPUT_DESCRIPTION,
-    (state, action) => {
-        state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
-            action.payload.description
 
         return state
     },
@@ -208,7 +189,6 @@ export const handleAddState = handleAction<EditorState, AddStateAction>(
             id: nanoid(6),
             mouldId: action.payload.mouldId,
             state: action.payload.state,
-            name: action.payload.state,
             width: 300,
             height: 500,
             x: 100,
@@ -338,7 +318,6 @@ export const handleWaitingForCreating = handleAction<
                 id: nanoid(6),
                 mouldId,
                 state: stateName,
-                name: stateName,
                 x: 0,
                 y: 0,
                 width: 0,
@@ -425,7 +404,7 @@ export const handleFinishCreating = handleAction<
                     name: `mould ${Object.keys(state.moulds).length}`,
                     scope: [],
                     kits: [],
-                    input: [],
+                    input: {},
                     states: {},
                 }
             }
@@ -676,14 +655,16 @@ export const handleConnectScopeToKit = handleAction<
 
 type ModifyInputAction = {
     mouldId: string
-    input: string[]
+    inputKey: string
+    config: InputConfig
 }
 const MODIFY_INPUT = 'MODIFY_INPUT'
 export const modifyInput = createAction<ModifyInputAction>(MODIFY_INPUT)
 export const handleModifyInput = handleAction<EditorState, ModifyInputAction>(
     MODIFY_INPUT,
     (state, action) => {
-        state.moulds[action.payload.mouldId].input = action.payload.input
+        state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
+            action.payload.config
 
         return state
     },

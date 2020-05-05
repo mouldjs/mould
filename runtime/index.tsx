@@ -29,7 +29,9 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                 useScope = returnEmptyObject(Object.keys(states)[0])
             }
 
-            const [currentState, scope] = useScope(pick(input, rest))
+            const [currentState, scope] = useScope(
+                pick(Object.keys(input), rest)
+            )
 
             const renderChildren = (components: Component[]) => {
                 return components.map((component) => {
