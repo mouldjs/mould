@@ -157,10 +157,7 @@ const App = () => {
                         <TitledBoard title="Kits">
                             <MouldKits></MouldKits>
                         </TitledBoard>
-                        <TitledBoard title="Metas">
-                            <MouldMetas></MouldMetas>
-                            <MouldInput></MouldInput>
-                        </TitledBoard>
+                        <MouldMetas></MouldMetas>
                         <DebugPanel.Target></DebugPanel.Target>
                     </ArcherContainer>
                 </Box>

@@ -56,14 +56,17 @@ export default forwardRef(
     ) => {
         return (
             <BaseBox ref={ref} as="span" {...rest}>
-                {requestUpdateProps && (
+                {
                     <TextContent
                         content={content}
                         onChange={(event) => {
-                            requestUpdateProps({ content: event.target.value })
+                            requestUpdateProps &&
+                                requestUpdateProps({
+                                    content: event.target.value,
+                                })
                         }}
                     ></TextContent>
-                )}
+                }
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
                         <TitledBoard title="Text">

@@ -71,7 +71,7 @@ const MouldKitItem = ({
 
     const fields =
         plugin.type === 'Mould'
-            ? moulds[(param as any).mouldId].input
+            ? Object.keys(moulds[(param as any).mouldId].input)
             : Object.keys(plugin.propType._def.shape)
     const [inputValue, setInputValue] = useState(name)
 

@@ -1,56 +1,153 @@
-import React from 'react'
-import { WithOutContext as TagInput } from 'b1ncer-react-tag-input'
+import React, { useState, useMemo } from 'react'
+import { useForm, useField } from 'react-form'
+import {
+    Drawer,
+    InputGroup,
+    HTMLSelect,
+    Button as BButton,
+    FormGroup,
+} from '@blueprintjs/core'
+import {
+    TitledBoard,
+    ControlGrid,
+    ControlGridItem,
+} from '../inspector/FormComponents'
+import Controls from '../controls'
 import { useCurrentMould } from './utils'
-import { Cell } from '../inspector/FormComponents'
-import { useDispatch } from 'react-redux'
-import { modifyInput } from './appShell'
+import { omit } from 'ramda'
 
-export const MouldInput = () => {
-    const dispatch = useDispatch()
+const InputTypes = Object.keys(Controls)
+
+const NameField = ({ origin }) => {
     const mould = useCurrentMould()
+    const {
+        meta: { error },
+        getInputProps,
+    } = useField('name', {
+        validate: (name) => {
+            const names = Object.keys(mould?.input || [])
+            if (names.includes(name) && name !== origin) {
+                return `Input ${name} already added!`
+            }
+            if (!name) {
+                return `Name was required.`
+            }
 
-    if (!mould) {
-        return null
-    }
-
-    const { input } = mould
+            return false
+        },
+    })
 
     return (
-        <div className="horizontal-tag-input">
-            <TagInput
-                placeholder="add new input"
-                tags={input.map((input) => ({ id: input, text: input }))}
-                autofocus={false}
-                handleAddition={(tag) => {
-                    dispatch(
-                        modifyInput({
-                            mouldId: mould.id,
-                            input: [...input, tag.text],
-                        })
-                    )
-                }}
-                handleDelete={(i) => {
-                    dispatch(
-                        modifyInput({
-                            mouldId: mould.id,
-                            input: input.filter((input, index) => i !== index),
-                        })
-                    )
-                }}
-                handleDrag={(tag, currPos, newPos) => {
-                    const newInput = [...input]
+        <>
+            <ControlGrid>
+                <ControlGridItem area="active / active / visual / visual">
+                    Name*
+                </ControlGridItem>
+                <ControlGridItem area="value / value / control / control">
+                    <InputGroup {...getInputProps()}></InputGroup>
+                </ControlGridItem>
+            </ControlGrid>
+            {error && (
+                <ControlGrid marginTop={8}>
+                    <ControlGridItem area="value / value / control / control">
+                        <FormGroup helperText={error}></FormGroup>
+                    </ControlGridItem>
+                </ControlGrid>
+            )}
+        </>
+    )
+}
 
-                    newInput.splice(currPos, 1)
-                    newInput.splice(newPos, 0, tag.text)
+export const MouldInput = ({
+    name = '',
+    type,
+    onClose,
+    isOpen,
+    onSubmit,
+}: {
+    name?: string
+    type?: string
+    onClose: () => void
+    isOpen: boolean
+    onSubmit: (name, config) => void
+}) => {
+    const mould = useCurrentMould()
+    const defaultValues = useMemo(() => {
+        return mould && name && mould.input[name]
+            ? omit(['type'], { ...mould.input[name], name })
+            : undefined
+    }, [mould?.id, name])
+    const [addingControlType, setAddingControlType] = useState<string | null>(
+        type || mould!.input[name].type
+    )
+    const ControlEditPanel = addingControlType
+        ? Controls[addingControlType].Editor
+        : null
+    const {
+        Form,
+        meta: { canSubmit },
+        setValues,
+        getFieldValue,
+    } = useForm({
+        onSubmit: (values) => {
+            onClose()
+            const type = addingControlType
+            setAddingControlType(null)
+            if (!mould) {
+                return
+            }
+            const { name, ...rest } = values
+            onSubmit(name, {
+                type,
+                ...rest,
+            })
+        },
+        defaultValues,
+    })
 
-                    dispatch(
-                        modifyInput({
-                            mouldId: mould.id,
-                            input: newInput,
-                        })
-                    )
-                }}
-            ></TagInput>
-        </div>
+    return (
+        <Drawer
+            onClose={onClose}
+            isOpen={isOpen}
+            size={215}
+            hasBackdrop={false}
+            style={{ background: '#e1e1e1', top: 50 }}
+            position="left"
+        >
+            <Form>
+                <TitledBoard title="Input">
+                    <NameField origin={name}></NameField>
+                    <ControlGrid marginTop={8}>
+                        <ControlGridItem area="active / active / visual / visual">
+                            Type
+                        </ControlGridItem>
+                        <ControlGridItem area="value / value / control / control">
+                            <HTMLSelect
+                                onChange={(event) => {
+                                    setAddingControlType(event.target.value)
+                                    setValues({
+                                        name: getFieldValue('name'),
+                                    })
+                                }}
+                                value={addingControlType as string}
+                                options={InputTypes}
+                                minimal
+                                fill
+                            ></HTMLSelect>
+                        </ControlGridItem>
+                    </ControlGrid>
+                </TitledBoard>
+                {ControlEditPanel && <ControlEditPanel />}
+                <div style={{ width: '100%', padding: 8 }}>
+                    <BButton
+                        disabled={!canSubmit}
+                        type="submit"
+                        intent="success"
+                        text="Submit"
+                        fill
+                    ></BButton>
+                </div>
+            </Form>
+        </Drawer>
     )
 }

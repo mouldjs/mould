@@ -148,14 +148,6 @@ export const Explorer2 = () => {
 
     const selectedTree = mould.states[stateName]
 
-    const onDragStart = (info) => {
-        console.log('start', info)
-    }
-
-    const onDragEnter = (info) => {
-        console.log('enter', info)
-    }
-
     const onDrop = (info) =>
         dispatch(
             sortTree({
@@ -259,8 +251,6 @@ export const Explorer2 = () => {
                 draggable
                 defaultExpandAll
                 selectable={false}
-                onDragStart={onDragStart}
-                onDragEnter={onDragEnter}
                 onDrop={onDrop}
             >
                 {selectedTree &&
