@@ -5,7 +5,6 @@ import {
     View,
     Vector,
     Size,
-    Mould,
     Component,
     ID,
     Kit,
@@ -132,6 +131,35 @@ export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
     MODIFY_SCOPE,
     (state, action) => {
         state.moulds[action.payload.mouldId].scope = action.payload.scope
+
+        return state
+    },
+    initialData
+)
+
+type DeleteScopeAction = {
+    mouldId: string
+    scopeName: string
+}
+const DELETE_SCOPE = 'DELETE_SCOPE'
+export const deleteScope = createAction<DeleteScopeAction>(DELETE_SCOPE)
+export const handleDeleteScope = handleAction<EditorState, DeleteScopeAction>(
+    DELETE_SCOPE,
+    (state, { payload: { mouldId, scopeName } }) => {
+        state.moulds[mouldId].scope = state.moulds[mouldId].scope.filter(
+            (name) => name !== scopeName
+        )
+
+        const kits = state.moulds[mouldId].kits.filter((k) =>
+            k.dataMappingVector.flat().includes(scopeName)
+        )
+        kits.forEach((kit) => {
+            Object.assign(kit, {
+                dataMappingVector: kit.dataMappingVector.filter(
+                    ([, target]) => target !== scopeName
+                ),
+            })
+        })
 
         return state
     },
@@ -614,14 +642,22 @@ export const addKit = createAction<AddKitAction>(ADD_KIT)
 export const handleAddKit = handleAction<EditorState, AddKitAction>(
     ADD_KIT,
     (state, { payload: { type, mouldId, name, param } }) => {
+        const { kits } = state.moulds[mouldId]
+
+        let kitName = name || `kit ${kits.length}`
+        const names = kits.map((k) => k.name)
+        if (names.includes(kitName)) {
+            kitName = 'New-' + kitName
+        }
         const mould = state.moulds[mouldId]
         const kit: Kit = {
             type,
-            name: name || `kit ${mould.kits.length}`,
+            name: kitName,
             dataMappingVector: [],
             param,
         }
-        mould.kits.push(kit)
+
+        kits.push(kit)
 
         return state
     },
@@ -746,6 +782,94 @@ export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
         )
         if (view) view.state = name
 
+        return state
+    },
+    initialData
+)
+
+type ModifyKitNameAction = {
+    mouldId: ID
+    kitName: string
+    newKitName: string
+    stateName: string
+}
+const MODIFY_KITNAME = 'MODIFY_KITNAME'
+export const modifyKitName = createAction<ModifyKitNameAction>(MODIFY_KITNAME)
+export const handleModifyKitName = handleAction<
+    EditorState,
+    ModifyKitNameAction
+>(
+    MODIFY_KITNAME,
+    (state, { payload: { mouldId, kitName, newKitName, stateName } }) => {
+        const { kits, states } = state.moulds[mouldId]
+        const currentKit = kits.find((k) => k.name === kitName)
+        const currentState = states[stateName]
+
+        const recursiveUpdate = (children, propSet) => {
+            const { key, oldValue, newValue } = propSet
+            children.forEach((child) => {
+                if (child.children && Array.isArray(child.children)) {
+                    recursiveUpdate(child.children, propSet)
+                }
+                if (child.props[key] === oldValue) {
+                    child.props[key] = newValue
+                }
+            })
+        }
+
+        if (currentState?.children) {
+            recursiveUpdate(currentState.children, {
+                key: '__kitName',
+                oldValue: kitName,
+                newValue: newKitName,
+            })
+        }
+
+        Object.assign(currentKit, { name: newKitName })
+
+        return state
+    },
+    initialData
+)
+
+type DeleteKitAction = {
+    mouldId: ID
+    kitName: string
+    stateName: string
+}
+const DELETE_KIT = 'DELETE_KIT'
+export const deleteKit = createAction<DeleteKitAction>(DELETE_KIT)
+export const handleDeleteKit = handleAction<EditorState, DeleteKitAction>(
+    DELETE_KIT,
+    (state, { payload: { mouldId, kitName, stateName } }) => {
+        const { kits, states } = state.moulds[mouldId]
+        const currentKitIndex = kits.findIndex((k) => k.name === kitName)
+        const currentState = states[stateName]
+        const recursiveRemove = (children, propSet) => {
+            const { key, name } = propSet
+            children.forEach((child, index) => {
+                if (child.children && Array.isArray(child.children)) {
+                    recursiveRemove(child.children, propSet)
+                }
+                if (child.props[key] === name) {
+                    children.splice(index, 1)
+                }
+            })
+        }
+
+        Object.assign(state.moulds[mouldId], {
+            kits: [
+                ...kits.slice(0, currentKitIndex),
+                ...kits.slice(currentKitIndex + 1),
+            ],
+        })
+
+        if (currentState?.children) {
+            recursiveRemove(currentState.children, {
+                key: '__kitName',
+                name: kitName,
+            })
+        }
         return state
     },
     initialData

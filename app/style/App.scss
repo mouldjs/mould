@@ -1,3 +1,5 @@
+@import 'vars.scss';
+
 body {
     overflow: hidden;
     line-height: 1.35;
@@ -15,4 +17,20 @@ radix-portal div {
 
 .bp3-fill {
     height: 100%;
+}
+
+.m-l {
+    margin-left: 10px;
+}
+
+.m-l-sm {
+    margin-left: 5px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.warn {
+    color: map-get($color, warn)
 }

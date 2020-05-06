@@ -27,6 +27,9 @@ import {
     handleModifyStateName,
     handleModifyKit,
     handleDragToView,
+    handleModifyKitName,
+    handleDeleteKit,
+    handleDeleteScope,
 } from './appShell'
 
 export default () => [
@@ -59,4 +62,7 @@ export default () => [
     handleModifyStateName,
     handleModifyKit,
     handleDragToView,
+    handleModifyKitName,
+    handleDeleteKit,
+    handleDeleteScope,
 ]

@@ -4,7 +4,7 @@ div.ReactTags__tags {
 
 /* Styles for the input */
 div.ReactTags__tagInput {
-    width: 200px;
+    width: 130px;
     border-radius: 2px;
     display: inline-block;
 }
@@ -32,16 +32,19 @@ div.ReactTags__selected {
 div.ReactTags__selected span.ReactTags__tag {
     border: 1px solid #ddd;
     background: #eee;
-    font-size: 12px;
-    display: inline-block;
-    padding: 5px;
-    margin: 5px 0;
+    font-size: 13px;
+    padding: 0 5px;
+    margin-bottom: 5px;
     border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
+
 div.ReactTags__selected a.ReactTags__remove {
     color: #aaa;
-    margin-top: 5px;
     cursor: pointer;
+    font-size: 18px;
 }
 
 /* Styles for suggestions */
@@ -52,7 +55,7 @@ div.ReactTags__suggestions ul {
     list-style-type: none;
     box-shadow: 0.05em 0.01em 0.5em rgba(0, 0, 0, 0.2);
     background: white;
-    width: 200px;
+    width: 130px;
 }
 div.ReactTags__suggestions li {
     border-bottom: 1px solid #ddd;
