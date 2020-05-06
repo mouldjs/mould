@@ -23,8 +23,12 @@ export const Cell = ({
                     <Text size={0}>{label}</Text>
                 </Tooltip>
             )}
-            {!desc && <Text size={0}>{label}</Text>}
-            <Box width={170}>{children}</Box>
+            {!desc && (
+                <Text sx={{ flexBasis: '50px' }} size={0}>
+                    {label}
+                </Text>
+            )}
+            <Box sx={{ flexBasis: 'auto' }}>{children}</Box>
         </Flex>
     )
 }
