@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import Components from '../../components'
-import { Flex, Text, Select, Option, Card } from '@modulz/radix'
-import { X } from 'react-feather'
+import { Flex, Text, Card, Grid, Hover } from '@modulz/radix'
+import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
+import { X, ChevronDown } from 'react-feather'
 import { EditableText } from '@blueprintjs/core'
 import { ArcherElement } from 'react-archer'
 import { useCurrentState, useCurrentMould } from '../utils'
@@ -95,6 +96,8 @@ const MouldKitItem = ({
         )
     }
 
+    const usedAttrs = dataMappingVector.map(([src]) => src)
+    const attrsList = fields.filter((f) => !usedAttrs.includes(f))
     return (
         <Card p={0} mb={5} sx={{ position: 'relative' }}>
             <Flex
@@ -260,22 +263,63 @@ const MouldKitItem = ({
                         )
                     })}
                     {draggingScope && (
-                        <Select
-                            size={0}
-                            value=""
-                            variant="ghost"
-                            onValueChange={(value) => {
-                                if (value) {
-                                    onConnect(value, draggingScope)
-                                }
-                                setDraggingScope('')
-                            }}
-                        >
-                            <Option value="" label="select"></Option>
-                            {fields.map((k) => {
-                                return <Option value={k} label={k}></Option>
-                            })}
-                        </Select>
+                        <>
+                            <Popover
+                                key="Popover"
+                                interactionKind={PopoverInteractionKind.HOVER}
+                            >
+                                <Flex alignItems="center">
+                                    Select
+                                    <ChevronDown
+                                        color="#333"
+                                        size={13}
+                                    ></ChevronDown>
+                                </Flex>
+                                <Grid
+                                    p={10}
+                                    sx={{
+                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gap: 1,
+                                    }}
+                                >
+                                    {attrsList.map((k) => {
+                                        return (
+                                            <>
+                                                <Hover>
+                                                    {(isHovered) => (
+                                                        <p
+                                                            className="clickable"
+                                                            style={{
+                                                                padding: '5px',
+                                                                border:
+                                                                    '1px solid',
+                                                                borderColor: isHovered
+                                                                    ? '#56a9f1'
+                                                                    : '#ddd',
+                                                                textAlign:
+                                                                    'center',
+                                                            }}
+                                                            onClick={(e) => {
+                                                                onConnect(
+                                                                    k,
+                                                                    draggingScope
+                                                                )
+                                                                setDraggingScope(
+                                                                    ''
+                                                                )
+                                                            }}
+                                                        >
+                                                            {' '}
+                                                            {k}{' '}
+                                                        </p>
+                                                    )}
+                                                </Hover>
+                                            </>
+                                        )
+                                    })}
+                                </Grid>
+                            </Popover>
+                        </>
                     )}
                 </Flex>
             </Flex>
