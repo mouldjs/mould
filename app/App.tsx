@@ -4,6 +4,7 @@ import '@/app/style/blueprint.scss'
 // import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@/app/style/App.scss'
 import dynamic from 'next/dynamic'
+import CustomDragLayer from '@components/CustomDragLayer'
 import { Workspace } from './Workspaces'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
@@ -199,6 +200,7 @@ export default () => {
     return (
         <Provider store={getStore()}>
             <DndProvider backend={HTML5Backend}>
+                <CustomDragLayer></CustomDragLayer>
                 <RadixProvider>
                     <App></App>
                 </RadixProvider>
