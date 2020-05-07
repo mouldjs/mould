@@ -34,3 +34,11 @@ radix-portal div {
 .warn {
     color: map-get($color, warn)
 }
+
+.primary {
+    color: map-get($color, primary)
+}
+
+.pure {
+    color: map-get($color, pure)
+}
