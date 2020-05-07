@@ -1,27 +1,25 @@
-import React, { forwardRef, Fragment } from 'react'
-import { useSelector } from 'react-redux'
-import { pick } from 'ramda'
+import React, { forwardRef, Fragment, useContext } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { ZoomIn } from 'react-feather'
 import {
-    Cell,
     TitledBoard,
     ControlGridItem,
     ControlGrid,
 } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
-import { Select, Input } from '@modulz/radix'
-import * as z from 'zod'
 import {
     ComponentPropTypes,
     ComponentProps,
-    Mould as MouldType,
     Component,
     EditorState,
 } from '../app/types'
-import { MouldContext } from '../app/Contexts'
-import { rootTree, pathToString, useCurrentMould } from '../app/utils'
+import { MouldContext, ViewContext } from '../app/Contexts'
+import { pathToString } from '../app/utils'
 import { Tree } from '../app/Tree'
 import Components from '.'
 import Controls from '../controls'
+import { Error, Info } from '../app/Messager'
+import { renderRecursiveMould } from '../app/appShell'
 
 const { Provider } = MouldContext
 
@@ -49,10 +47,44 @@ const Mould = forwardRef(
             },
         ref
     ) => {
+        const dispatch = useDispatch()
+        const recursiveRendered =
+            useSelector((state: EditorState) => {
+                return state.recursiveRendered
+            }) || []
         const mould = useSelector((state: EditorState) => {
             return state.moulds[__mouldId]
         })
+        const view = useContext(ViewContext)
+
+        if (!mould) {
+            return <Error ref={ref}>{`Mould ${__mouldId} not found.`}</Error>
+        }
+
         const { states, input, kits } = mould
+
+        if (__mouldId === view?.mouldId) {
+            const pathStr = pathToString(path!)
+            const recursiveRender = recursiveRendered.includes(pathStr)
+
+            if (!recursiveRender) {
+                return (
+                    <Info ref={ref} onDoubleClickCapture={onDoubleClickCapture}>
+                        <span
+                            onClick={() => {
+                                dispatch(renderRecursiveMould({ key: pathStr }))
+                            }}
+                        >
+                            <ZoomIn
+                                color="white"
+                                style={{ cursor: 'pointer' }}
+                            ></ZoomIn>
+                        </span>
+                    </Info>
+                )
+            }
+        }
+
         const tree = states[__state]
 
         const renderTree = (

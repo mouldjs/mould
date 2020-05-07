@@ -1,0 +1,31 @@
+const schema = `
+    query {
+        hello
+    }
+`
+
+const resolvers = {
+    query: {
+        hello: () => 'hello'
+    }
+}
+
+GraphQL.start(schema, resolvers)
+
+d.ts
+
+const MouldSchema = file.read()
+const resolvers = {
+    t: () => {}
+    filterButton: () => {}
+}
+
+Runtime.render(MouldSchema, resolvers)
+
+code = Build(MouldSchema, resolvers, runtime)
+
+(input) => {
+    const scopes = useResolver(input)
+
+    return GUI
+}

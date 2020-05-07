@@ -98,7 +98,6 @@ export const View = ({ viewId }: { viewId: string }) => {
         },
     })
     const path: Path = [[mouldId, state], []]
-    const included = useIsIncludePath(path)
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
     const [paused, setPaused] = useState(true)

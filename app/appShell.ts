@@ -874,3 +874,26 @@ export const handleDeleteKit = handleAction<EditorState, DeleteKitAction>(
     },
     initialData
 )
+
+type renderRecursiveMouldAction = { key: string }
+const RENDER_RECURSIVE_MOULD = 'RENDER_RECURSIVE_MOULD'
+export const renderRecursiveMould = createAction<renderRecursiveMouldAction>(
+    RENDER_RECURSIVE_MOULD
+)
+export const handleRenderRecursiveMould = handleAction<
+    EditorState,
+    renderRecursiveMouldAction
+>(
+    RENDER_RECURSIVE_MOULD,
+    (state, { payload: { key } }) => {
+        if (!state.recursiveRendered) {
+            state.recursiveRendered = []
+        }
+        if (!state.recursiveRendered.includes(key)) {
+            state.recursiveRendered.push(key)
+        }
+
+        return state
+    },
+    initialData
+)

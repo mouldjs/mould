@@ -93,6 +93,7 @@ export type EditorState = {
     moulds: { [key: string]: Mould }
     selection?: Path //[mouldId, state, ...path]
     creating?: Creating
+    recursiveRendered?: string[]
 }
 
 export type AtomicComponent = {

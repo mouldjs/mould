@@ -14,18 +14,6 @@ import {
 } from '../app/appShell'
 import { useIsSelectedPath, pathToString } from './utils'
 
-const MouldLabel = (mould: Mould) => {
-    const [, drag] = useDrag({
-        item: { type: 'TREE', name: 'Mould', props: { mouldId: mould.id } },
-    })
-
-    return (
-        <Box display="inline-block" ref={drag}>
-            {mould.name}
-        </Box>
-    )
-}
-
 const ComponentTree = ({
     comp,
     path,
@@ -181,7 +169,9 @@ export const Explorer2 = () => {
             >
                 {label ||
                     (comp.type === 'Mould'
-                        ? moulds[(comp.props as any).__mouldId].name
+                        ? !moulds[(comp.props as any).__mouldId]
+                            ? (comp.props as any).__mouldId
+                            : moulds[(comp.props as any).__mouldId].name
                         : comp.type === 'Kit'
                         ? (comp.props as any).__kitName
                         : comp.type)}
@@ -222,12 +212,12 @@ export const Explorer2 = () => {
             }
         }
 
+        const mould = moulds[(comp.props as any).__mouldId]
+
         const children =
-            comp.type === 'Mould'
+            comp.type === 'Mould' && mould
                 ? transformChildren(
-                      moulds[(comp.props as any).__mouldId].states[
-                          (comp.props as any).__state
-                      ]?.children || []
+                      mould.states[(comp.props as any).__state]?.children || []
                   )
                 : comp.children
 
