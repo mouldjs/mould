@@ -8,16 +8,15 @@ const layerStyles = {
     zIndex: 100,
     left: 0,
     top: 0,
-    transform: 'rotate(-5deg)',
 } as React.CSSProperties
 
-const getItemStyles = (initialOffset, currentOffset) => {
-    if (!initialOffset || !currentOffset) {
+const getItemStyles = (initialOffset, currentOffset, clientOffset) => {
+    if (!initialOffset || !currentOffset || !clientOffset) {
         return {
             display: 'none',
         }
     }
-    let { x, y } = currentOffset
+    let { x, y } = clientOffset
     const transform = `translate(${x}px, ${y}px)`
     return {
         transform,
@@ -27,12 +26,14 @@ const getItemStyles = (initialOffset, currentOffset) => {
 
 const CustomDragLayer = () => {
     const {
+        clientOffset,
         draggedItem,
         itemType,
         isDragging,
         initialOffset,
         currentOffset,
     } = useDragLayer((monitor) => ({
+        clientOffset: monitor.getClientOffset(),
         draggedItem: monitor.getItem(),
         itemType: monitor.getItemType(),
         initialOffset: monitor.getInitialSourceClientOffset(),
@@ -57,7 +58,13 @@ const CustomDragLayer = () => {
 
     return (
         <div style={layerStyles}>
-            <div style={getItemStyles(initialOffset, currentOffset)}>
+            <div
+                style={getItemStyles(
+                    initialOffset,
+                    currentOffset,
+                    clientOffset
+                )}
+            >
                 {getGhostLayer()}
             </div>
         </div>

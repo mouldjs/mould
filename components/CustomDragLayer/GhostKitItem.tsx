@@ -6,7 +6,11 @@ const KitItem = ({ type, name, isList }) => {
     const Icon = plugin?.icon
 
     return (
-        <Card p={0} mb={5} sx={{ position: 'relative' }}>
+        <Card
+            p={0}
+            mb={5}
+            sx={{ position: 'relative', transform: 'rotate(-5deg)' }}
+        >
             <Flex justifyContent="space-between" p={10} pl={20}>
                 <Flex alignItems="center" width="100%">
                     <Icon></Icon>
