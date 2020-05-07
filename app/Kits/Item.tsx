@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Components from '../../components'
 import { Flex, Text, Card, Grid, Hover } from '@modulz/radix'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { X, ChevronDown } from 'react-feather'
 import { EditableText } from '@blueprintjs/core'
 import { ArcherElement } from 'react-archer'
-import { useCurrentState, useCurrentMould } from '../utils'
+import { useCurrentState } from '../utils'
 import { useDrop, useDrag } from 'react-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import { modifyKitName, deleteKit } from '../appShell'
 import { Kit, EditorState } from '../types'
+import { getEmptyImage } from 'react-dnd-html5-backend'
 
 const MouldKitItem = ({
     type,
@@ -39,12 +40,17 @@ const MouldKitItem = ({
         },
     })
 
-    const [, drag] = useDrag({
+    const [{ isDragging }, drag, preview] = useDrag({
         item: isList
             ? {
                   type: 'TREE',
                   name: 'Kit',
                   props: { __kitName: name },
+                  layerData: {
+                      name,
+                      isList,
+                      type,
+                  },
                   children: [
                       {
                           type,
@@ -59,8 +65,21 @@ const MouldKitItem = ({
                   type: 'TREE',
                   name: 'Kit',
                   props: { __kitName: name },
+                  layerData: {
+                      name,
+                      isList,
+                      type,
+                  },
               },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
     })
+
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true })
+    }, [])
+
     const plugin = Components.find((c) => c.type === type)
     if (!plugin) {
         return null
@@ -99,7 +118,15 @@ const MouldKitItem = ({
     const usedAttrs = dataMappingVector.map(([src]) => src)
     const attrsList = fields.filter((f) => !usedAttrs.includes(f))
     return (
-        <Card p={0} mb={5} sx={{ position: 'relative' }}>
+        <Card
+            p={0}
+            mb={5}
+            sx={{
+                position: 'relative',
+                opacity: isDragging ? '.5' : '1',
+                border: '1px solid #ccc',
+            }}
+        >
             <Flex
                 justifyContent="space-between"
                 p={10}
@@ -309,8 +336,7 @@ const MouldKitItem = ({
                                                                 )
                                                             }}
                                                         >
-                                                            {' '}
-                                                            {k}{' '}
+                                                            {k}
                                                         </p>
                                                     )}
                                                 </Hover>

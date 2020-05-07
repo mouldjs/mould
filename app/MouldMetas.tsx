@@ -78,7 +78,7 @@ export const MouldMetas = () => {
                 )
             }}
         >
-            <Cell label="name">
+            <Cell label="Name">
                 <Input
                     key={mould.id}
                     value={mould.name}
@@ -92,7 +92,7 @@ export const MouldMetas = () => {
                     }}
                 ></Input>
             </Cell>
-            <Cell label="function">
+            <Cell label="Function">
                 <Input
                     key={mould.id}
                     value={mould.hookFunctionName}
