@@ -16,22 +16,6 @@ export interface UndoCompatibleState {
     _processingChanges?: Change[]
 }
 
-// type ProduceWithPatches = <T>(
-//     data: T,
-//     mut: (draft: T) => any
-// ) => [T, Patch[], Patch[]]
-
-// const produceWithPatches: ProduceWithPatches = (data, mut) => {
-//     let patches: Patch[] | undefined, inverses: Patch[] | undefined
-
-//     const nextData = produce(data, mut, (a, b) => {
-//         patches = a
-//         inverses = b
-//     })
-
-//     return [nextData, patches as Patch[], inverses as Patch[]]
-// }
-
 const UNDO_ACTION = 'UNDO_ACTION'
 const REDO_ACTION = 'REDO_ACTION'
 const RESET_ACTION = 'RESET_ACTION'
