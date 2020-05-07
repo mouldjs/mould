@@ -1,5 +1,12 @@
-import produce, { Patch, applyPatches } from 'immer'
+import produce, {
+    Patch,
+    applyPatches,
+    enablePatches,
+    produceWithPatches,
+} from 'immer'
 import { Reducer } from 'redux'
+
+enablePatches()
 
 export type Change = Patch[]
 
@@ -9,21 +16,21 @@ export interface UndoCompatibleState {
     _processingChanges?: Change[]
 }
 
-type ProduceWithPatches = <T>(
-    data: T,
-    mut: (draft: T) => any
-) => [T, Patch[], Patch[]]
+// type ProduceWithPatches = <T>(
+//     data: T,
+//     mut: (draft: T) => any
+// ) => [T, Patch[], Patch[]]
 
-const produceWithPatches: ProduceWithPatches = (data, mut) => {
-    let patches: Patch[] | undefined, inverses: Patch[] | undefined
+// const produceWithPatches: ProduceWithPatches = (data, mut) => {
+//     let patches: Patch[] | undefined, inverses: Patch[] | undefined
 
-    const nextData = produce(data, mut, (a, b) => {
-        patches = a
-        inverses = b
-    })
+//     const nextData = produce(data, mut, (a, b) => {
+//         patches = a
+//         inverses = b
+//     })
 
-    return [nextData, patches as Patch[], inverses as Patch[]]
-}
+//     return [nextData, patches as Patch[], inverses as Patch[]]
+// }
 
 const UNDO_ACTION = 'UNDO_ACTION'
 const REDO_ACTION = 'REDO_ACTION'
@@ -59,11 +66,11 @@ const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
         case 'UNDO_ACTION':
             if (undoable(state)) {
                 let { _inverseChanges = [], _processingChanges = [] } = state
-                const patches = _inverseChanges.shift() as Change
+                let [patches, ...rest] = _inverseChanges
                 _processingChanges = [patches, ..._processingChanges]
 
-                return produce(applyPatches(state, patches), draft => {
-                    draft._inverseChanges = _inverseChanges
+                return produce(applyPatches(state, patches), (draft) => {
+                    draft._inverseChanges = rest
                     draft._processingChanges = _processingChanges
                 })
             }
@@ -78,9 +85,10 @@ const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
                 const patches = _changes[_processingChanges.length - 1]
                 // _inverseChanges =
 
-                return produce(applyPatches(state, patches), draft => {
-                    const inverseChange = (draft._processingChanges as Change[]).shift() as Change
+                return produce(applyPatches(state, patches), (draft) => {
+                    const [inverseChange, ...rest] = draft._processingChanges
                     draft._inverseChanges = [inverseChange, ..._inverseChanges]
+                    draft._processingChanges = rest
                 })
             }
             return false
@@ -89,7 +97,7 @@ const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
                 let { _inverseChanges = [] } = state
                 const patches = flatArray(_inverseChanges)
 
-                return produce(applyPatches(state, patches), draft => {
+                return produce(applyPatches(state, patches), (draft) => {
                     draft._inverseChanges = []
                 })
             }
@@ -133,9 +141,9 @@ export const createProcessReducers = <T>(
 
             const [nextState, patches, inversePatches] = produceWithPatches(
                 state,
-                draft => {
-                    reducers.forEach(reducer => {
-                        reducer(draft, action)
+                (draft) => {
+                    reducers.forEach((reducer) => {
+                        reducer(draft as any, action)
                     })
                 }
             )
@@ -144,7 +152,7 @@ export const createProcessReducers = <T>(
                 return nextState
             }
 
-            const applyPatchData = produce(nextState, draft => {
+            const applyPatchData = produce(nextState, (draft) => {
                 const changes = [
                     ...(draft._changes || []).slice(
                         (draft._processingChanges || []).length
@@ -171,7 +179,7 @@ export const createProcessReducers = <T>(
                 draft._inverseChanges = inverseChanges
             })
 
-            res = applyPatchData
+            res = applyPatchData as any
         }
 
         cb && cb(res as any)

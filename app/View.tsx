@@ -111,11 +111,13 @@ export const View = ({ viewId }: { viewId: string }) => {
             {selected && viewRef.current && (
                 <>
                     <Moveable
+                        key={JSON.stringify({ x, y, width, height })}
                         target={viewRef.current}
                         resizable
                         draggable
                         origin={false}
                         throttleResize={0}
+                        edge
                         // keepRatio={true}
                         onResize={({
                             target,
