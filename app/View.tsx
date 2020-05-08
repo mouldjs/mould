@@ -98,7 +98,6 @@ export const View = ({ viewId }: { viewId: string }) => {
         },
     })
     const path: Path = [[mouldId, state], []]
-    const included = useIsIncludePath(path)
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
     const [paused, setPaused] = useState(true)
@@ -111,11 +110,13 @@ export const View = ({ viewId }: { viewId: string }) => {
             {selected && viewRef.current && (
                 <>
                     <Moveable
+                        key={JSON.stringify({ x, y, width, height })}
                         target={viewRef.current}
                         resizable
                         draggable
                         origin={false}
                         throttleResize={0}
+                        edge
                         // keepRatio={true}
                         onResize={({
                             target,

@@ -1,0 +1,43 @@
+
+UI - interface - Code
+
+                - build(data, code) -> production
+                - production(Runtime(data, code))
+interface + UI  - data - binary - editor
+
+                - dsl(Diff)
+
+UI  -  dsl  -  Code
+
+- Sketch | Figma | Framer -> UI
+- 手写 UI - DSL - Code   （ Framework ） <  手写 React
+
+- DSL -》 lint -》 Compiler -》 Runtime -》 高亮
+- Editor > 手写 React
+
+- use path
+
+- Components - layout engine -> node tree (transform3d) -> style
+
+- build system (Connect to Code)
+
+------ 可用
+
+- SaaS(Self-host)
+
+- engineer 维护 code base，管理 Components
+
+- designer（Figma）
+
+- business enginerring
+
+------ 产品化
+
+- 生态
+- language
+
+
+
+- UI 支持 Figma 导入
+- React 兼容
+- （局部）

@@ -1,0 +1,35 @@
+const Components = {
+    'Kit': ...,
+    'Stack': ...
+}
+
+() => [{
+    label: string,
+    src: string,
+    color: Color
+}, 'state 0' | 'state 1']
+
+(input) => {
+    const [scope, state] = use(input) // use = code
+    const tree = states[state]
+
+    const render = (component) => {
+        const {type, props, children} = component
+        const Comp = Components[type]
+
+        if (type === 'Kit') {
+            const kit = props.__kitName
+            kit.dataMappingVector.map(mapping => {
+                const [field, scope] = mapping
+
+                props[field] = scope
+            })
+        }
+
+        return <Comp {...props}>
+            {children.map(render)}
+        </Comp>
+    }
+
+    return render(tree)
+}

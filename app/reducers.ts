@@ -30,6 +30,7 @@ import {
     handleModifyKitName,
     handleDeleteKit,
     handleDeleteScope,
+    handleRenderRecursiveMould,
 } from './appShell'
 
 export default () => [
@@ -65,4 +66,5 @@ export default () => [
     handleModifyKitName,
     handleDeleteKit,
     handleDeleteScope,
+    handleRenderRecursiveMould,
 ]
