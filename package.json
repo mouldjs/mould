@@ -19,6 +19,7 @@
         "b1ncer-react-tag-input": "^0.0.0",
         "debounce": "^1.2.0",
         "immer": "^6.0.5",
+        "lodash": "^4.17.15",
         "nanoid": "^2.1.2",
         "next": "^9.3.2",
         "node-sass": "^4.13.1",

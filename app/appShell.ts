@@ -13,6 +13,7 @@ import {
 } from './types'
 import { initialData, pathToString, viewPathToString } from './utils'
 import nanoid from 'nanoid'
+import { filter } from 'lodash'
 
 type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
@@ -892,6 +893,31 @@ export const handleRenderRecursiveMould = handleAction<
         if (!state.recursiveRendered.includes(key)) {
             state.recursiveRendered.push(key)
         }
+
+        return state
+    },
+    initialData
+)
+
+type ToggleViewsAction = {
+    excludes: string
+}
+
+const TOGGLE_VIEWS = 'TOGGLE_VIEWS'
+export const toggleViews = createAction<ToggleViewsAction>(TOGGLE_VIEWS)
+export const handleToggleViews = handleAction<EditorState, ToggleViewsAction>(
+    TOGGLE_VIEWS,
+    (state, { payload: { excludes } }) => {
+        const { views } = state
+        const target = excludes
+
+        const allViews = Object.keys(views)
+        const ownViews = filter(allViews, (v) => views[v].mouldId === target)
+
+        state.testWorkspace.views =
+            state.testWorkspace.views.length === allViews.length
+                ? ownViews
+                : allViews
 
         return state
     },

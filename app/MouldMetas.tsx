@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
+import { EditorState } from './types'
 import { Input, DropdownMenu, Button, Menu, MenuItem } from '@modulz/radix'
 import { useCurrentMould } from './utils'
 import { Cell, TitledBoard } from '../inspector/FormComponents'
-import { useDispatch } from 'react-redux'
-import { modifyMeta, addInput } from './appShell'
+import { useDispatch, useSelector } from 'react-redux'
+import { modifyMeta, addInput, toggleViews } from './appShell'
 import { MouldInput } from './MouldInput'
 import { Plus } from 'react-feather'
+import { Switch } from '@blueprintjs/core'
 import Controls from '../controls'
 
 const InputTypes = Object.keys(Controls)
@@ -16,10 +18,12 @@ export const MouldMetas = () => {
     const [addingControlType, setAddingControlType] = useState<string | null>(
         null
     )
-
+    const { moulds } = useSelector((state: EditorState) => state)
     if (!mould) {
         return null
     }
+
+    const tipVisible = Object.keys(moulds).length > 1
 
     return (
         <TitledBoard
@@ -92,6 +96,32 @@ export const MouldMetas = () => {
                     }}
                 ></Input>
             </Cell>
+            {tipVisible && (
+                <>
+                    <div
+                        className="m-t"
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Switch
+                            alignIndicator="right"
+                            label="Hide other Moulds"
+                            large={true}
+                            onChange={(e) => {
+                                dispatch(
+                                    toggleViews({
+                                        excludes: mould.id,
+                                    })
+                                )
+                            }}
+                            value="accept"
+                        ></Switch>
+                    </div>
+                </>
+            )}
             <Cell label="Function">
                 <Input
                     key={mould.id}

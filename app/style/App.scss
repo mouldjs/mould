@@ -27,10 +27,26 @@ radix-portal div {
     margin-left: 5px;
 }
 
+.m-t {
+    margin-top: 10px;
+}
+
+.m-t-sm {
+    margin-top: 5px;
+}
+
 .clickable {
     cursor: pointer;
 }
 
 .warn {
     color: map-get($color, warn)
+}
+
+.primary {
+    color: map-get($color, primary)
+}
+
+.pure {
+    color: map-get($color, pure)
 }
