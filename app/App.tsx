@@ -17,7 +17,12 @@ import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
+import {
+    cancelCreating,
+    deleteNode,
+    waitingForCreating,
+    toggleViews,
+} from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
@@ -79,6 +84,7 @@ const App = () => {
                 handleKeys={['backspace', 'del']}
                 onKeyEvent={() => {
                     dispatch(deleteNode())
+                    dispatch(toggleViews({ excludes: '' }))
                 }}
             />
             {/* hit m to easy add a new mould */}
