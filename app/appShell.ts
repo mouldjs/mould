@@ -500,7 +500,8 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                 info.dropPosition - Number(dropPos[dropPos.length - 1])
 
             const loop = (data, key, addPath, callback) => {
-                data.forEach((item, index, arr) => {
+                const target = Array.isArray(data) ? data : data.children
+                target.forEach((item, index, arr) => {
                     const path = addPath ? `${addPath}-${index}` : `${index}`
                     if (path === key) {
                         callback(item, index, arr)
