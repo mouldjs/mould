@@ -591,6 +591,12 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
     DELETE_NODE,
     (state) => {
         const selection = state.selection
+        const views = state.views
+        const allViews = Object.keys(views)
+        if (state.testWorkspace.views.length !== allViews.length) {
+            state.testWorkspace.views = allViews
+        }
+
         if (selection) {
             if (selection[1].length) {
                 deleteChildren(
