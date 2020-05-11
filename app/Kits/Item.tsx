@@ -8,7 +8,7 @@ import { ArcherElement } from 'react-archer'
 import { useCurrentState } from '../utils'
 import { useDrop, useDrag } from 'react-dnd'
 import { useDispatch, useSelector } from 'react-redux'
-import { modifyKitName, deleteKit } from '../appShell'
+import { modifyKitName, deleteKit, disconnectScopeToKit } from '../appShell'
 import { Kit, EditorState } from '../types'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 
@@ -270,7 +270,7 @@ const MouldKitItem = ({
                     justifyContent="center"
                     alignItems="flex-end"
                 >
-                    {dataMappingVector.map(([source, target]) => {
+                    {dataMappingVector.map(([source, target], index) => {
                         return (
                             <ArcherElement
                                 key={`prop-${source}-${name}`}
@@ -283,9 +283,36 @@ const MouldKitItem = ({
                                     },
                                 ]}
                             >
-                                <div>
-                                    <Text size={0}>{source}</Text>
-                                </div>
+                                <Hover style={{ position: 'relative' }}>
+                                    {(isHovered) => (
+                                        <>
+                                            <X
+                                                color="#333"
+                                                size={10}
+                                                onClick={() => {
+                                                    dispatch(
+                                                        disconnectScopeToKit({
+                                                            scope: target,
+                                                            prop: source,
+                                                            mouldId,
+                                                            kitName: name,
+                                                        })
+                                                    )
+                                                }}
+                                                className="clickable"
+                                                style={{
+                                                    position: 'absolute',
+                                                    display: isHovered
+                                                        ? 'block'
+                                                        : 'none',
+                                                    left: '-10px',
+                                                    top: '3px',
+                                                }}
+                                            ></X>
+                                            <Text size={0}>{source}</Text>
+                                        </>
+                                    )}
+                                </Hover>
                             </ArcherElement>
                         )
                     })}

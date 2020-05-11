@@ -13,7 +13,7 @@ import {
 } from './types'
 import { initialData, pathToString, viewPathToString } from './utils'
 import nanoid from 'nanoid'
-import { filter } from 'lodash'
+import { filter, remove, find } from 'lodash'
 
 type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
@@ -500,7 +500,8 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                 info.dropPosition - Number(dropPos[dropPos.length - 1])
 
             const loop = (data, key, addPath, callback) => {
-                data.forEach((item, index, arr) => {
+                const target = Array.isArray(data) ? data : data.children
+                target.forEach((item, index, arr) => {
                     const path = addPath ? `${addPath}-${index}` : `${index}`
                     if (path === key) {
                         callback(item, index, arr)
@@ -691,6 +692,31 @@ export const handleConnectScopeToKit = handleAction<
         const kit = mould.kits[kitIndex]
         kit.dataMappingVector.push([prop, scope])
 
+        return state
+    },
+    initialData
+)
+
+type DisConnectScopeToKit = {
+    scope: string
+    prop: string
+    mouldId: ID
+    kitName: string
+}
+const DISCONNECT_SCOPE_TO_KIT = 'DISCONNECT_SCOPE_TO_KIT'
+export const disconnectScopeToKit = createAction<DisConnectScopeToKit>(
+    DISCONNECT_SCOPE_TO_KIT
+)
+export const handleDisConnectScopeToKit = handleAction<
+    EditorState,
+    DisConnectScopeToKit
+>(
+    DISCONNECT_SCOPE_TO_KIT,
+    (state, { payload: { scope, prop, mouldId, kitName } }) => {
+        const mould = state.moulds[mouldId]
+        const kit = find(mould.kits, (k) => k.name === kitName)
+
+        remove(kit.dataMappingVector, (v) => v[0] === prop && v[1] === scope)
         return state
     },
     initialData
