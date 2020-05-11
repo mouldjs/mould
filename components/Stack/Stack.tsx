@@ -27,6 +27,7 @@ import { nameToParam } from '../../app/utils'
 import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
+import { StackProps as StandardStackProp } from '../../standard'
 
 const Direction = z.union([
     z.literal('column'),
@@ -79,9 +80,9 @@ const transformStyles = ({
     shadowsProps,
     innerShadowsProps,
 }: StyleProperties) => {
-    let res: CSSProperties = {}
+    let res: StandardStackProp = {}
     if (fillProps && fillProps.active) {
-        res = { ...res, background: transformColorToStr(fillProps.color) }
+        res = { ...res, fill: transformColorToStr(fillProps.color) }
     }
     if (borderProps) {
         res = { ...res, ...transformBorderProps(borderProps) }
@@ -126,14 +127,20 @@ const transformStyles = ({
         handleShadow(innerShadowsProps, true)
     }
     if (shadowStr) {
-        res.boxShadow = shadowStr
+        res.shadow = shadowStr
     }
 
     return res
 }
 
 const mapDistribution: {
-    [distribution in StackDistribution]: string
+    [distribution in StackDistribution]:
+        | 'flex-start'
+        | 'flex-end'
+        | 'center'
+        | 'space-between'
+        | 'space-around'
+        | 'space-evenly'
 } = {
     Start: 'flex-start',
     Center: 'center',
@@ -162,18 +169,19 @@ const transformStackContent = ({
     const paddingParam =
         typeof padding === 'object'
             ? {
-                  paddingTop: padding.t,
-                  paddingRight: padding.r,
-                  paddingBottom: padding.b,
-                  paddingLeft: padding.l,
+                  paddingTop: padding.t + '',
+                  paddingRight: padding.r + '',
+                  paddingBottom: padding.b + '',
+                  paddingLeft: padding.l + '',
               }
             : {
-                  padding,
+                  padding: padding + '',
               }
 
     return {
         ...paddingParam,
-        flexDirection: direction === 'Vertical' ? 'column' : 'row',
+        flexDirection:
+            direction === 'Vertical' ? 'column' : ('row' as 'column' | 'row'),
         justifyContent: mapDistribution[distribute],
         alignItems: mapAlignment[alignment],
         // gap,
@@ -213,11 +221,11 @@ const transformLayout = (
     return {
         width: `${width.amount}${width.unit}`,
         height: `${height.amount}${height.unit}`,
-        overflow: nameToParam(overflow),
-        opacity: `${opacity}%`,
+        overflow: nameToParam(overflow) as 'visible' | 'hidden' | undefined,
+        opacity: opacity / 100 + '',
         rotate: rotation,
-        borderRadius: radiusStr,
-    } as any
+        radius: radiusStr,
+    }
 }
 
 const transform = ({
@@ -241,7 +249,6 @@ const transform = ({
         }),
         ...transformStackContent(stackProps),
         ...transformLayout(layoutProps),
-        display: 'flex',
     }
 }
 
@@ -345,7 +352,7 @@ export default forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawStack ref={ref as any} style={style} {...rest}>
+                <RawStack ref={ref as any} {...style} {...rest}>
                     {children}
                 </RawStack>
             </>

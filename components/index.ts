@@ -31,8 +31,8 @@ export default [
     },
     {
         type: 'Stack',
-        component: Stack,
         icon: Layers,
+        component: Stack,
         propType: stackProps,
     },
     {

@@ -304,19 +304,19 @@ export const View = ({ viewId }: { viewId: string }) => {
                 ></MouldInput>
             )}
             <ViewContextProvider value={view}>
-                <Box
+                <div
                     ref={(dom) => {
                         drop(dom)
-                        viewRef.current = dom
+                        viewRef.current = dom as any
                     }}
-                    boxShadow="0px 0px 5px #aaaaaa"
-                    position="absolute"
                     style={{
                         width,
                         height,
                         left: x,
                         top: y,
                         background: 'transparent',
+                        boxShadow: '0px 0px 5px #aaaaaa',
+                        position: 'absolute',
                     }}
                     onDoubleClickCapture={() => {
                         if (!mould.states[state]) {
@@ -352,7 +352,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                             {...inputValue}
                         ></RuntimeMould>
                     )}
-                </Box>
+                </div>
             </ViewContextProvider>
         </>
     )
