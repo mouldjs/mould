@@ -87,12 +87,12 @@ const MouldKitItem = ({
     if (plugin.type === 'Kit') {
         return null
     }
-    const Icon = plugin.icon
+    const Icon = plugin.Icon
 
     const fields =
         plugin.type === 'Mould'
             ? Object.keys(moulds[(param as any).mouldId].input)
-            : Object.keys(plugin.propType._def.shape)
+            : Object.keys(plugin.Standard!._def.shape)
     const [inputValue, setInputValue] = useState(name)
 
     const [errorTip, setErrorTip] = useState('')
@@ -127,22 +127,33 @@ const MouldKitItem = ({
                 border: '1px solid #ccc',
             }}
         >
-            <Flex
-                justifyContent="space-between"
-                p={10}
-                pl={20}
+            <div
+                style={{
+                    justifyContent: 'space-between',
+                    padding: 10,
+                    paddingLeft: 20,
+                    display: 'flex',
+                }}
                 ref={(dom) => {
                     ready && drop(dom)
                     ready && drag(dom)
                 }}
             >
-                <Flex alignItems="center" width="100%">
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                    }}
+                >
                     <Icon></Icon>
-                    <Flex
-                        width="100%"
-                        ml="5px"
-                        flexDirection="column"
-                        justifyContent="space-between"
+                    <div
+                        style={{
+                            width: '100%',
+                            marginLeft: 5,
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                        }}
                     >
                         <div
                             style={{
@@ -262,13 +273,16 @@ const MouldKitItem = ({
                                 <X color="#333" size={13}></X>
                             </div>
                         )}
-                    </Flex>
-                </Flex>
+                    </div>
+                </div>
 
-                <Flex
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="flex-end"
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                    }}
                 >
                     {dataMappingVector.map(([source, target]) => {
                         return (
@@ -295,7 +309,7 @@ const MouldKitItem = ({
                                 key="Popover"
                                 interactionKind={PopoverInteractionKind.HOVER}
                             >
-                                <Flex alignItems="center">
+                                <Flex translate alignItems="center">
                                     Select
                                     <ChevronDown
                                         color="#333"
@@ -303,6 +317,7 @@ const MouldKitItem = ({
                                     ></ChevronDown>
                                 </Flex>
                                 <Grid
+                                    translate
                                     p={10}
                                     sx={{
                                         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -347,8 +362,8 @@ const MouldKitItem = ({
                             </Popover>
                         </>
                     )}
-                </Flex>
-            </Flex>
+                </div>
+            </div>
         </Card>
     )
 }

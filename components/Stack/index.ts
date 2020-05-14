@@ -1,9 +1,12 @@
+import { Layers } from 'react-feather'
 import Stack from './Stack'
 import { RawStack } from './RawStack'
-import { Stack as StackProps } from '../../standard'
+import { Stack as StackStandard } from '../../standard'
 
 export const Editable = Stack
 
 export const Raw = RawStack
 
-export const propType = StackProps
+export const Icon = Layers
+
+export const Standard = StackStandard

@@ -15,7 +15,7 @@ const Tree = forwardRef(
             return null
         }
 
-        const Comp = plugin.component
+        const Comp = plugin.Editable
 
         return (
             <Comp ref={ref} {...props}>

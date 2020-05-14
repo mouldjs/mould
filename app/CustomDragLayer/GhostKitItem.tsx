@@ -3,7 +3,7 @@ import Components from '@components'
 
 const KitItem = ({ type, name, isList }) => {
     const plugin = Components.find((c) => c.type === type)
-    const Icon = plugin?.icon
+    const Icon = plugin?.Icon
 
     return (
         <Card
@@ -11,10 +11,11 @@ const KitItem = ({ type, name, isList }) => {
             mb={5}
             sx={{ position: 'relative', transform: 'rotate(-5deg)' }}
         >
-            <Flex justifyContent="space-between" p={10} pl={20}>
-                <Flex alignItems="center" width="100%">
+            <Flex translate justifyContent="space-between" p={10} pl={20}>
+                <Flex translate alignItems="center" width="100%">
                     <Icon></Icon>
                     <Flex
+                        translate
                         width="100%"
                         ml="5px"
                         flexDirection="column"

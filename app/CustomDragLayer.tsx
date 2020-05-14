@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDragLayer } from 'react-dnd'
-import GhostKitItem from '@components/CustomDragLayer/GhostKitItem'
+import GhostKitItem from './CustomDragLayer/GhostKitItem'
 
 const layerStyles = {
     position: 'fixed',

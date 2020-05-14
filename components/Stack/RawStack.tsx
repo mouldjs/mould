@@ -2,7 +2,8 @@ import React, { SFC, RefForwardingComponent } from 'react'
 import styled from 'styled-components'
 import { StackProps } from '../../standard'
 
-const mouseEventWrapper = (fn) => (event) => fn(event.stopPropagation)
+const mouseEventWrapper = (fn) => (event) =>
+    fn ? fn(event.stopPropagation) : fn
 
 export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     StackProps
@@ -14,7 +15,7 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     flex-direction: ${(props) => props.flexDirection};
     justify-content: ${(props) => props.justifyContent};
     align-items: ${(props) => props.alignItem};
-    boxshadow: ${(props) => props.shadow};
+    box-shadow: ${(props) => props.shadow};
     filter: ${(props) => props.filter};
     border-width: ${(props) => props.borderWidth};
     border-style: ${(props) => props.borderStyle};
@@ -24,5 +25,5 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     height: ${(props) => props.height};
     overflow: ${(props) => props.overflow};
     opacity: ${(props) => parseFloat(props.opacity || '1')};
-    borderradius: ${(props) => props.radius};
+    border-radius: ${(props) => props.radius};
 `

@@ -20,7 +20,7 @@ import {
     removeInput,
 } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
-import Mould from './Mould'
+import EditingMould from './EditingMould'
 import { ViewContext } from './Contexts'
 import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
@@ -345,7 +345,10 @@ export const View = ({ viewId }: { viewId: string }) => {
                         </Text>
                     </div>
                     {paused ? (
-                        <Mould {...mould} currentState={state}></Mould>
+                        <EditingMould
+                            {...mould}
+                            currentState={state}
+                        ></EditingMould>
                     ) : (
                         <RuntimeMould
                             __mouldId={mould.id}

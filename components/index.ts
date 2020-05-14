@@ -1,53 +1,24 @@
-import {
-    Type,
-    Image as ImageIcon,
-    Layers,
-    Box,
-    Italic,
-    Package,
-} from 'react-feather'
+import { Cpu, Code } from 'react-feather'
 import { AtomicComponent } from '../app/types'
-// import Hello from './Hello'
-import Image, { imageProps } from './Image'
-import Stack, { stackProps } from './Stack/Stack'
 import Mould from './Mould'
-import Text, { textProps } from './Text'
-import Input, { inputProps } from './Input'
 import Kit from './Kit'
+import * as Stack from './Stack'
 
 export default [
-    // Hello,
-    {
-        type: 'Text',
-        component: Text,
-        icon: Type,
-        propType: textProps,
-    },
-    {
-        type: 'Image',
-        component: Image,
-        icon: ImageIcon,
-        propType: imageProps,
-    },
     {
         type: 'Stack',
-        icon: Layers,
-        component: Stack,
-        propType: stackProps,
-    },
-    {
-        type: 'Mould',
-        component: Mould,
-        icon: Box,
-    },
-    {
-        type: 'Input',
-        component: Input,
-        icon: Italic,
-        propType: inputProps,
+        ...Stack,
     },
     {
         type: 'Kit',
-        component: Kit,
+        Editable: Kit,
+        Raw: Kit,
+        Icon: Code,
+    },
+    {
+        type: 'Mould',
+        Editable: Mould,
+        Raw: Mould,
+        Icon: Cpu,
     },
 ] as AtomicComponent[]
