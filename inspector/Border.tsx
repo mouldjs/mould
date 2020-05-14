@@ -59,15 +59,23 @@ export const transformBorderProps = (data: BorderPropTypes | undefined) => {
         const w = (data.borderWidth as any) as BorderSplittedWidthType
         return {
             borderWidth: `${w.t}px ${w.r}px ${w.b}px ${w.l}px`,
-            borderStyle: data.borderStyle,
+            borderStyle: data.borderStyle.toLowerCase() as
+                | 'solid'
+                | 'dashed'
+                | 'dotted'
+                | 'double',
             borderColor: transformColorToStr(data.borderColor),
         }
     }
 
     return {
-        border: `${data.borderWidth}px ${
-            data.borderStyle
-        } ${transformColorToStr(data.borderColor)}`,
+        borderWidth: `${data.borderWidth}px`,
+        borderStyle: data.borderStyle.toLowerCase() as
+            | 'solid'
+            | 'dashed'
+            | 'dotted'
+            | 'double',
+        borderColor: transformColorToStr(data.borderColor),
     }
 }
 

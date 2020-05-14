@@ -98,9 +98,10 @@ export type EditorState = {
 
 export type AtomicComponent = {
     type: string
-    component: ForwardRefExoticComponent<any>
-    icon: ComponentType
-    propType: z.ZodObject<{ [k: string]: any }>
+    Standard?: z.ZodObject<{ [key: string]: any }>
+    Icon: ComponentType
+    Editable: ForwardRefExoticComponent<any>
+    Raw: ForwardRefExoticComponent<any>
 }
 
 export type useScopeFn = (input: object) => [StateName, object]

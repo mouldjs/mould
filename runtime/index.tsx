@@ -37,7 +37,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                 return components.map((component) => {
                     let Comp = Components.find(
                         (c) => c.type === component.type
-                    )!.component
+                    )!.Raw
                     let { props, children } = component
                     if (component.type === 'Kit') {
                         const kitName = (component as any).props.__kitName
@@ -63,7 +63,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                             } else {
                                 Comp = Components.find(
                                     (c) => c.type === kit!.type
-                                )!.component
+                                )!.Raw
                             }
                         } else {
                             Comp = List
@@ -109,7 +109,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
             }
             const RootComp = Components.find(
                 (c) => c.type === rootComponent.type
-            )!.component
+            )!.Raw
 
             return (
                 <RootComp {...rootComponent.props} ref={ref}>

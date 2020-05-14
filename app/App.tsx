@@ -4,7 +4,7 @@ import '@/app/style/blueprint.scss'
 // import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@/app/style/App.scss'
 import dynamic from 'next/dynamic'
-import CustomDragLayer from '@components/CustomDragLayer'
+import CustomDragLayer from './CustomDragLayer'
 import { Workspace } from './Workspaces'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
@@ -64,6 +64,7 @@ const App = () => {
 
     return (
         <Flex
+            translate
             flexDirection="column"
             bg="#f1f1f1"
             minHeight="100vh"
@@ -116,11 +117,12 @@ const App = () => {
                 handleKeys={['shift+meta+z']}
                 onKeyEvent={() => dispatch(redo())}
             ></KeyboardEventHandler>
-            <Box width="100vw">
+            <div style={{ width: '100vw' }}>
                 <Toolbar></Toolbar>
-            </Box>
+            </div>
 
             <Flex
+                translate
                 flex={1}
                 overflow="hidden"
                 flexDirection="row"
@@ -132,6 +134,7 @@ const App = () => {
             >
                 <MouldStates></MouldStates>
                 <Box
+                    translate
                     width={215}
                     style={{
                         transition: '0.3s',
@@ -167,6 +170,7 @@ const App = () => {
                     </ArcherContainer>
                 </Box>
                 <Box
+                    translate
                     flex={1}
                     style={{
                         // zoom: selection ? 1 : 0.7,
@@ -178,6 +182,7 @@ const App = () => {
                     <Workspace {...testWorkspace}></Workspace>
                 </Box>
                 <Box
+                    translate
                     width={215}
                     style={{
                         transition: '0.3s',

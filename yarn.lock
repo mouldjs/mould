@@ -1474,7 +1474,7 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/hoist-non-react-statics@^3.3.0", "@types/hoist-non-react-statics@^3.3.1":
+"@types/hoist-non-react-statics@*", "@types/hoist-non-react-statics@^3.3.0", "@types/hoist-non-react-statics@^3.3.1":
   version "3.3.1"
   resolved "https://registry.npm.taobao.org/@types/hoist-non-react-statics/download/@types/hoist-non-react-statics-3.3.1.tgz#1124aafe5118cb591977aeb1ceaaed1070eb039f"
   integrity sha1-ESSq/lEYy1kZd66xzqrtEHDrA58=
@@ -1513,6 +1513,13 @@
   integrity sha1-X9HyI4HM+ROjYnvrFvRo+1f4LZQ=
   dependencies:
     ts-toolbelt "^4.7.7"
+
+"@types/react-native@*":
+  version "0.62.7"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.62.7.tgz#bfc5ed03ba576f288603daa3f67f0f67d9a8bf57"
+  integrity sha512-FGFEt9GcFVl//XxWmxkeBxAx0YnzyEhJpR8hOJrjfaFKZm0KjHzzyCmCksBAP2qHSTrcJCiBkIvYCX/kGiOgww==
+  dependencies:
+    "@types/react" "*"
 
 "@types/react-redux@^7.1.4":
   version "7.1.4"
@@ -1555,6 +1562,16 @@
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/@types/shallowequal/download/@types/shallowequal-1.1.1.tgz#aad262bb3f2b1257d94c71d545268d592575c9b1"
   integrity sha1-qtJiuz8rElfZTHHVRSaNWSV1ybE=
+
+"@types/styled-components@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.0.tgz#24d3412ba5395aa06e14fbc93c52f9454cebd0d6"
+  integrity sha512-ZFlLCuwF5r+4Vb7JUmd+Yr2S0UBdBGmI7ctFTgJMypIp3xOHI4LCFVn2dKMvpk6xDB2hLRykrEWMBwJEpUAUIQ==
+  dependencies:
+    "@types/hoist-non-react-statics" "*"
+    "@types/react" "*"
+    "@types/react-native" "*"
+    csstype "^2.2.0"
 
 "@types/styled-system__core@npm:@peduarte/styled-system__core":
   version "0.0.1"
@@ -9271,10 +9288,10 @@ yargs@^7.0.0:
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
 
-zod@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-1.2.5.tgz#3fbc28c91bb3116c7432da3951187d797cc43114"
-  integrity sha512-ouBihIDXCxR/TpmIgciDdqFAm2PKIZ6jh/M86T4JOK0LhMtr+Fe+lMXd4C9I4QlCqmlPtNFfwEekiIzs9gxd9w==
+zod@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-1.6.0.tgz#d42738ef2fffef1d2ee39cead3c0008bdcde8694"
+  integrity sha512-gi+3GL7uwq87hlwBNqh6EAXLKPEOfjZBAQW51p2EAqMb/Sl+lpQqUsXvwx7NdVJOKKBizicCA4vF4DjQ2zUVNA==
 
 zustand@^2.2.3:
   version "2.2.3"

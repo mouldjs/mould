@@ -58,7 +58,11 @@ const Mould = forwardRef(
         const view = useContext(ViewContext)
 
         if (!mould) {
-            return <Error ref={ref}>{`Mould ${__mouldId} not found.`}</Error>
+            return (
+                <Error
+                    ref={ref as any}
+                >{`Mould ${__mouldId} not found.`}</Error>
+            )
         }
 
         const { states, input, kits } = mould
@@ -69,7 +73,10 @@ const Mould = forwardRef(
 
             if (!recursiveRender) {
                 return (
-                    <Info ref={ref} onDoubleClickCapture={onDoubleClickCapture}>
+                    <Info
+                        ref={ref as any}
+                        onDoubleClickCapture={onDoubleClickCapture}
+                    >
                         <span
                             onClick={() => {
                                 dispatch(renderRecursiveMould({ key: pathStr }))
@@ -98,7 +105,7 @@ const Mould = forwardRef(
                 return null
             }
 
-            const Comp = plugin.component
+            const Comp = plugin.Editable
 
             if (type === 'Kit') {
                 const pathStr = pathToString(path)

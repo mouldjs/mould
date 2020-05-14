@@ -20,7 +20,7 @@ import {
     removeInput,
 } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
-import Mould from './Mould'
+import EditingMould from './EditingMould'
 import { ViewContext } from './Contexts'
 import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
@@ -304,19 +304,19 @@ export const View = ({ viewId }: { viewId: string }) => {
                 ></MouldInput>
             )}
             <ViewContextProvider value={view}>
-                <Box
+                <div
                     ref={(dom) => {
                         drop(dom)
-                        viewRef.current = dom
+                        viewRef.current = dom as any
                     }}
-                    boxShadow="0px 0px 5px #aaaaaa"
-                    position="absolute"
                     style={{
                         width,
                         height,
                         left: x,
                         top: y,
                         background: 'transparent',
+                        boxShadow: '0px 0px 5px #aaaaaa',
+                        position: 'absolute',
                     }}
                     onDoubleClickCapture={() => {
                         if (!mould.states[state]) {
@@ -345,14 +345,17 @@ export const View = ({ viewId }: { viewId: string }) => {
                         </Text>
                     </div>
                     {paused ? (
-                        <Mould {...mould} currentState={state}></Mould>
+                        <EditingMould
+                            {...mould}
+                            currentState={state}
+                        ></EditingMould>
                     ) : (
                         <RuntimeMould
                             __mouldId={mould.id}
                             {...inputValue}
                         ></RuntimeMould>
                     )}
-                </Box>
+                </div>
             </ViewContextProvider>
         </>
     )

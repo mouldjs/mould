@@ -131,7 +131,7 @@ export const Tree = ({
     if (!plugin) {
         return null
     }
-    const Comp = plugin.component
+    const Comp = plugin.Editable
 
     let inside =
         Array.isArray(children) && children.length
