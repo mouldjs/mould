@@ -3,9 +3,32 @@ import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Layers, Image, Type, Italic, Move } from 'react-feather'
 import { useDrag } from 'react-dnd'
 
-const icons = ['Stack']
+const icons = ['Stack', 'Text']
 const getIcon = (name) => {
     const baseComponents = {
+        Text: {
+            icon: <Type color="#fff"></Type>,
+            descInPopover: (
+                <>
+                    <Move size={32} color="#666"></Move>
+                    <Text
+                        as="p"
+                        mt={15}
+                        sx={{ color: '#666', textAlign: 'center' }}
+                    >
+                        Create a {name}
+                    </Text>
+                    <Text
+                        size={2}
+                        as="p"
+                        mt={10}
+                        sx={{ color: '#666', lineHeight: '1.3' }}
+                    >
+                        Grabbing to kits or your working view directly.
+                    </Text>
+                </>
+            ),
+        },
         Stack: {
             icon: <Layers color="#fff"></Layers>,
             descInPopover: (

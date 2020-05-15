@@ -106,11 +106,11 @@ export type AtomicComponent = {
 
 export type useScopeFn = (input: object) => [StateName, object]
 
-export type InspectorProps<T> = {
+export type InspectorProps<T, Option = {}> = {
     data: T | undefined
     onChange: (data: T | undefined) => void
     title?: string
     connectedFields?: string[]
-}
+} & Option
 
-export type Inspector<T> = SFC<InspectorProps<T>>
+export type Inspector<T, Option = {}> = SFC<InspectorProps<T, Option>>

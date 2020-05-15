@@ -33,12 +33,10 @@ const initialData: ShadowType = {
     spread: 0,
 }
 
-export const ShadowsInspector: Inspector<ShadowsPropTypes> = ({
-    title,
-    data,
-    onChange,
-    connectedFields,
-}) => {
+export const ShadowsInspector: Inspector<
+    ShadowsPropTypes,
+    { withoutSpread?: boolean }
+> = ({ title, data, onChange, connectedFields, withoutSpread }) => {
     const fields = intersection(connectedFields || [], ['shadow'])
     if (connectedFields && !fields.length) {
         return null
@@ -155,6 +153,7 @@ export const ShadowsInspector: Inspector<ShadowsPropTypes> = ({
                                             min={0}
                                         ></NumericInput>
                                         <NumericInput
+                                            disabled={withoutSpread}
                                             value={shadow.spread}
                                             onValueChange={(value) => {
                                                 const next = [...data]
