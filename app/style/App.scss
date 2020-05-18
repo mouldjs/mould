@@ -50,3 +50,10 @@ radix-portal div {
 .pure {
     color: map-get($color, pure)
 }
+
+input.editable-state {
+    &::placeholder {
+        color: #666;
+        font-weight: normal,
+    }
+}
