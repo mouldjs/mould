@@ -1,7 +1,11 @@
-import { Flex, Text } from '@modulz/radix'
+import { useDispatch, useSelector } from 'react-redux'
+import { Text } from '@modulz/radix'
+import { waitingForCreating } from '../appShell'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
-import { Layers, Image, Type, Italic, Move } from 'react-feather'
+import { Layers, Move } from 'react-feather'
 import { useDrag } from 'react-dnd'
+import { useCurrentMould } from '../utils'
+import nanoid from 'nanoid'
 
 const icons = ['Stack', 'Text']
 const getIcon = (name) => {
@@ -33,7 +37,9 @@ const getIcon = (name) => {
             icon: <Layers color="#fff"></Layers>,
             descInPopover: (
                 <>
-                    <Move size={32} color="#666"></Move>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Move size={32} color="#666"></Move>
+                    </div>
                     <Text
                         as="p"
                         mt={15}
@@ -47,7 +53,9 @@ const getIcon = (name) => {
                         mt={10}
                         sx={{ color: '#666', lineHeight: '1.3' }}
                     >
-                        Grabbing to kits or your working view directly.
+                        Grabbing to kits or your working view directly. Or click
+                        and drag a new state with having a {name} in workspace
+                        below.
                     </Text>
                 </>
             ),
@@ -57,8 +65,11 @@ const getIcon = (name) => {
 }
 
 const Icon = ({ name }) => {
+    const dispatch = useDispatch()
+    const currentMould = useCurrentMould()
     const [, drag] = useDrag({ item: { type: 'TREE', name } })
     const { icon, descInPopover } = getIcon(name)
+
     return (
         <Popover interactionKind={PopoverInteractionKind.HOVER}>
             <div
@@ -67,6 +78,31 @@ const Icon = ({ name }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',
+                }}
+                onClick={() => {
+                    const waitingParams: {
+                        mouldId: string
+                        stateName: string
+                        injectedKitName: string
+                    } = {
+                        mouldId: '',
+                        stateName: '',
+                        injectedKitName: '',
+                    }
+
+                    if (currentMould) {
+                        waitingParams.mouldId = currentMould.id
+                        waitingParams.stateName = `state ${
+                            Object.keys(currentMould.states).length
+                        }`
+                        waitingParams.injectedKitName = name
+                    } else {
+                        waitingParams.mouldId = nanoid(6)
+                        waitingParams.stateName = 'state 0'
+                        waitingParams.injectedKitName = name
+                    }
+
+                    dispatch(waitingForCreating(waitingParams))
                 }}
                 ref={drag}
             >
