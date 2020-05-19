@@ -99,7 +99,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 transformEnabled: true,
                 disabled: false,
                 limitToWrapper: false,
-                minScale: 0.2,
+                minScale: 0.1,
                 maxScale: 3,
                 centerContent: false,
             }}
@@ -118,17 +118,17 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 animation: false,
             }}
         >
-            <TransformComponent>
-                <Box
-                    translate
-                    bg="#f1f1f1"
-                    height="100vh"
-                    position="relative"
-                    {...bind()}
-                    onDoubleClickCapture={() => {
-                        tick((data = []) => data)
-                    }}
-                >
+            <Box
+                translate
+                bg="#f1f1f1"
+                height="100vh"
+                position="relative"
+                {...bind()}
+                onDoubleClickCapture={() => {
+                    tick((data = []) => data)
+                }}
+            >
+                <TransformComponent>
                     <div
                         style={{
                             position: 'inherit',
@@ -155,8 +155,8 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                             </Box>
                         )}
                     </div>
-                </Box>
-            </TransformComponent>
+                </TransformComponent>
+            </Box>
         </TransformWrapper>
     )
 }
