@@ -31,6 +31,7 @@ const ComponentTree = ({
 
     label = (
         <Box
+            translate
             backgroundColor={
                 Array.isArray(selection) && isSelected
                     ? 'rgba(86, 169, 241, 0.7)'
@@ -81,6 +82,7 @@ const ComponentTree2 = ({
 
     label = (
         <Box
+            translate
             backgroundColor={
                 Array.isArray(selection) && isSelected
                     ? 'rgba(86, 169, 241, 0.7)'
@@ -156,6 +158,7 @@ export const Explorer2 = () => {
 
         label = (
             <Box
+                translate
                 backgroundColor={
                     Array.isArray(selection) && isSelected
                         ? 'rgba(86, 169, 241, 0.7)'

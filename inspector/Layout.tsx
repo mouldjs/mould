@@ -21,6 +21,7 @@ import {
 import { Text, Slider } from '@modulz/radix'
 import { Inspector } from '../app/types'
 import { intersection } from 'ramda'
+import { nameToParam } from '../app/utils'
 
 type LayoutSizeUnit = 'px' | '%' | 'fr'
 
@@ -48,6 +49,46 @@ export type LayoutPropTypes = {
     opacity: number
     rotation: number
     radius: LayoutRadius
+}
+
+export const transformLayout = (
+    {
+        width,
+        height,
+        lockProportion,
+        overflow,
+        opacity,
+        rotation,
+        radius,
+    }: LayoutPropTypes = {
+        width: {
+            amount: 100,
+            unit: '%',
+        },
+        height: {
+            amount: 100,
+            unit: '%',
+        },
+        lockProportion: false,
+        overflow: 'Visible',
+        opacity: 100,
+        rotation: 0,
+        radius: 0,
+    }
+) => {
+    const radiusStr =
+        typeof radius === 'object'
+            ? `${radius.t}px ${radius.r}px ${radius.b}px ${radius.l}px`
+            : `${radius}px`
+
+    return {
+        width: `${width.amount}${width.unit}`,
+        height: `${height.amount}${height.unit}`,
+        overflow: nameToParam(overflow) as 'visible' | 'hidden' | undefined,
+        opacity: opacity / 100 + '',
+        rotate: rotation,
+        radius: radiusStr,
+    }
 }
 
 const initialData: LayoutPropTypes = {

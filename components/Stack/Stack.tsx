@@ -1,8 +1,6 @@
 import React, { forwardRef, CSSProperties, useEffect } from 'react'
-import { pick } from 'ramda'
 import { ComponentInspector } from '../../app/Inspectors'
-import * as z from 'zod'
-import { ComponentPropTypes, zodComponentProps } from '../../app/types'
+import { ComponentPropTypes } from '../../app/types'
 import {
     BorderInspector,
     BorderPropTypes,
@@ -22,41 +20,16 @@ import {
     StackDistribution,
     StackAlignment,
 } from './Inspector'
-import { LayoutPropTypes, LayoutInspector } from '../../inspector/Layout'
+import {
+    LayoutPropTypes,
+    LayoutInspector,
+    transformLayout,
+} from '../../inspector/Layout'
 import { nameToParam } from '../../app/utils'
 import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
-
-const Direction = z.union([
-    z.literal('column'),
-    z.literal('row'),
-    z.literal('column-reverse'),
-    z.literal('row-reverse'),
-])
-
-const Alignment = z.union([
-    z.literal('flex-start'),
-    z.literal('flex-end'),
-    z.literal('center'),
-    z.literal('space-between'),
-    z.literal('space-around'),
-    z.literal('space-evenly'),
-    z.literal('baseline'),
-    z.literal('stretch'),
-])
-
-export const stackProps = z
-    .object({
-        direction: Direction.optional(),
-        horizontalAlign: Alignment.optional(),
-        verticalAlign: Alignment.optional(),
-        wrap: z.boolean().optional(),
-        grow: z.boolean().optional(),
-        shrink: z.boolean().optional(),
-    })
-    .merge(zodComponentProps)
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -185,46 +158,6 @@ const transformStackContent = ({
         justifyContent: mapDistribution[distribute],
         alignItems: mapAlignment[alignment],
         // gap,
-    }
-}
-
-const transformLayout = (
-    {
-        width,
-        height,
-        lockProportion,
-        overflow,
-        opacity,
-        rotation,
-        radius,
-    }: LayoutPropTypes = {
-        width: {
-            amount: 100,
-            unit: '%',
-        },
-        height: {
-            amount: 100,
-            unit: '%',
-        },
-        lockProportion: false,
-        overflow: 'Visible',
-        opacity: 100,
-        rotation: 0,
-        radius: 0,
-    }
-) => {
-    const radiusStr =
-        typeof radius === 'object'
-            ? `${radius.t}px ${radius.r}px ${radius.b}px ${radius.l}px`
-            : `${radius}px`
-
-    return {
-        width: `${width.amount}${width.unit}`,
-        height: `${height.amount}${height.unit}`,
-        overflow: nameToParam(overflow) as 'visible' | 'hidden' | undefined,
-        opacity: opacity / 100 + '',
-        rotate: rotation,
-        radius: radiusStr,
     }
 }
 
