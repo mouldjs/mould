@@ -1,17 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating } from '../appShell'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
-import { Layers, Move } from 'react-feather'
+import { Layers, Move, Type } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import nanoid from 'nanoid'
 
 const icons = ['Stack', 'Text']
-const getIcon = (name) => {
+const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
-            icon: <Type color="#fff"></Type>,
+            icon: (
+                <Type className={`${isActive ? 'primary' : 'pure'}`}></Type>
+            ),
             descInPopover: (
                 <>
                     <Move size={32} color="#666"></Move>
@@ -34,7 +37,9 @@ const getIcon = (name) => {
             ),
         },
         Stack: {
-            icon: <Layers color="#fff"></Layers>,
+            icon: (
+                <Layers className={`${isActive ? 'primary' : 'pure'}`}></Layers>
+            ),
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -66,14 +71,18 @@ const getIcon = (name) => {
 
 const Icon = ({ name }) => {
     const dispatch = useDispatch()
+    const creating = useSelector((state: EditorState) => state.creating)
     const currentMould = useCurrentMould()
     const [, drag] = useDrag({ item: { type: 'TREE', name } })
-    const { icon, descInPopover } = getIcon(name)
+    const isActive =
+        creating?.injectedKitName && creating?.injectedKitName === name
+    const { icon, descInPopover } = getIcon(name, isActive)
 
     return (
         <Popover interactionKind={PopoverInteractionKind.HOVER}>
             <div
                 style={{
+                    display: 'flex',
                     padding: '5px 10px',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -107,9 +116,13 @@ const Icon = ({ name }) => {
                 ref={drag}
             >
                 {icon}
-                <Text as="p" mt={5} sx={{ color: 'white' }}>
+                <p
+                    className={`clickable m-t-sm m-b-0 ${
+                        isActive ? 'primary' : 'pure'
+                    }`}
+                >
                     {name}
-                </Text>
+                </p>
             </div>
             <div
                 style={{

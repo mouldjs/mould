@@ -10,12 +10,17 @@ const AddMouldTrigger = () => {
 
     return (
         <Popover interactionKind={PopoverInteractionKind.HOVER}>
-            <Flex
-                px={10}
-                py={5}
-                alignItems="center"
-                justifyContent="center"
-                sx={{ flexDirection: 'column' }}
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: '5px',
+                    paddingBottom: '5px',
+                    paddingLeft: '10px',
+                    paddingRight: '10px',
+                }}
                 onClick={() =>
                     dispatch(
                         waitingForCreating({
@@ -26,10 +31,8 @@ const AddMouldTrigger = () => {
                 }
             >
                 <Plus color="#fff"></Plus>
-                <Text as="p" mt={5} sx={{ color: 'white' }}>
-                    Add Mould
-                </Text>
-            </Flex>
+                <p className={`clickable m-t-sm m-b-0 pure`}>Add Mould</p>
+            </div>
             <Flex
                 p={10}
                 width="180px"
