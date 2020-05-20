@@ -175,7 +175,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                     ></Moveable>
                     <DebugPanel.Source>
                         <div
-                            onDoubleClickCapture={(e) => {
+                            onDoubleClick={(e) => {
                                 e.stopPropagation()
                             }}
                         >
@@ -318,10 +318,10 @@ export const View = ({ viewId }: { viewId: string }) => {
                         boxShadow: '0px 0px 5px #aaaaaa',
                         position: 'absolute',
                     }}
-                    onDoubleClickCapture={() => {
+                    onDoubleClick={() => {
                         if (!mould.states[state]) {
                             tick((tickData = []) => {
-                                tickData.push(path)
+                                tickData.unshift(path)
 
                                 return tickData
                             })

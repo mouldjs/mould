@@ -35,7 +35,7 @@ const Mould = forwardRef(
             __patches = {},
             children,
             requestUpdateProps,
-            onDoubleClickCapture,
+            onDoubleClick,
             path,
             ...rest
         }: ComponentPropTypes &
@@ -43,7 +43,7 @@ const Mould = forwardRef(
                 __mouldId: string
                 __state: string
                 __patches: PropPatch
-                onDoubleClickCapture: any
+                onDoubleClick: any
             },
         ref
     ) => {
@@ -73,10 +73,7 @@ const Mould = forwardRef(
 
             if (!recursiveRender) {
                 return (
-                    <Info
-                        ref={ref as any}
-                        onDoubleClickCapture={onDoubleClickCapture}
-                    >
+                    <Info ref={ref as any} onDoubleClick={onDoubleClick}>
                         <span
                             onClick={() => {
                                 dispatch(renderRecursiveMould({ key: pathStr }))
@@ -147,9 +144,7 @@ const Mould = forwardRef(
                     {...props}
                     path={path}
                     ref={isRoot ? ref : undefined}
-                    onDoubleClickCapture={
-                        isRoot ? onDoubleClickCapture : undefined
-                    }
+                    onDoubleClick={isRoot ? onDoubleClick : undefined}
                 >
                     {children &&
                         children.map((c) =>
