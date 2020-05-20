@@ -85,6 +85,7 @@ export type Creating = {
     status: 'waiting' | 'start' | 'updating'
     view: View
     beginAt: Vector
+    injectedKitName?: string
 }
 
 export type EditorState = {

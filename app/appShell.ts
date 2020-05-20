@@ -330,7 +330,11 @@ export const handleModifyMouldTree = handleAction<
     initialData
 )
 
-type WaitingForCreatingAction = { mouldId: string; stateName: string }
+type WaitingForCreatingAction = {
+    mouldId: string
+    stateName: string
+    injectedKitName?: string
+}
 const WAITING_FOR_CREATING = 'WAITING_FOR_CREATING'
 export const waitingForCreating = createAction<WaitingForCreatingAction>(
     WAITING_FOR_CREATING
@@ -340,7 +344,7 @@ export const handleWaitingForCreating = handleAction<
     WaitingForCreatingAction
 >(
     WAITING_FOR_CREATING,
-    (state, { payload: { mouldId, stateName } }) => {
+    (state, { payload: { mouldId, stateName, injectedKitName } }) => {
         state.creating = {
             status: 'waiting',
             view: {
@@ -353,6 +357,7 @@ export const handleWaitingForCreating = handleAction<
                 height: 0,
             },
             beginAt: { x: 0, y: 0 },
+            injectedKitName,
         }
 
         return state
@@ -418,7 +423,7 @@ export const handleFinishCreating = handleAction<
 >(
     FINISH_CREATING,
     (state) => {
-        const { status, view } = state.creating || {}
+        const { status, view, injectedKitName } = state.creating || {}
         if (
             status === 'updating' &&
             typeof view === 'object' &&
@@ -437,7 +442,9 @@ export const handleFinishCreating = handleAction<
                     states: {},
                 }
             }
-            state.moulds[view.mouldId].states[view.state] = null
+            state.moulds[view.mouldId].states[view.state] = injectedKitName
+                ? { type: injectedKitName, props: {} }
+                : null
         }
 
         state.creating = undefined

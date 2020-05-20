@@ -7519,6 +7519,11 @@ react-use-gesture@^6.0.1:
   resolved "https://registry.npm.taobao.org/react-use-gesture/download/react-use-gesture-6.0.1.tgz#c66d686c63a2469de3ae178e19e3d1a04c526bf6"
   integrity sha1-xm1obGOiRp3jrheOGePRoExSa/Y=
 
+react-zoom-pan-pinch@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-zoom-pan-pinch/-/react-zoom-pan-pinch-1.6.1.tgz#da16267c258ab37e8ebcdc7c252794a9633e91ec"
+  integrity sha512-J2eM0gZ04XiUWvmKZrOhSAB2zjyoK7kw2POIeN1X0yTTlmp6HPGV0zYfjnlkhgt8nQwpvXAbsF/oAnkuiwk1kA==
+
 react@16.10.1:
   version "16.10.1"
   resolved "https://registry.npm.taobao.org/react/download/react-16.10.1.tgz#967c1e71a2767dfa699e6ba702a00483e3b0573f"

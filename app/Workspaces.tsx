@@ -1,11 +1,11 @@
 import React, { useState, useRef, DOMElement, useEffect } from 'react'
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { Box } from '@modulz/radix'
 import { Workspace as WorkspaceType, EditorState, Vector } from './types'
 import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
-import { useSpring, animated } from 'react-spring'
 import {
     selectComponent,
     startCreating,
@@ -56,94 +56,107 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
 
     const creation = creating && creating.view
     const [xy, setXY] = useState([x, y])
-    const [scale, setScale] = useState(zoom)
-    const bind = useGesture(
-        {
-            // onDrag: ({ last, movement }) => {
-            //     const xy = [x + movement[0], y + movement[1]]
-            //     setXY(xy)
-            //     if (last) {
-            //         dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
-            //     }
-            // },
-            onWheel: ({ last, movement }) => {
-                const xy = [x - movement[0], y - movement[1]]
-                setXY(xy)
-                if (last) {
-                    dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
-                }
-            },
-            onPinch: ({ da: [d, a] }) => {
-                setScale((d + zoom * 200) / 200)
-            },
-            onDrag: ({ event }) => {
-                event!.stopPropagation()
-                dispatch(
-                    updateCreating({
-                        x: (event as any).offsetX - x,
-                        y: (event as any).offsetY - y,
-                    })
-                )
-            },
-            onMouseDown: (event) => {
-                event.stopPropagation()
-                dispatch(
-                    startCreating({
-                        x: event.nativeEvent.offsetX - x,
-                        y: event.nativeEvent.offsetY - y,
-                    })
-                )
-            },
-            onMouseUp: (event) => {
-                // event.stopPropagation()
-                dispatch(finishCreating())
-            },
+    const bind = useGesture({
+        onWheel: ({ last, movement }) => {
+            const xy = [x - movement[0], y - movement[1]]
+            setXY(xy)
+            if (last) {
+                dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
+            }
         },
-        {
-            pinch: {
-                initial: [200, 1],
-            } as any,
-        }
-    )
+        onDrag: ({ event }) => {
+            event!.stopPropagation()
+            dispatch(
+                updateCreating({
+                    x: (event as any).offsetX - x,
+                    y: (event as any).offsetY - y,
+                })
+            )
+        },
+        onMouseDown: (event) => {
+            event.stopPropagation()
+            dispatch(
+                startCreating({
+                    x: event.nativeEvent.offsetX - x,
+                    y: event.nativeEvent.offsetY - y,
+                })
+            )
+        },
+        onMouseUp: (event) => {
+            // event.stopPropagation()
+            dispatch(finishCreating())
+        },
+    })
 
     const vs = Object.values(views).map((viewId) => {
         return <View key={viewId} viewId={viewId}></View>
     })
 
     return (
-        <Box
-            bg="#f1f1f1"
-            height="100vh"
-            position="relative"
-            {...bind()}
-            onDoubleClickCapture={() => {
-                tick((data = []) => data)
+        <TransformWrapper
+            options={{
+                limitToBounds: true,
+                transformEnabled: true,
+                disabled: false,
+                limitToWrapper: false,
+                minScale: 0.1,
+                maxScale: 3,
+                centerContent: false,
+            }}
+            pan={{
+                disabled: true,
+            }}
+            step={100}
+            pinch={{ disabled: true }}
+            doubleClick={{ disabled: true }}
+            wheel={{
+                disabled: false,
+                wheelEnabled: false,
+                touchPadEnabled: true,
+                limitsOnWheel: false,
+                step: 30,
+                animation: false,
             }}
         >
-            <div
-                style={{
-                    position: 'absolute',
-                    left: xy[0],
-                    top: xy[1],
-                    zoom: scale,
+            <Box
+                translate
+                bg="#f1f1f1"
+                height="100vh"
+                position="relative"
+                {...bind()}
+                onDoubleClickCapture={() => {
+                    tick((data = []) => data)
                 }}
             >
-                {vs}
-                {creation && (
-                    <Box
-                        position="absolute"
-                        bg="white"
+                <TransformComponent>
+                    <div
                         style={{
-                            left: creation.x,
-                            top: creation.y,
-                            width: creation.width,
-                            height: creation.height,
+                            position: 'inherit',
+                            width: '100vw',
+                            height: '100vh',
+                            top: 0,
+                            left: 0,
+                            transform: `translate(${xy[0]}px,${xy[1]}px)`,
                         }}
                     >
-                        {/* <Mould editable {...mould} currentState={state}></Mould> */}
-                    </Box>
-                )}
-            </div>
-        </Box>
+                        {vs}
+                        {creation && (
+                            <Box
+                                position="absolute"
+                                bg="white"
+                                style={{
+                                    left: creation.x,
+                                    top: creation.y,
+                                    width: creation.width,
+                                    height: creation.height,
+                                }}
+                            >
+                                {/* <Mould editable {...mould} currentState={state}></Mould> */}
+                            </Box>
+                        )}
+                    </div>
+                </TransformComponent>
+            </Box>
+        </TransformWrapper>
     )
 }

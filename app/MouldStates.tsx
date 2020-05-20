@@ -62,10 +62,10 @@ export const MouldStates = () => {
 
     const currentStateStyle = {
         ...listItemStyle,
-        fontWeight: 700,
         color: '#333',
         cursor: 'text',
         outline: 'none',
+        fontWeight: 700,
         border: '1px solid #56a9f1',
     } as React.CSSProperties
 
@@ -120,14 +120,19 @@ export const MouldStates = () => {
                                 if (isActive) {
                                     return (
                                         <Input
+                                            className="editable-state"
                                             style={currentStateStyle}
                                             type="text"
                                             key={stateName}
-                                            value={inputValue || stateName}
+                                            value={inputValue}
+                                            placeholder={stateName}
                                             onKeyPress={(e) => {
                                                 if (e.key === 'Enter') {
                                                     e.target.blur()
                                                 }
+                                            }}
+                                            onFocus={() => {
+                                                setInputValue(stateName)
                                             }}
                                             onChange={(e) => {
                                                 setInputValue(e.target.value)

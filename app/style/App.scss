@@ -35,6 +35,14 @@ radix-portal div {
     margin-top: 5px;
 }
 
+.m-b-sm {
+    margin-bottom: 5px;
+}
+
+.m-b-0 {
+    margin-bottom: 0px;
+}
+
 .clickable {
     cursor: pointer;
 }
@@ -49,4 +57,11 @@ radix-portal div {
 
 .pure {
     color: map-get($color, pure)
+}
+
+input.editable-state {
+    &::placeholder {
+        color: #666;
+        font-weight: normal,
+    }
 }
