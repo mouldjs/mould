@@ -124,7 +124,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 height="100vh"
                 position="relative"
                 {...bind()}
-                onDoubleClickCapture={() => {
+                onDoubleClick={() => {
                     tick((data = []) => data)
                 }}
             >

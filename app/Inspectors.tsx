@@ -1,6 +1,5 @@
 import PropertyToolBar from './PropertyToolBar'
 import { useIsSelectedPath, useIsSelectedMould } from './utils'
-import { Box } from '@modulz/radix'
 
 export const ComponentInspector = ({ path, children }) => {
     const selected = useIsSelectedPath(path)
@@ -8,7 +7,13 @@ export const ComponentInspector = ({ path, children }) => {
     return (
         (selected && (
             <PropertyToolBar.Source>
-                <Box onDoubleClick={e => e.stopPropagation()}>{children}</Box>
+                <div
+                    style={{ overflowY: 'auto' }}
+                    onWheel={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                >
+                    {children}
+                </div>
             </PropertyToolBar.Source>
         )) ||
         null
@@ -21,7 +26,13 @@ export const MouldInspector = ({ mouldId, children }) => {
     return (
         selected && (
             <PropertyToolBar.Source>
-                <Box onDoubleClick={e => e.stopPropagation()}>{children}</Box>
+                <div
+                    style={{ overflowY: 'auto' }}
+                    onWheel={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                >
+                    {children}
+                </div>
             </PropertyToolBar.Source>
         )
     )

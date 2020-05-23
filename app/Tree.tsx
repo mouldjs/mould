@@ -200,9 +200,9 @@ export const Tree = ({
                 //             : `2px solid ${BLUE}`
                 //         : 'none'
                 // }
-                onDoubleClickCapture={() => {
+                onDoubleClick={() => {
                     tick((tickData = []) => {
-                        tickData.push(path)
+                        tickData.unshift(path)
 
                         return tickData
                     })
