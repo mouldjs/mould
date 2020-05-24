@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { View as ViewType, EditorState, Vector, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
@@ -108,11 +108,15 @@ export const View = ({ viewId }: { viewId: string }) => {
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
     const otherViews = without(testWorkspace.views, viewId)
+    const [ready, setReady] = useState(false)
 
-    console.log(otherViews)
+    useEffect(() => {
+        setReady(true)
+    }, [viewRef.current])
+
     return (
         <>
-            {selected && viewRef.current && (
+            {selected && ready && (
                 <>
                     <Moveable
                         key={JSON.stringify({ x, y, width, height })}
@@ -125,7 +129,6 @@ export const View = ({ viewId }: { viewId: string }) => {
                         origin={false}
                         throttleResize={0}
                         edge
-                        // keepRatio={true}
                         onResize={({
                             target,
                             width,
@@ -133,16 +136,6 @@ export const View = ({ viewId }: { viewId: string }) => {
                             dist: [mx, my],
                             direction: [dx, dy],
                         }) => {
-                            // dispatch(resizeView({ viewId, width, height }))
-                            // if (dx === -1 || dy === -1) {
-                            //     dispatch(
-                            //         dragView({
-                            //             id: viewId,
-                            //             x: dx === -1 ? x - mx : x,
-                            //             y: dy === -1 ? y - my : y,
-                            //         })
-                            //     )
-                            // }
                             target.style.width = width + 'px'
                             target.style.height = height + 'px'
                             target.style.left = (dx === -1 ? x - mx : x) + 'px'
@@ -328,6 +321,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                         left: x,
                         top: y,
                         background: 'transparent',
+                        border: '1px solid #aaa',
                         boxShadow: '0px 0px 5px #aaa',
                     }}
                     onDoubleClick={() => {

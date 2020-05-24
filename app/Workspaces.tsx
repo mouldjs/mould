@@ -89,8 +89,9 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     })
 
     const [viewCacheKey, setViewCacheKey] = useState('')
+
     const vs = Object.values(views).map((viewId) => {
-        return <View key={`viewId-${viewCacheKey}`} viewId={viewId}></View>
+        return <View key={`${viewId}-${viewCacheKey}`} viewId={viewId}></View>
     })
 
     return (
