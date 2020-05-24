@@ -1166,17 +1166,22 @@
   resolved "https://registry.npm.taobao.org/@csstools/convert-colors/download/@csstools/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha1-rUldxBsS511YjG24uYNPCPoTHrc=
 
-"@daybrush/drag@^0.12.0":
-  version "0.12.0"
-  resolved "http://registry.npm.taobao.org/@daybrush%2fdrag/-/drag-0.12.0.tgz#36022ce5b03027d6d6c31d512c6cea9c7779410b"
-  integrity sha512-KO9xoEo8KhbNdxJusZ+exOH/HJiyzw3uv+zhKzgsAysZ99cVKKC5TnokzXGB+e4cTn25xnCljMuXpYPLbTXRzw==
+"@daybrush/drag@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@daybrush/drag/-/drag-0.14.0.tgz#5786afd6950582feef1fee078c5c025c69044d7e"
+  integrity sha512-AVVFLfGOosSR2LrgxyRKg8FRSATaa5sDFZlTQ9YgKy/F5etg2v/IO8kdcpIKD6FDZ74kT5hdjG0JJf+9YcIWfQ==
   dependencies:
-    "@daybrush/utils" "^0.10.0"
+    "@daybrush/utils" "^0.10.3"
 
-"@daybrush/utils@^0.10.0", "@daybrush/utils@^0.10.1":
+"@daybrush/utils@^0.10.1":
   version "0.10.1"
   resolved "http://registry.npm.taobao.org/@daybrush%2futils/-/utils-0.10.1.tgz#212588261fb9638fa3ed223fd0c6e0f3d0f2b43a"
   integrity sha512-pKnlI3C+u/qgkhypQQT9G7YwEmBp+6XD5ZHzVCKtA0avuku//KGdLoIT6QL78aXI7ZPlJwY31t24+6xkxqdoJg==
+
+"@daybrush/utils@^0.10.3":
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/@daybrush/utils/-/utils-0.10.4.tgz#64f5f85a40752c2109cb75aeaacde10571e9be37"
+  integrity sha512-gqnTIsaHbqOuIEDwtZIkxZuIRo1yT2rY7jesTYW/Niu9jfv6RiIyhlLHq9j3Z4Ua8eeaydRvBzST1CU+aoo79A==
 
 "@egjs/agent@^2.1.5":
   version "2.1.5"
@@ -7395,13 +7400,13 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.npm.taobao.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-moveable@^0.18.1:
-  version "0.18.1"
-  resolved "http://registry.npm.taobao.org/react-moveable/-/react-moveable-0.18.1.tgz#457986de27c19863c7f8d36fd4ddaa4c83a9b4d5"
-  integrity sha512-v9wYU4Vg+y7xGECkS2XrtPboekM91sFSW8FA9TUV3FKBVJELjuezQncW69xyI19nQho50/efWTWfItEf9NA9oA==
+react-moveable@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/react-moveable/-/react-moveable-0.20.7.tgz#f7d680013d38b11e9f90f2b57438ff18e08723e6"
+  integrity sha512-9jzkEWcM+umKiNdWlpeM9qFssOZfMGMmP7I1EEHl3Vo7CSOAnMpG6Fonlw0EQhXdWkpma6DWe1JE+LC/oPrfYg==
   dependencies:
-    "@daybrush/drag" "^0.12.0"
-    "@daybrush/utils" "^0.10.1"
+    "@daybrush/drag" "^0.14.0"
+    "@daybrush/utils" "^0.10.3"
     "@egjs/agent" "^2.1.5"
     "@egjs/children-differ" "^1.0.0"
     "@moveable/matrix" "^0.3.1"

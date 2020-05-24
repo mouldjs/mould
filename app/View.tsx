@@ -35,6 +35,7 @@ import { tick } from './selectionTick'
 import Controls from '../controls'
 import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { MouldInput } from './MouldInput'
+import { without } from 'lodash'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -45,7 +46,8 @@ const ViewContextProvider = ViewContext.Provider
 
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
-    const view = useSelector((state: EditorState) => state.views[viewId])
+    const { views, testWorkspace } = useSelector((state: EditorState) => state)
+    const view = views[viewId]
     const { mouldId, state, x, y, width, height } = view
     const { moulds } = useSelector((state: EditorState) => state)
     const mould = moulds[mouldId]
@@ -105,6 +107,9 @@ export const View = ({ viewId }: { viewId: string }) => {
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
+    const otherViews = without(testWorkspace.views, viewId)
+
+    console.log(otherViews)
     return (
         <>
             {selected && viewRef.current && (
@@ -114,6 +119,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                         target={viewRef.current}
                         resizable
                         draggable
+                        snappable
+                        snapCenter
+                        isDisplaySnapDigit={false}
                         origin={false}
                         throttleResize={0}
                         edge
@@ -169,6 +177,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
+                        elementGuidelines={otherViews.map((v) =>
+                            document.getElementById(`view-${v}`)
+                        )}
                         style={{
                             pointerEvents: !paused ? 'none' : 'auto',
                         }}
@@ -305,18 +316,19 @@ export const View = ({ viewId }: { viewId: string }) => {
             )}
             <ViewContextProvider value={view}>
                 <div
+                    id={`view-${viewId}`}
                     ref={(dom) => {
                         drop(dom)
                         viewRef.current = dom as any
                     }}
                     style={{
+                        position: 'absolute',
                         width,
                         height,
                         left: x,
                         top: y,
                         background: 'transparent',
-                        boxShadow: '0px 0px 5px #aaaaaa',
-                        position: 'absolute',
+                        boxShadow: '0px 0px 5px #aaa',
                     }}
                     onDoubleClick={() => {
                         if (!mould.states[state]) {
