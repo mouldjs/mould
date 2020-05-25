@@ -18,6 +18,7 @@ import {
     dragToView,
     modifyInput,
     removeInput,
+    selectComponent,
 } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import EditingMould from './EditingMould'
@@ -51,6 +52,16 @@ export const View = ({ viewId }: { viewId: string }) => {
     const { mouldId, state, x, y, width, height } = view
     const { moulds } = useSelector((state: EditorState) => state)
     const mould = moulds[mouldId]
+    const selectView = ({ mouldId, stateName }) => {
+        const path: Path = [[mouldId, stateName], []]
+        const pathData: any = [path]
+        dispatch(
+            selectComponent({
+                pathes: pathData,
+            })
+        )
+    }
+
     const [, drag] = useDrag({
         item: {
             type: 'TREE',
@@ -71,7 +82,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             }
 
             if (!selected) {
-                return
+                selectView({ mouldId, stateName: state })
             }
 
             dispatch(
@@ -99,6 +110,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             }
         },
     })
+
     const path: Path = [[mouldId, state], []]
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
@@ -321,8 +333,13 @@ export const View = ({ viewId }: { viewId: string }) => {
                         left: x,
                         top: y,
                         background: 'transparent',
-                        border: '1px solid #aaa',
-                        boxShadow: '0px 0px 5px #aaa',
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: isOver && canDrop ? '#4af' : '#aaa',
+                        boxShadow:
+                            isOver && canDrop
+                                ? '0px 0px 5px #4af'
+                                : '0px 0px 5px #aaa',
                     }}
                     onDoubleClick={() => {
                         if (!mould.states[state]) {
