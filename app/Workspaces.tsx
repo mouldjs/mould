@@ -32,7 +32,7 @@ export const handleMoveWorkspace = handleAction<
     initialData
 )
 
-type ZoomWorkspaceActionType = { id: string; zoom: number }
+type ZoomWorkspaceActionType = { zoom: number }
 const ZOOM_WORKSPACE = 'ZOOM_WORKSPACE'
 const zoomWorkspace = createAction<ZoomWorkspaceActionType>(ZOOM_WORKSPACE)
 export const handleZoomWorkspace = handleAction<
@@ -88,8 +88,10 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
         },
     })
 
+    const [viewCacheKey, setViewCacheKey] = useState('')
+
     const vs = Object.values(views).map((viewId) => {
-        return <View key={viewId} viewId={viewId}></View>
+        return <View key={`${viewId}-${viewCacheKey}`} viewId={viewId}></View>
     })
 
     return (
@@ -106,7 +108,6 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             pan={{
                 disabled: true,
             }}
-            step={100}
             pinch={{ disabled: true }}
             doubleClick={{ disabled: true }}
             wheel={{
@@ -115,7 +116,12 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 touchPadEnabled: true,
                 limitsOnWheel: false,
                 step: 30,
-                animation: false,
+            }}
+            onWheelStop={(e) => {
+                const zoom = e.scale
+
+                setViewCacheKey(zoom)
+                zoomWorkspace({ zoom })
             }}
         >
             <Box

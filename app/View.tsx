@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { View as ViewType, EditorState, Vector, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
@@ -18,6 +18,7 @@ import {
     dragToView,
     modifyInput,
     removeInput,
+    selectComponent,
 } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import EditingMould from './EditingMould'
@@ -35,6 +36,7 @@ import { tick } from './selectionTick'
 import Controls from '../controls'
 import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { MouldInput } from './MouldInput'
+import { without } from 'lodash'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -45,10 +47,21 @@ const ViewContextProvider = ViewContext.Provider
 
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
-    const view = useSelector((state: EditorState) => state.views[viewId])
+    const { views, testWorkspace } = useSelector((state: EditorState) => state)
+    const view = views[viewId]
     const { mouldId, state, x, y, width, height } = view
     const { moulds } = useSelector((state: EditorState) => state)
     const mould = moulds[mouldId]
+    const selectView = ({ mouldId, stateName }) => {
+        const path: Path = [[mouldId, stateName], []]
+        const pathData: any = [path]
+        dispatch(
+            selectComponent({
+                pathes: pathData,
+            })
+        )
+    }
+
     const [, drag] = useDrag({
         item: {
             type: 'TREE',
@@ -69,7 +82,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             }
 
             if (!selected) {
-                return
+                selectView({ mouldId, stateName: state })
             }
 
             dispatch(
@@ -97,6 +110,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             }
         },
     })
+
     const path: Path = [[mouldId, state], []]
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
@@ -105,19 +119,28 @@ export const View = ({ viewId }: { viewId: string }) => {
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
+    const otherViews = without(testWorkspace.views, viewId)
+    const [ready, setReady] = useState(false)
+
+    useEffect(() => {
+        setReady(true)
+    }, [viewRef.current])
+
     return (
         <>
-            {selected && viewRef.current && (
+            {selected && ready && (
                 <>
                     <Moveable
                         key={JSON.stringify({ x, y, width, height })}
                         target={viewRef.current}
                         resizable
                         draggable
+                        snappable
+                        snapCenter
+                        isDisplaySnapDigit={false}
                         origin={false}
                         throttleResize={0}
                         edge
-                        // keepRatio={true}
                         onResize={({
                             target,
                             width,
@@ -125,16 +148,6 @@ export const View = ({ viewId }: { viewId: string }) => {
                             dist: [mx, my],
                             direction: [dx, dy],
                         }) => {
-                            // dispatch(resizeView({ viewId, width, height }))
-                            // if (dx === -1 || dy === -1) {
-                            //     dispatch(
-                            //         dragView({
-                            //             id: viewId,
-                            //             x: dx === -1 ? x - mx : x,
-                            //             y: dy === -1 ? y - my : y,
-                            //         })
-                            //     )
-                            // }
                             target.style.width = width + 'px'
                             target.style.height = height + 'px'
                             target.style.left = (dx === -1 ? x - mx : x) + 'px'
@@ -169,6 +182,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
+                        elementGuidelines={otherViews.map((v) =>
+                            document.getElementById(`view-${v}`)
+                        )}
                         style={{
                             pointerEvents: !paused ? 'none' : 'auto',
                         }}
@@ -305,18 +321,25 @@ export const View = ({ viewId }: { viewId: string }) => {
             )}
             <ViewContextProvider value={view}>
                 <div
+                    id={`view-${viewId}`}
                     ref={(dom) => {
                         drop(dom)
                         viewRef.current = dom as any
                     }}
                     style={{
+                        position: 'absolute',
                         width,
                         height,
                         left: x,
                         top: y,
                         background: 'transparent',
-                        boxShadow: '0px 0px 5px #aaaaaa',
-                        position: 'absolute',
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: isOver && canDrop ? '#4af' : '#aaa',
+                        boxShadow:
+                            isOver && canDrop
+                                ? '0px 0px 5px #4af'
+                                : '0px 0px 5px #aaa',
                     }}
                     onDoubleClick={() => {
                         if (!mould.states[state]) {
