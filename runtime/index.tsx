@@ -35,15 +35,23 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
 
             const renderChildren = (components: Component[]) => {
                 return components.map((component) => {
-                    let Comp = Components.find(
+                    const Plugin = Components.find(
                         (c) => c.type === component.type
-                    )!.Raw
+                    )
+
+                    if (!Plugin) {
+                        throw Error(`Can not find plugin: ${component.type}`)
+                    }
+
+                    let Comp = Plugin.Raw
+                    let transform = Plugin.Transform
+
                     let { props, children } = component
                     if (component.type === 'Kit') {
                         const kitName = (component as any).props.__kitName
                         const kit = kits.find((k) => k.name === kitName)
                         if (!kit) {
-                            return null
+                            throw Error(`Can not find kit: ${kitName}`)
                         }
                         const { isList } = kit
                         if (!isList) {
@@ -61,9 +69,17 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                                 } as any
                                 Comp = RuntimeMould
                             } else {
-                                Comp = Components.find(
-                                    (c) => c.type === kit!.type
-                                )!.Raw
+                                const Plugin = Components.find(
+                                    (c) => c.type === kit.type
+                                )
+                                if (!Plugin) {
+                                    throw Error(
+                                        `Can not find plugin in kit: plugin ${kit.type}, kit ${kit.name}`
+                                    )
+                                }
+
+                                Comp = Plugin.Raw
+                                transform = Plugin.Transform
                             }
                         } else {
                             Comp = List
@@ -95,8 +111,11 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                         return null
                     }
 
+                    const styledProps = transform ? transform(props) : {}
+                    // const styledProps = {}
+
                     return (
-                        <Comp {...props}>
+                        <Comp {...styledProps} {...props}>
                             {children && renderChildren(children)}
                         </Comp>
                     )

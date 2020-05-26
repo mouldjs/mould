@@ -161,7 +161,7 @@ const transformStackContent = ({
     }
 }
 
-const transform = ({
+export const transform = ({
     fillProps,
     borderProps,
     blurProps,

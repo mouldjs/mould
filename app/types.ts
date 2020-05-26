@@ -103,6 +103,7 @@ export type AtomicComponent = {
     Icon: ComponentType
     Editable: ForwardRefExoticComponent<any>
     Raw: ForwardRefExoticComponent<any>
+    Transform?: (args: object) => object
 }
 
 export type useScopeFn = (input: object) => [StateName, object]
