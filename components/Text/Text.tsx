@@ -44,7 +44,7 @@ const initialTextProps: TextPropTypes = {
     verticalAlign: 'middle',
 }
 
-const transformTextProps = (textProps: TextPropTypes) => {
+const transformTextProps = (textProps: TextPropTypes = initialTextProps) => {
     return {
         content: textProps.content,
         color: transformColorToStr(textProps.color),
@@ -103,7 +103,7 @@ const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
     }
 }
 
-const transform = ({
+export const transform = ({
     layoutProps,
     shadowsProps,
     textProps,
