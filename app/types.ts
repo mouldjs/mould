@@ -95,6 +95,8 @@ export type EditorState = {
     selection?: Path //[mouldId, state, ...path]
     creating?: Creating
     recursiveRendered?: string[]
+    viewRelationsMap: { [key: string]: ViewRelaion[] }
+    connectingRelation: ConnectingRelation
 }
 
 export type AtomicComponent = {
@@ -116,3 +118,14 @@ export type InspectorProps<T, Option = {}> = {
 } & Option
 
 export type Inspector<T, Option = {}> = SFC<InspectorProps<T, Option>>
+
+export type ConnectingRelation = {
+    view: string
+    position: 'top' | 'bottom' | 'left' | 'right' | ''
+}[]
+
+export type ViewRelaion = {
+    targetId: string
+    sourceAnchor: 'top' | 'bottom' | 'left' | 'right'
+    targetAnchor: 'top' | 'bottom' | 'left' | 'right'
+}

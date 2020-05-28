@@ -1,7 +1,8 @@
-import React, { useState, useRef, DOMElement, useEffect } from 'react'
+import React, { useState } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { Box } from '@modulz/radix'
 import { Workspace as WorkspaceType, EditorState, Vector } from './types'
+import { ArcherContainer, ArcherElement } from 'react-archer'
 import { createAction, handleAction } from 'redux-actions'
 import { initialData } from './utils'
 import { useDispatch, useSelector } from 'react-redux'
@@ -50,10 +51,9 @@ export const handleZoomWorkspace = handleAction<
 
 export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
-    const creating = useSelector((state: EditorState) => {
-        return state.creating
-    })
-
+    const { views: viewMap, creating, viewRelationsMap } = useSelector(
+        (state: EditorState) => state
+    )
     const creation = creating && creating.view
     const [xy, setXY] = useState([x, y])
     const bind = useGesture({
@@ -91,7 +91,41 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const [viewCacheKey, setViewCacheKey] = useState('')
 
     const vs = Object.values(views).map((viewId) => {
-        return <View key={`${viewId}-${viewCacheKey}`} viewId={viewId}></View>
+        const { width, height, x, y } = viewMap[viewId]
+        const relations = viewRelationsMap[viewId]
+
+        return (
+            <>
+                <div style={{ position: 'absolute', zIndex: 1 }}>
+                    <ArcherElement
+                        id={`archer-${viewId}`}
+                        relations={relations}
+                        style={{
+                            position: 'absolute',
+                            width,
+                            height,
+                            left: x,
+                            top: y,
+                        }}
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                width: 0,
+                                height: 0,
+                                left: -1 * x,
+                                top: -1 * y,
+                            }}
+                        >
+                            <View
+                                key={`${viewId}-${viewCacheKey}`}
+                                viewId={viewId}
+                            ></View>
+                        </div>
+                    </ArcherElement>
+                </div>
+            </>
+        )
     })
 
     return (
@@ -134,34 +168,39 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                     tick((data = []) => data)
                 }}
             >
-                <TransformComponent>
-                    <div
-                        style={{
-                            position: 'inherit',
-                            width: '100vw',
-                            height: '100vh',
-                            top: 0,
-                            left: 0,
-                            transform: `translate(${xy[0]}px,${xy[1]}px)`,
-                        }}
-                    >
-                        {vs}
-                        {creation && (
-                            <Box
-                                position="absolute"
-                                bg="white"
-                                style={{
-                                    left: creation.x,
-                                    top: creation.y,
-                                    width: creation.width,
-                                    height: creation.height,
-                                }}
-                            >
-                                {/* <Mould editable {...mould} currentState={state}></Mould> */}
-                            </Box>
-                        )}
-                    </div>
-                </TransformComponent>
+                <ArcherContainer
+                    strokeColor="#aaa"
+                    strokeWidth={1}
+                    arrowLength={0}
+                    arrowThickness={0}
+                >
+                    <TransformComponent>
+                        <div
+                            style={{
+                                position: 'inherit',
+                                width: '100vw',
+                                height: '100vh',
+                                top: 0,
+                                left: 0,
+                                transform: `translate(${xy[0]}px,${xy[1]}px)`,
+                            }}
+                        >
+                            {vs}
+                            {creation && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        left: creation.x,
+                                        top: creation.y,
+                                        width: creation.width,
+                                        height: creation.height,
+                                        background: '#fff',
+                                    }}
+                                ></div>
+                            )}
+                        </div>
+                    </TransformComponent>
+                </ArcherContainer>
             </Box>
         </TransformWrapper>
     )

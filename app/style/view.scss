@@ -1,0 +1,40 @@
+.archer-trigger {
+    $pointSize: 10px;
+    $offset: $pointSize / 2 + 1;
+    $pointColor: #4af;
+
+    position: absolute;
+    width: $pointSize;
+    height: $pointSize;
+    background-color: #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    &.top {
+        left: 50%;
+        top: -$offset;
+        transform: translateX(-50%);
+    }
+    &.bottom {
+        left: 50%;
+        bottom: -$offset;
+        transform: translateX(-50%);
+    }
+    &.left {
+        top: 50%;
+        left: -$offset;
+        transform: translateY(-50%);
+    }
+    &.right {
+        top: 50%;
+        right: -$offset;
+        transform: translateY(-50%);
+    }
+
+    &.active {
+        background-color: darken($pointColor, 10%);
+    }
+
+    &.selected {
+        background-color: $pointColor;
+    }
+}

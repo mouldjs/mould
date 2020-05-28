@@ -33,6 +33,7 @@ import {
     handleRenderRecursiveMould,
     handleToggleViews,
     handleDisConnectScopeToKit,
+    handleConnectRelation,
 } from './appShell'
 
 export default () => [
@@ -71,4 +72,5 @@ export default () => [
     handleRenderRecursiveMould,
     handleToggleViews,
     handleDisConnectScopeToKit,
+    handleConnectRelation,
 ]

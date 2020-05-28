@@ -10,6 +10,7 @@ import {
     Kit,
     StateName,
     InputConfig,
+    ViewRelaion,
 } from './types'
 import { initialData, pathToString, viewPathToString } from './utils'
 import nanoid from 'nanoid'
@@ -958,6 +959,77 @@ export const handleToggleViews = handleAction<EditorState, ToggleViewsAction>(
                 ? ownViews
                 : allViews
 
+        return state
+    },
+    initialData
+)
+
+type AddViewRelationAction = {
+    viewId: string
+    relation: ViewRelaion
+}
+
+const ADD_VIEW_RELATION = 'ADD_VIEW_RELATION'
+export const addViewRelation = createAction<AddViewRelationAction>(
+    ADD_VIEW_RELATION
+)
+export const handleAddViewRelation = handleAction<
+    EditorState,
+    AddViewRelationAction
+>(
+    ADD_VIEW_RELATION,
+    (state, { payload: { viewId, relation } }) => {
+        if (!state.viewRelationsMap[viewId]) {
+            state.viewRelationsMap[viewId] = []
+        } else {
+            state.viewRelationsMap[viewId].push(relation)
+        }
+        return state
+    },
+    initialData
+)
+
+type ConnectRelation = {
+    viewId: string
+    position: string
+}
+
+const CONNECT_RELATION = 'CONNECT_RELATION'
+export const connectRelation = createAction<ConnectRelation>(CONNECT_RELATION)
+export const handleConnectRelation = handleAction<EditorState, ConnectRelation>(
+    CONNECT_RELATION,
+    (state, { payload: { viewId, position } }) => {
+        const [from, to] = state.connectingRelation
+
+        if (!from.view) {
+            state.connectingRelation = [{ view: viewId, position }]
+        } else {
+            if (from.view === viewId) {
+                state.connectingRelation = [
+                    { view: '', position: '' },
+                    { view: '', position: '' },
+                ]
+            } else {
+                state.connectingRelation = [
+                    ...state.connectingRelation,
+                    { view: viewId, position },
+                ]
+
+                if (!state.viewRelationsMap[from.view]) {
+                    state.viewRelationsMap[from.view] = []
+                }
+                state.viewRelationsMap[from.view].push({
+                    targetId: `archer-${viewId}`,
+                    sourceAnchor: from.position,
+                    targetAnchor: position,
+                })
+
+                state.connectingRelation = [
+                    { view: '', position: '' },
+                    { view: '', position: '' },
+                ]
+            }
+        }
         return state
     },
     initialData

@@ -1,4 +1,12 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react'
+import React, {
+    useState,
+    useRef,
+    useMemo,
+    useEffect,
+    useReducer,
+    useCallback,
+} from 'react'
+import './style/view.scss'
 import { View as ViewType, EditorState, Vector, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
@@ -11,7 +19,6 @@ import {
     useIsSelectedPath,
     rootTree,
 } from './utils'
-import { ResizableBox } from 'react-resizable'
 import {
     resizeView,
     dragView,
@@ -19,6 +26,7 @@ import {
     modifyInput,
     removeInput,
     selectComponent,
+    connectRelation,
 } from './appShell'
 import { Box, Text, Input } from '@modulz/radix'
 import EditingMould from './EditingMould'
@@ -47,7 +55,9 @@ const ViewContextProvider = ViewContext.Provider
 
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
-    const { views, testWorkspace } = useSelector((state: EditorState) => state)
+    const { views, testWorkspace, connectingRelation, selection } = useSelector(
+        (state: EditorState) => state
+    )
     const view = views[viewId]
     const { mouldId, state, x, y, width, height } = view
     const { moulds } = useSelector((state: EditorState) => state)
@@ -126,6 +136,8 @@ export const View = ({ viewId }: { viewId: string }) => {
         setReady(true)
     }, [viewRef.current])
 
+    const relation = connectingRelation
+
     return (
         <>
             {selected && ready && (
@@ -185,9 +197,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                         elementGuidelines={otherViews.map((v) =>
                             document.getElementById(`view-${v}`)
                         )}
-                        style={{
-                            pointerEvents: !paused ? 'none' : 'auto',
-                        }}
+                        style={{ pointerEvents: !paused ? 'none' : 'auto' }}
                     ></Moveable>
                     <DebugPanel.Source>
                         <div
@@ -351,6 +361,22 @@ export const View = ({ viewId }: { viewId: string }) => {
                         }
                     }}
                 >
+                    {selection &&
+                        ['top', 'left', 'right', 'bottom'].map((position) => (
+                            <div
+                                className={`archer-trigger ${position} ${
+                                    relation[0].view === viewId &&
+                                    relation[0].position === position
+                                        ? 'active'
+                                        : 'inactive'
+                                } ${selected ? 'selected' : ''}`}
+                                onClick={() => {
+                                    dispatch(
+                                        connectRelation({ viewId, position })
+                                    )
+                                }}
+                            ></div>
+                        ))}
                     <div
                         style={{
                             cursor: 'grab',
