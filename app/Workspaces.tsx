@@ -90,6 +90,22 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
 
     const [viewCacheKey, setViewCacheKey] = useState('')
 
+    const [archerStyleState, setArcherStyle] = useState({
+        display: 'block',
+    } as React.CSSProperties)
+
+    const getArcherStyle = ({ isMoving }) => {
+        const style = isMoving
+            ? ({
+                  display: 'none',
+              } as React.CSSProperties)
+            : ({
+                  display: 'block',
+              } as React.CSSProperties)
+
+        setArcherStyle(style)
+    }
+
     const vs = Object.values(views).map((viewId) => {
         const { width, height, x, y } = viewMap[viewId]
         const relations = viewRelationsMap[viewId]
@@ -118,6 +134,9 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                             }}
                         >
                             <View
+                                onMove={({ isMoving }) =>
+                                    getArcherStyle({ isMoving })
+                                }
                                 key={`${viewId}-${viewCacheKey}`}
                                 viewId={viewId}
                             ></View>
@@ -151,9 +170,13 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                 limitsOnWheel: false,
                 step: 30,
             }}
+            onWheelStart={() => {
+                getArcherStyle({ isMoving: true })
+            }}
             onWheelStop={(e) => {
                 const zoom = e.scale
 
+                getArcherStyle({ isMoving: false })
                 setViewCacheKey(zoom)
                 zoomWorkspace({ zoom })
             }}
@@ -170,9 +193,10 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             >
                 <ArcherContainer
                     strokeColor="#aaa"
-                    strokeWidth={1}
-                    arrowLength={0}
-                    arrowThickness={0}
+                    strokeWidth={2}
+                    arrowLength={8}
+                    arrowThickness={3}
+                    svgContainerStyle={archerStyleState}
                 >
                     <TransformComponent>
                         <div

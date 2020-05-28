@@ -53,7 +53,13 @@ const Moveable = dynamic(() => import('react-moveable'), {
 
 const ViewContextProvider = ViewContext.Provider
 
-export const View = ({ viewId }: { viewId: string }) => {
+export const View = ({
+    viewId,
+    onMove,
+}: {
+    viewId: string
+    onMove: ({ isMoving }) => void
+}) => {
     const dispatch = useDispatch()
     const { views, testWorkspace, connectingRelation, selection } = useSelector(
         (state: EditorState) => state
@@ -181,6 +187,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
+                        onDragStart={() => {
+                            onMove({ isMoving: true })
+                        }}
                         onDrag={({ target, left, top }) => {
                             target.style.left = left + 'px'
                             target.style.top = top + 'px'
@@ -193,6 +202,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                                     y: parseFloat(target.style.top),
                                 })
                             )
+                            onMove({ isMoving: false })
                         }}
                         elementGuidelines={otherViews.map((v) =>
                             document.getElementById(`view-${v}`)
