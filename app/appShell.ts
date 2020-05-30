@@ -69,7 +69,7 @@ export const handleSelectComponent = handleAction<
     initialData
 )
 
-type SelectComponentFromTreeAction = { path: Path }
+type SelectComponentFromTreeAction = { path: Path | undefined }
 const SELECT_COMPONENT_FROM_TREE = 'SELECT_COMPONENT_FROM_TREE'
 export const selectComponentFromTree = createAction<
     SelectComponentFromTreeAction

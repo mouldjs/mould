@@ -34,7 +34,7 @@ export const MouldKits = () => {
     }
 
     return (
-        <Box minHeight={300} ref={drop}>
+        <div style={{ minHeight: 300 }} ref={drop}>
             {mould.kits.length ? (
                 mould.kits.map((kit, i) => {
                     return (
@@ -65,8 +65,8 @@ export const MouldKits = () => {
                     )
                 })
             ) : (
-                <Box>Drag kits here</Box>
+                <div>Drag kits here</div>
             )}
-        </Box>
+        </div>
     )
 }

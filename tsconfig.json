@@ -13,11 +13,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "jsx": "preserve",
-        "strictNullChecks": true,
-        "paths": {
-            "@components/*": ["./components/*"],
-            "@app/*": ["./app/*"]
-        }
+        "strictNullChecks": true
     },
     "exclude": ["node_modules"],
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]

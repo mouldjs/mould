@@ -1,9 +1,9 @@
 import { Flex, Text, Card } from '@modulz/radix'
-import Components from '@components'
+import Components from '../../components'
 
 const KitItem = ({ type, name, isList }) => {
     const plugin = Components.find((c) => c.type === type)
-    const Icon = plugin?.Icon
+    const Icon = plugin!.Icon
 
     return (
         <Card

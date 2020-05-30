@@ -185,9 +185,6 @@ export const View = ({ viewId }: { viewId: string }) => {
                         elementGuidelines={otherViews.map((v) =>
                             document.getElementById(`view-${v}`)
                         )}
-                        style={{
-                            pointerEvents: !paused ? 'none' : 'auto',
-                        }}
                     ></Moveable>
                     <DebugPanel.Source>
                         <div

@@ -181,25 +181,13 @@ export const Tree = ({
     return (
         <>
             {selected && !root && compRef.current && (
-                <Moveable
-                    target={compRef.current}
-                    origin={false}
-                    // rotatable
-                ></Moveable>
+                <Moveable target={compRef.current} origin={false}></Moveable>
             )}
             <Comp
-                // id={pathStr}
                 ref={(dom) => {
                     drop(dom)
                     compRef.current = dom
                 }}
-                // outline={
-                //     selected && !root
-                //         ? isOver
-                //             ? `2px solid ${GREEN}`
-                //             : `2px solid ${BLUE}`
-                //         : 'none'
-                // }
                 onDoubleClick={() => {
                     tick((tickData = []) => {
                         tickData.unshift(path)
