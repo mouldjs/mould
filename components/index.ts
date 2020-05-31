@@ -14,6 +14,8 @@ export default [
         type: 'Text',
         ...Text,
     },
+
+    //TODO: move Kit and Mould to /app
     {
         type: 'Kit',
         Editable: Kit,

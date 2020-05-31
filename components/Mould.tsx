@@ -7,12 +7,7 @@ import {
     ControlGrid,
 } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
-import {
-    ComponentPropTypes,
-    ComponentProps,
-    Component,
-    EditorState,
-} from '../app/types'
+import { ComponentPropTypes, Component, EditorState } from '../app/types'
 import { MouldContext, ViewContext } from '../app/Contexts'
 import { pathToString } from '../app/utils'
 import { Tree } from '../app/Tree'
@@ -38,13 +33,12 @@ const Mould = forwardRef(
             onDoubleClick,
             path,
             ...rest
-        }: ComponentPropTypes &
-            ComponentProps & {
-                __mouldId: string
-                __state: string
-                __patches: PropPatch
-                onDoubleClick: any
-            },
+        }: ComponentPropTypes & {
+            __mouldId: string
+            __state: string
+            __patches: PropPatch
+            onDoubleClick: any
+        },
         ref
     ) => {
         const dispatch = useDispatch()
