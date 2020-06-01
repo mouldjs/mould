@@ -7,13 +7,7 @@ export const ComponentInspector = ({ path, children }) => {
     return (
         (selected && (
             <PropertyToolBar.Source>
-                <div
-                    style={{ overflowY: 'auto' }}
-                    onWheel={(e) => e.stopPropagation()}
-                    onDoubleClick={(e) => e.stopPropagation()}
-                >
-                    {children}
-                </div>
+                <div onDoubleClick={(e) => e.stopPropagation()}>{children}</div>
             </PropertyToolBar.Source>
         )) ||
         null

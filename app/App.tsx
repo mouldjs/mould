@@ -10,7 +10,7 @@ import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
 import { RadixProvider, Flex, Box } from '@modulz/radix'
 import { EditorState } from './types'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { undo, redo } from '../lib/undo-redux'
 import Toolbar from './Toolbar/index'
 import PropertyToolBar from './PropertyToolBar'
@@ -24,7 +24,7 @@ import { MouldScope } from './MouldScope'
 import { MouldStates } from './MouldStates'
 import { MouldKits } from './Kits/index'
 import { ArcherContainer } from 'react-archer'
-import { MouldInput } from './MouldInput'
+import { useWheel } from 'react-use-gesture'
 import DebugPanel from './DebugPanel'
 import nanoid from 'nanoid'
 
@@ -38,6 +38,10 @@ function handleTouchMove(e) {
 }
 
 const App = () => {
+    const HierarchyBlockRef = useRef<HTMLDivElement>(null)
+    const InspectorsBlockRef = useRef<HTMLDivElement>(null)
+    const [hierarchyBlockHeight, setHierarchyBlockHeight] = useState(50)
+
     useEffect(() => {
         //阻止二指滑动的默认浏览器 后退/前进 行为
         if (document) {
@@ -50,6 +54,27 @@ const App = () => {
             }
         }
     }, [])
+
+    const bind = useWheel(
+        ({ event, delta: [, dy] }) => {
+            if (InspectorsBlockRef && InspectorsBlockRef.current) {
+                InspectorsBlockRef.current.scrollTop += dy
+            }
+
+            event && event.stopPropagation()
+        },
+        {
+            domTarget: InspectorsBlockRef,
+        }
+    )
+
+    useEffect(() => {
+        if (HierarchyBlockRef.current) {
+            setHierarchyBlockHeight(HierarchyBlockRef.current.clientHeight)
+        }
+    })
+    useEffect(bind, [bind])
+
     const dispatch = useDispatch()
     const { testWorkspace, creating, selection } = useSelector(
         (state: EditorState) => state
@@ -123,13 +148,13 @@ const App = () => {
 
             <Flex
                 translate
-                flex={1}
-                overflow="hidden"
-                flexDirection="row"
-                alignItems="stretch"
-                alignContent="stretch"
                 style={{
                     position: 'relative',
+                    flexDirection: 'row',
+                    alignItems: 'stretch',
+                    alignContent: 'stretch',
+                    flex: 1,
+                    overflow: 'hidden',
                 }}
             >
                 <Box
@@ -189,16 +214,27 @@ const App = () => {
                         right: selection ? 0 : -215,
                         top: 0,
                         zIndex: 1,
+                        height: 'calc(100vh - 55px)',
+                        borderLeft: '1px solid #aaa',
+                        backgroundColor: '#e1e1e1',
                     }}
-                    height="100vh"
-                    borderLeft="1px solid #aaaaaa"
-                    backgroundColor="#e1e1e1"
                 >
                     <MouldStates></MouldStates>
-                    <TitledBoard title="Hierarchy">
-                        <Explorer2></Explorer2>
-                    </TitledBoard>
-                    <PropertyToolBar.Target />
+                    <div ref={HierarchyBlockRef}>
+                        <TitledBoard title="Hierarchy">
+                            <Explorer2></Explorer2>
+                        </TitledBoard>
+                    </div>
+                    <div
+                        ref={InspectorsBlockRef}
+                        style={{
+                            position: 'absolute',
+                            height: `calc(100% - ${hierarchyBlockHeight}px)`,
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <PropertyToolBar.Target />
+                    </div>
                 </Box>
             </Flex>
         </Flex>

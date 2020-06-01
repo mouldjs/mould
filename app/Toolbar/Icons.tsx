@@ -149,12 +149,11 @@ const Icons: any = () => {
     const [opening, setOpening] = useState(null)
     let timer = undefined
     const onHover = (icon) => {
-        window.clearTimeout(timer)
-
         setOpening(icon)
     }
 
     const onPopoverOpened = () => {
+        if (timer) window.clearTimeout(timer)
         timer = delay(() => setOpening(null), 1500)
     }
 
