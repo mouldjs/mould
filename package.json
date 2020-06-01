@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "WORKDIR=./test-mould next dev",
+        "dev": "node scripts/ensure-test-workdir && WORKDIR=./test-mould next dev",
         "build": "next build",
         "start": "next start"
     },
