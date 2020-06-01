@@ -132,7 +132,6 @@ const App = () => {
                     position: 'relative',
                 }}
             >
-                <MouldStates></MouldStates>
                 <Box
                     translate
                     width={215}
@@ -195,6 +194,7 @@ const App = () => {
                     borderLeft="1px solid #aaaaaa"
                     backgroundColor="#e1e1e1"
                 >
+                    <MouldStates></MouldStates>
                     <TitledBoard title="Hierarchy">
                         <Explorer2></Explorer2>
                     </TitledBoard>

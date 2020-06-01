@@ -82,27 +82,13 @@ export const MouldMetas = () => {
                 )
             }}
         >
-            <Cell label="Name">
-                <Input
-                    key={mould.id}
-                    value={mould.name}
-                    onChange={(e) => {
-                        dispatch(
-                            modifyMeta({
-                                mouldId: mould.id,
-                                name: e.target.value,
-                            })
-                        )
-                    }}
-                ></Input>
-            </Cell>
             {tipVisible && (
                 <>
                     <div
                         className="m-t"
                         style={{
                             display: 'flex',
-                            justifyContent: 'flex-end',
+                            justifyContent: 'flex-start',
                             alignItems: 'center',
                         }}
                     >

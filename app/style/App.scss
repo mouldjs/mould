@@ -65,3 +65,19 @@ input.editable-state {
         font-weight: normal,
     }
 }
+
+.mould-name {
+    width: 100%;
+    &.bp3-editable-text-editing {
+        &::before {
+            width: 100%;
+            background: transparent;
+            border: none;
+        }
+    }
+    .bp3-editable-text-input {
+        &::placeholder {
+            font-size: 13px
+        }
+    }
+}
