@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import { pick } from 'ramda'
-import { Mould, ComponentProps, useScopeFn, Component, ID } from '../app/types'
+import { Mould, useScopeFn, Component, ID } from '../app/types'
 import Components from '../components'
 import List from '../components/List'
 import './tempFunctions'
@@ -17,7 +17,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                 ...rest
             }: {
                 __mouldId: ID
-            } & ComponentProps,
+            },
             ref
         ) => {
             const __mouldProps = moulds[__mouldId]

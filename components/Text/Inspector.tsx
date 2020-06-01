@@ -1,6 +1,5 @@
 import React from 'react'
 import { Text, Slider } from '@modulz/radix'
-import { AlignLeft, AlignCenter, AlignRight } from 'react-feather'
 import {
     InputGroup,
     HTMLSelect,
@@ -15,7 +14,6 @@ import {
     ControlGrid,
     ControlGridItem,
 } from '../../inspector/FormComponents'
-import { Plus, Minus } from 'react-feather'
 import { ColorType, ColorControl } from '../../inspector/Color'
 import {
     BlockAlignLeft,

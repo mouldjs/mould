@@ -34,6 +34,7 @@ const AddMouldTrigger = () => {
                 <p className={`clickable m-t-sm m-b-0 pure`}>Add Mould</p>
             </div>
             <Flex
+                translate
                 p={10}
                 width="180px"
                 alignItems="center"

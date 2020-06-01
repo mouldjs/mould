@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { EditorState, Path } from '@app/types'
-import { selectComponent, selectComponentFromTree } from '@app/appShell'
+import { EditorState, Path } from '../../app/types'
+import { selectComponent, selectComponentFromTree } from '../../app/appShell'
 import { AlignRight } from 'react-feather'
 
 const PanelTrigger = () => {

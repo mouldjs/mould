@@ -12,12 +12,12 @@ const icons = ['Stack', 'Text']
 const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
-            icon: (
-                <Type className={`${isActive ? 'primary' : 'pure'}`}></Type>
-            ),
+            icon: <Type className={`${isActive ? 'primary' : 'pure'}`}></Type>,
             descInPopover: (
                 <>
-                    <Move size={32} color="#666"></Move>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Move size={32} color="#666"></Move>
+                    </div>
                     <Text
                         as="p"
                         mt={15}

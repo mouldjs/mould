@@ -1,48 +1,7 @@
-import {
-    EditorState,
-    Path,
-    StateName,
-    MouldID,
-    Mould,
-    Component,
-    ComponentProps,
-} from './types'
+import { EditorState, Path, StateName, MouldID, Component } from './types'
 import { useSelector } from 'react-redux'
 import data from './initialData'
 
-// export const initialData: EditorState = {
-//     testWorkspace: {
-//         id: '1234',
-//         x: 0,
-//         y: 0,
-//         views: ['a'],
-//     },
-//     views: {
-//         a: {
-//             id: 'a',
-//             mouldId: 'testMould',
-//             state: 'default',
-//             width: 300,
-//             height: 500,
-//             x: 100,
-//             y: 100,
-//         },
-//     },
-//     moulds: {
-//         testMould: {
-//             id: 'testMould',
-//             name: 'Test Mould',
-//             scope: [],
-//             input: {},
-//             states: {
-//                 default: {
-//                     type: 'Stack',
-//                     props: {},
-//                 },
-//             },
-//         },
-//     },
-// }
 export const initialData = (data as any) as EditorState
 
 export const useIsSelectedMould = (mouldId: MouldID) => {
@@ -87,7 +46,7 @@ export const useIsIncludePath = (path: Path) => {
     )
 }
 
-export const rootTree = (props: ComponentProps, children: Component[]) => {
+export const rootTree = (props: object, children: Component[]) => {
     return {
         type: 'Root',
         props,

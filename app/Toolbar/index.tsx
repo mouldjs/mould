@@ -6,6 +6,7 @@ import Icons from './Icons'
 const Toolbar = () => {
     return (
         <Flex
+            translate
             position="relative"
             backgroundColor="#333"
             alignItems="center"
@@ -13,7 +14,7 @@ const Toolbar = () => {
             height="100%"
         >
             <AddMouldTrigger></AddMouldTrigger>
-            <Flex> {Icons} </Flex>
+            <Flex translate> {Icons} </Flex>
             <PanelTrigger></PanelTrigger>
         </Flex>
     )

@@ -148,6 +148,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
                         {vs}
                         {creation && (
                             <Box
+                                translate
                                 position="absolute"
                                 bg="white"
                                 style={{

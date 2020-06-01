@@ -13,6 +13,7 @@ export const Cell = ({
 }) => {
     return (
         <Flex
+            translate
             justifyContent="space-between"
             alignItems="baseline"
             marginY={1}
@@ -28,7 +29,9 @@ export const Cell = ({
                     {label}
                 </Text>
             )}
-            <Box sx={{ flexBasis: 'auto' }}>{children}</Box>
+            <Box translate sx={{ flexBasis: 'auto' }}>
+                {children}
+            </Box>
         </Flex>
     )
 }
@@ -45,6 +48,7 @@ export const Head = ({
 } & FlexProps) => {
     return (
         <Flex
+            translate
             backgroundColor="#eeeeee"
             justifyContent="space-between"
             alignItems="center"
@@ -71,7 +75,7 @@ export const Head = ({
 
 export const Board = ({ children }) => {
     return (
-        <Box borderY="1px solid #c7c7c7" padding={8}>
+        <Box translate borderY="1px solid #c7c7c7" padding={8}>
             {children}
         </Box>
     )
@@ -89,6 +93,7 @@ const CollspaedHead = ({
     return (
         <Board>
             <Flex
+                translate
                 justifyContent="space-between"
                 alignItems="center"
                 paddingX={12}
@@ -131,7 +136,7 @@ export const TitledBoard = ({
     return !collspaed ? (
         <Fragment>
             <Head title={title} desc={desc}>
-                <Flex alignItems="center">
+                <Flex translate alignItems="center">
                     {renderTitle ? (
                         renderTitle()
                     ) : (
@@ -151,7 +156,7 @@ export const TitledBoard = ({
             desc={desc}
             borderBottom="1px solid rgba(170, 170, 170, 0.5)"
         >
-            <Flex alignItems="center">
+            <Flex translate alignItems="center">
                 {renderTitle ? (
                     renderTitle()
                 ) : (

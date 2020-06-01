@@ -1,6 +1,5 @@
 import { ComponentType, ForwardRefExoticComponent, SFC } from 'react'
 import * as z from 'zod'
-import { DOMAttributes } from '../lib/zodTypes'
 
 export type ID = string
 export type MouldID = ID
@@ -35,15 +34,10 @@ export type Workspace = {
     zoom?: number
 } & Vector
 
-export const zodComponentProps = DOMAttributes
-
-export type ComponentProps = z.TypeOf<typeof zodComponentProps>
-
 export type Component = {
     type: string
-    props: ComponentProps
+    props: object
     children?: Component[]
-    kits?: Component[]
 }
 
 //[prop-field, scope-field]
