@@ -42,7 +42,7 @@ function logger({ getState }) {
 
 let store
 
-export const getStore = (schemas) => {
+export const getStore = (schemas = {}) => {
     if (!store) {
         store = createStore(
             reduceReducers(
