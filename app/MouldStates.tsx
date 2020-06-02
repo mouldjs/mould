@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { PlusCircle } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { waitingForCreating, modifyStateName, modifyMeta } from './appShell'
@@ -75,6 +75,10 @@ export const MouldStates = () => {
     const [mouldName, setMouldName] = useState(mould?.name)
 
     const mouldNames = Object.keys(moulds).map((m) => moulds[m].name)
+
+    useEffect(() => {
+        mould && setMouldName(mould.name)
+    }, [mould])
 
     if (mould) {
         const currentStates = mould.states || {}
