@@ -9,7 +9,7 @@ const AddMouldTrigger = () => {
     const dispatch = useDispatch()
 
     return (
-        <Popover interactionKind={PopoverInteractionKind.HOVER}>
+        <Popover interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}>
             <div
                 style={{
                     display: 'flex',

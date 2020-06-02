@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
@@ -6,6 +7,7 @@ import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Layers, Move, Type } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
+import { delay } from 'lodash'
 import nanoid from 'nanoid'
 
 const icons = ['Stack', 'Text']
@@ -69,7 +71,7 @@ const getIcon = (name, isActive) => {
     return baseComponents[name]
 }
 
-const Icon = ({ name }) => {
+const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const currentMould = useCurrentMould()
@@ -79,7 +81,7 @@ const Icon = ({ name }) => {
     const { icon, descInPopover } = getIcon(name, isActive)
 
     return (
-        <Popover interactionKind={PopoverInteractionKind.HOVER}>
+        <Popover isOpen={isOpen} onOpening={() => onPopoverOpened(name)}>
             <div
                 style={{
                     display: 'flex',
@@ -87,6 +89,9 @@ const Icon = ({ name }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',
+                }}
+                onMouseEnter={() => {
+                    onHover(name)
                 }}
                 onClick={() => {
                     const waitingParams: {
@@ -140,4 +145,27 @@ const Icon = ({ name }) => {
     )
 }
 
-export default icons.map((icon) => <Icon key={icon} name={icon}></Icon>)
+const Icons: any = () => {
+    const [opening, setOpening] = useState(null)
+    let timer = undefined
+    const onHover = (icon) => {
+        setOpening(icon)
+    }
+
+    const onPopoverOpened = () => {
+        if (timer) window.clearTimeout(timer)
+        timer = delay(() => setOpening(null), 1500)
+    }
+
+    return icons.map((icon) => (
+        <Icon
+            key={icon}
+            name={icon}
+            isOpen={icon === opening}
+            onHover={onHover}
+            onPopoverOpened={onPopoverOpened}
+        ></Icon>
+    ))
+}
+
+export default Icons

@@ -238,7 +238,7 @@ export const Explorer2 = () => {
     }
 
     return (
-        <div className="draggable-container">
+        <div>
             <Tree
                 key={selection[0].join('/')}
                 draggable

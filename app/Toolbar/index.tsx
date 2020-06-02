@@ -14,7 +14,10 @@ const Toolbar = () => {
             height="100%"
         >
             <AddMouldTrigger></AddMouldTrigger>
-            <Flex translate> {Icons} </Flex>
+            <Flex translate>
+                {' '}
+                <Icons></Icons>{' '}
+            </Flex>
             <PanelTrigger></PanelTrigger>
         </Flex>
     )

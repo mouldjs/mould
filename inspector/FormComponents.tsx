@@ -17,7 +17,7 @@ export const Cell = ({
             justifyContent="space-between"
             alignItems="baseline"
             marginY={1}
-            marginX={3}
+            marginRight={3}
         >
             {desc && (
                 <Tooltip label={desc} side="bottom" align="start">

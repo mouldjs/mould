@@ -1,22 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { PlusCircle } from 'react-feather'
-import { useDispatch } from 'react-redux'
-import { waitingForCreating, modifyStateName } from './appShell'
-import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
+import { useDispatch, useSelector } from 'react-redux'
+import { waitingForCreating, modifyStateName, modifyMeta } from './appShell'
+import {
+    Popover,
+    PopoverInteractionKind,
+    EditableText,
+} from '@blueprintjs/core'
 import { Text, Input } from '@modulz/radix'
-import { Path } from './types'
+import { Path, EditorState } from './types'
 import { useCurrentMould, useCurrentState } from './utils'
 import { selectComponent } from './appShell'
-
 export const MouldStates = () => {
     const mould = useCurrentMould()
     const state = useCurrentState()
     const dispatch = useDispatch()
+    const moulds = useSelector((state: EditorState) => state.moulds)
 
     const wrapperStyle = {
         position: 'absolute',
         right: '215px',
-        height: '100%',
         width: '100%',
         display: 'flex',
         justifyContent: 'flex-end',
@@ -35,7 +38,6 @@ export const MouldStates = () => {
         background: '#eee',
         padding: '5px',
         color: '#333',
-        boxShadow: '5px 5px 5px #ddd',
     } as React.CSSProperties
 
     const listItemStyle = {
@@ -57,7 +59,7 @@ export const MouldStates = () => {
         fontSize: '16px',
         borderBottom: '1px solid #bbb',
         cursor: 'default',
-        marginBottom: '5px',
+        margin: '0 auto',
     } as React.CSSProperties
 
     const currentStateStyle = {
@@ -70,6 +72,14 @@ export const MouldStates = () => {
     } as React.CSSProperties
 
     const [inputValue, setInputValue] = useState('')
+    const [mouldName, setMouldName] = useState(mould?.name)
+
+    const mouldNames = Object.keys(moulds).map((m) => moulds[m].name)
+
+    useEffect(() => {
+        mould && setMouldName(mould.name)
+    }, [mould])
+
     if (mould) {
         const currentStates = mould.states || {}
         const stateList = Object.keys(currentStates)
@@ -108,12 +118,46 @@ export const MouldStates = () => {
 
         return mould ? (
             <div style={wrapperStyle}>
-                <div>
+                <div
+                    style={{
+                        boxShadow: '5px 5px 5px #ddd',
+                        maxHeight: '600px',
+                    }}
+                >
+                    <div style={currentMouldStyle}>
+                        <EditableText
+                            className="mould-name"
+                            type="text"
+                            value={mouldName}
+                            placeholder="Name this Mould"
+                            onConfirm={() => {
+                                if (!mouldName) {
+                                    setMouldName(mould.name)
+                                    return
+                                }
+                                if (mouldNames.includes(mouldName)) {
+                                    setMouldName(mould.name)
+                                    return
+                                }
+                                dispatch(
+                                    modifyMeta({
+                                        mouldId: mould.id,
+                                        name: mouldName,
+                                    })
+                                )
+                            }}
+                            onChange={(value) => {
+                                setMouldName(value)
+                            }}
+                            onEdit={() => {
+                                mould.name && setMouldName(mould.name)
+                            }}
+                            confirmOnEnterKey={true}
+                            selectAllOnFocus={true}
+                        ></EditableText>
+                    </div>
                     <ul style={listStyle}>
                         {[
-                            <li key={mould.name} style={currentMouldStyle}>
-                                {mould.name}
-                            </li>,
                             ...stateList.map((stateName) => {
                                 const isActive = stateName === state
 
