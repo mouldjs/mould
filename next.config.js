@@ -9,5 +9,8 @@ module.exports = withSass(
             config.resolve.alias['@'] = path.join(__dirname)
             return config
         },
+        serverRuntimeConfig: {
+            workdir: process.env.WORKDIR,
+        },
     })
 )

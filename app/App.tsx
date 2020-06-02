@@ -27,6 +27,14 @@ import { ArcherContainer } from 'react-archer'
 import { MouldInput } from './MouldInput'
 import DebugPanel from './DebugPanel'
 import nanoid from 'nanoid'
+import gql from 'graphql-tag'
+import { useQuery } from '@apollo/react-hooks'
+
+const schemaQuery = gql`
+    query {
+        schemas
+    }
+`
 
 const KeyboardEventHandler: any = dynamic(
     () => import('react-keyboard-event-handler'),
@@ -206,8 +214,20 @@ const App = () => {
 }
 
 export default () => {
+    const { data, loading, error } = useQuery(schemaQuery)
+
+    if (loading) {
+        return null
+    }
+
+    if (error) {
+        return <div>{error}</div>
+    }
+
+    const dataObj = data.schemas ? JSON.parse(data.schemas) : null
+
     return (
-        <Provider store={getStore()}>
+        <Provider store={getStore(dataObj)}>
             <DndProvider backend={HTML5Backend}>
                 <CustomDragLayer></CustomDragLayer>
                 <RadixProvider>
