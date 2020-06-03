@@ -7,7 +7,6 @@
         "build": "next build",
         "start": "next start"
     },
-    "main": "cli/index.js",
     "bin": {
         "mould": "bin/mould"
     },
