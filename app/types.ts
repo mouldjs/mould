@@ -86,9 +86,10 @@ export type EditorState = {
     testWorkspace: Workspace
     views: { [key: string]: View }
     moulds: { [key: string]: Mould }
-    selection?: Path //[mouldId, state, ...path]
+    selection?: Path //[[mouldId, state], indexPath[]]
     creating?: Creating
     recursiveRendered?: string[]
+    isDragging?: boolean
 }
 
 export type AtomicComponent = {
@@ -98,6 +99,7 @@ export type AtomicComponent = {
     Editable: ForwardRefExoticComponent<any>
     Raw: ForwardRefExoticComponent<any>
     Transform?: (args: object) => object
+    acceptChildren?: boolean
 }
 
 export type useScopeFn = (input: object) => [StateName, object]

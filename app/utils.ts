@@ -88,3 +88,6 @@ export const viewPathToString = (path: Path) => path[0].join('/')
 export const nameToParam = (name: string): string => {
     return name.toLowerCase().split(' ').join('-')
 }
+
+export const useIsDraggingComponent = () =>
+    useSelector((state: EditorState) => state.isDragging)

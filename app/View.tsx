@@ -1,33 +1,24 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
-import { View as ViewType, EditorState, Vector, Path, Component } from './types'
+import { EditorState, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
-import { useGesture } from 'react-use-gesture'
 import dynamic from 'next/dynamic'
 import { Play, Pause } from 'react-feather'
-import {
-    useIsSelectedMould,
-    useIsSelectedState,
-    useIsIncludePath,
-    useIsSelectedPath,
-    rootTree,
-} from './utils'
-import { ResizableBox } from 'react-resizable'
+import { useIsSelectedPath, useIsDraggingComponent } from './utils'
 import {
     resizeView,
     dragView,
     dragToView,
     modifyInput,
     removeInput,
-    selectComponent,
+    updateDraggingStatus,
 } from './appShell'
-import { Box, Text, Input } from '@modulz/radix'
+import { Text } from '@modulz/radix'
 import EditingMould from './EditingMould'
 import { ViewContext } from './Contexts'
 import { useDrag, useDrop } from 'react-dnd'
 import DebugPanel from './DebugPanel'
 import {
     TitledBoard,
-    Cell,
     ControlGrid,
     ControlGridItem,
 } from '../inspector/FormComponents'
@@ -47,56 +38,48 @@ const ViewContextProvider = ViewContext.Provider
 
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
-    const { views, testWorkspace } = useSelector((state: EditorState) => state)
+    const views = useSelector((state: EditorState) => state.views)
+    const workspace = useSelector((state: EditorState) => state.testWorkspace)
     const view = views[viewId]
     const { mouldId, state, x, y, width, height } = view
-    const { moulds } = useSelector((state: EditorState) => state)
+    const moulds = useSelector((state: EditorState) => state.moulds)
     const mould = moulds[mouldId]
-    const selectView = ({ mouldId, stateName }) => {
-        const path: Path = [[mouldId, stateName], []]
-        const pathData: any = [path]
-        dispatch(
-            selectComponent({
-                pathes: pathData,
-            })
-        )
-    }
+    const isDragging = useIsDraggingComponent()
 
     const [, drag] = useDrag({
         item: {
             type: 'TREE',
             name: 'Mould',
             props: { __mouldId: mouldId, __state: state },
-            // children: mould.states[state],
+        },
+        begin: () => {
+            dispatch(updateDraggingStatus({ isDragging: true }))
+        },
+        end: () => {
+            dispatch(updateDraggingStatus({ isDragging: false }))
         },
     })
-    const [{ isOver, canDrop }, drop] = useDrop<
+    const [{ canDrop }, drop] = useDrop<
         { type: string; name: string; props?: object; children?: Component[] },
-        { res: boolean },
-        { isOver: boolean; canDrop: boolean }
+        void,
+        { canDrop: boolean }
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            if (monitor.getDropResult() && monitor.getDropResult().res) {
-                return { res: true }
-            }
+            const canDrop =
+                monitor.canDrop() && monitor.isOver({ shallow: true })
 
-            if (!selected) {
-                selectView({ mouldId, stateName: state })
-            }
-
-            dispatch(
-                dragToView({
-                    viewId,
-                    tree: {
-                        type: item.name,
-                        props: item.props || {},
-                        children: item.children,
-                    },
-                })
-            )
-
-            return { res: true }
+            canDrop &&
+                dispatch(
+                    dragToView({
+                        viewId,
+                        tree: {
+                            type: item.name,
+                            props: item.props || {},
+                            children: item.children,
+                        },
+                    })
+                )
         },
         collect: (monitor) => {
             let canDrop = false
@@ -105,8 +88,7 @@ export const View = ({ viewId }: { viewId: string }) => {
             } catch (e) {}
 
             return {
-                isOver: monitor.isOver(),
-                canDrop,
+                canDrop: canDrop && monitor.isOver({ shallow: true }),
             }
         },
     })
@@ -119,7 +101,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
-    const otherViews = without(testWorkspace.views, viewId)
+    const otherViews = without(workspace.views, viewId)
     const [ready, setReady] = useState(false)
 
     useEffect(() => {
@@ -128,7 +110,7 @@ export const View = ({ viewId }: { viewId: string }) => {
 
     return (
         <>
-            {selected && ready && (
+            {!isDragging && selected && ready && (
                 <>
                     <Moveable
                         key={JSON.stringify({ x, y, width, height })}
@@ -290,6 +272,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                     </DebugPanel.Source>
                 </>
             )}
+            {canDrop && (
+                <Moveable target={viewRef.current} origin={false}></Moveable>
+            )}
             {editControlName && (
                 <MouldInput
                     isOpen={!!(editControlName as any)}
@@ -330,13 +315,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                         left: x,
                         top: y,
                         background: 'transparent',
-                        borderWidth: '1px',
-                        borderStyle: 'solid',
-                        borderColor: isOver && canDrop ? '#4af' : '#aaa',
-                        boxShadow:
-                            isOver && canDrop
-                                ? '0px 0px 5px #4af'
-                                : '0px 0px 5px #aaa',
+                        boxShadow: '0px 0px 5px #aaa',
                     }}
                     onDoubleClick={() => {
                         if (!mould.states[state]) {
@@ -379,5 +358,4 @@ export const View = ({ viewId }: { viewId: string }) => {
             </ViewContextProvider>
         </>
     )
-    // </ResizableBox>
 }

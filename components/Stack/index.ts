@@ -12,3 +12,5 @@ export const Icon = Layers
 export const Standard = StackStandard
 
 export const Transform = transform
+
+export const acceptChildren = true

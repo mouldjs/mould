@@ -273,44 +273,6 @@ export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
     initialData
 )
 
-// type AddMouldAction = Size & Vector
-// const ADD_MOULD = 'ADD_MOULD'
-// export const addMould = createAction<AddMouldAction>(ADD_MOULD)
-// export const handleAddMould = handleAction<EditorState, AddMouldAction>(
-//     ADD_MOULD,
-//     (state, action) => {
-//         const { width, height, x, y } = action.payload
-//         const mouldId = nanoid(6)
-//         const view: View = {
-//             id: nanoid(6),
-//             width,
-//             height,
-//             x,
-//             y,
-//             mouldId,
-//             state: 'default',
-//         }
-//         const mould: Mould = {
-//             id: mouldId,
-//             name: `Mould ${Object.values(state.moulds).length + 1}`,
-//             scope: [],
-//             kits: [],
-//             input: [],
-//             states: {
-//                 default: [],
-//             },
-//             rootProps: {},
-//         }
-
-//         state.testWorkspace.views.push(view.id)
-//         state.views[view.id] = view
-//         state.moulds[mould.id] = mould
-
-//         return state
-//     },
-//     initialData
-// )
-
 type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
 const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
 export const modifyMouldTree = createAction<ModifyMouldTreeAction>(
@@ -797,6 +759,7 @@ export const handleDragToView = handleAction<EditorState, DragToViewAction>(
         const stateName = view.state
         const mould = state.moulds[view.mouldId]
         mould.states[stateName] = tree
+        state.selection = [[mould.id, stateName], []]
 
         return state
     },
@@ -957,6 +920,57 @@ export const handleToggleViews = handleAction<EditorState, ToggleViewsAction>(
             state.testWorkspace.views.length === allViews.length
                 ? ownViews
                 : allViews
+
+        return state
+    },
+    initialData
+)
+
+type UpdateDraggingStatusAction = {
+    isDragging: boolean
+}
+const UPDATE_DRAGGING_STATUS = 'UPDATE_DRAGGING_STATUS'
+export const updateDraggingStatus = createAction<UpdateDraggingStatusAction>(
+    UPDATE_DRAGGING_STATUS
+)
+export const handleUpdateDraggingStatus = handleAction<
+    EditorState,
+    UpdateDraggingStatusAction
+>(
+    UPDATE_DRAGGING_STATUS,
+    (state, { payload: { isDragging } }) => {
+        state.isDragging = isDragging
+
+        return state
+    },
+    initialData
+)
+
+type InsertComponentOnPathAction = {
+    component: Component
+    path: Path
+}
+const INSERT_COMPONENT_ON_PATH = 'INSERT_COMPONENT_ON_PATH'
+export const insertComponentOnPath = createAction<InsertComponentOnPathAction>(
+    INSERT_COMPONENT_ON_PATH
+)
+export const handleInsertComponentOnPath = handleAction<
+    EditorState,
+    InsertComponentOnPathAction
+>(
+    INSERT_COMPONENT_ON_PATH,
+    (state, { payload: { component, path } }) => {
+        const [[mouldId, stateName], indexArr] = path
+        const tree = state.moulds[mouldId].states[stateName]
+        let parent = tree!
+        indexArr.forEach((i) => {
+            parent = parent.children![i]
+        })
+        if (!parent.children) {
+            parent.children = []
+        }
+        parent.children.push(component)
+        state.selection = path
 
         return state
     },

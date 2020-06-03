@@ -1,17 +1,12 @@
-import React, { useState, Fragment, ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import TreeView from 'react-treeview'
 import 'react-treeview/react-treeview.css'
 import Tree, { TreeNode } from 'rc-tree'
 import './rc-tree.css'
-import { Component, EditorState, Mould, Path } from './types'
+import { Component, EditorState, Path } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@modulz/radix'
-import { useDrag } from 'react-dnd'
-import {
-    selectComponent,
-    sortTree,
-    selectComponentFromTree,
-} from '../app/appShell'
+import { sortTree, selectComponentFromTree } from '../app/appShell'
 import { useIsSelectedPath, pathToString } from './utils'
 
 const ComponentTree = ({

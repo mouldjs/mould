@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
-import { waitingForCreating } from '../appShell'
+import { waitingForCreating, updateDraggingStatus } from '../appShell'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Layers, Move, Type } from 'react-feather'
 import { useDrag } from 'react-dnd'
@@ -75,7 +75,15 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const currentMould = useCurrentMould()
-    const [, drag] = useDrag({ item: { type: 'TREE', name } })
+    const [, drag] = useDrag({
+        item: { type: 'TREE', name },
+        begin: () => {
+            dispatch(updateDraggingStatus({ isDragging: true }))
+        },
+        end: () => {
+            dispatch(updateDraggingStatus({ isDragging: false }))
+        },
+    })
     const isActive =
         creating?.injectedKitName && creating?.injectedKitName === name
     const { icon, descInPopover } = getIcon(name, isActive)
