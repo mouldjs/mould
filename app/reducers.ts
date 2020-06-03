@@ -1,4 +1,3 @@
-import { handleMoveWorkspace, handleZoomWorkspace } from './Workspaces'
 import {
     handleSelectComponent,
     handleSelectComponentFromTree,
@@ -33,6 +32,9 @@ import {
     handleDisConnectScopeToKit,
     handleUpdateDraggingStatus,
     handleInsertComponentOnPath,
+    handleZoomWorkspace,
+    handleMoveWorkspace,
+    handleMoveWorkspaceOffset,
 } from './appShell'
 
 export default () => [
@@ -71,4 +73,7 @@ export default () => [
     handleDisConnectScopeToKit,
     handleUpdateDraggingStatus,
     handleInsertComponentOnPath,
+    handleZoomWorkspace,
+    handleMoveWorkspace,
+    handleMoveWorkspaceOffset,
 ]
