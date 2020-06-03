@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating, updateDraggingStatus } from '../appShell'
-import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
+import { Popover } from '@blueprintjs/core'
 import { Layers, Move, Type } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
@@ -93,7 +93,7 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
             <div
                 style={{
                     display: 'flex',
-                    padding: '5px 10px',
+                    padding: '5px 5px',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',

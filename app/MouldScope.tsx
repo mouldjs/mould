@@ -95,7 +95,7 @@ export const MouldScope = () => {
                 {editMode ? (
                     <>
                         <TagInput
-                            autofocus
+                            autofocus={false}
                             placeholder="Type and press enter"
                             tags={scopes.map((scope) => ({
                                 id: scope,

@@ -39,10 +39,11 @@ const ViewContextProvider = ViewContext.Provider
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
     const views = useSelector((state: EditorState) => state.views)
+    const moulds = useSelector((state: EditorState) => state.moulds)
     const workspace = useSelector((state: EditorState) => state.testWorkspace)
     const view = views[viewId]
     const { mouldId, state, x, y, width, height } = view
-    const moulds = useSelector((state: EditorState) => state.moulds)
+
     const mould = moulds[mouldId]
     const isDragging = useIsDraggingComponent()
 

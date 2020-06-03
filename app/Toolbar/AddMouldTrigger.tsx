@@ -11,15 +11,12 @@ const AddMouldTrigger = () => {
     return (
         <Popover interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}>
             <div
+                className="m-r-lg"
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    paddingTop: '5px',
-                    paddingBottom: '5px',
-                    paddingLeft: '10px',
-                    paddingRight: '10px',
                 }}
                 onClick={() =>
                     dispatch(

@@ -12,6 +12,11 @@ export type Vector = {
     y: number
 }
 
+export type OffsetVector = {
+    positionX: number
+    positionY: number
+}
+
 export type Size = {
     width: number
     height: number
@@ -32,7 +37,8 @@ export type Workspace = {
     id: ID
     views: ID[]
     zoom?: number
-} & Vector
+} & Vector &
+    OffsetVector
 
 export type Component = {
     type: string
