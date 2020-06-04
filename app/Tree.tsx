@@ -6,8 +6,14 @@ import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHover, useGesture } from 'react-use-gesture'
-import { useIsSelectedPath, useIsIncludePath, pathToString } from './utils'
+import {
+    useIsSelectedPath,
+    useIsIncludePath,
+    pathToString,
+    useIsDraggingComponent,
+} from './utils'
 import { tick } from './selectionTick'
+import { insertComponentOnPath } from './appShell'
 
 const { Provider } = MouldContext
 
@@ -27,49 +33,6 @@ type PathProps = {
     path: Path
 }
 
-const Gap = ({ onDrop }: { onDrop: (type: string) => void }) => {
-    const [{ isOver }, drop] = useDrop<
-        { type: string; name: string },
-        { res: boolean },
-        { isOver: boolean }
-    >({
-        accept: 'TREE',
-        drop: (item, monitor) => {
-            if (!monitor.getDropResult() || !monitor.getDropResult().res) {
-                onDrop(item.name)
-            }
-
-            return { res: true }
-        },
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-        }),
-    })
-
-    return (
-        <div
-            style={{
-                width: 0,
-                height: 0,
-                position: 'relative',
-            }}
-        >
-            <div
-                ref={drop}
-                style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    backgroundColor: isOver ? GREEN : BLUE,
-                    position: 'absolute',
-                    left: -5,
-                    top: -5,
-                }}
-            ></div>
-        </div>
-    )
-}
-
 export const Tree = ({
     type,
     props,
@@ -79,38 +42,28 @@ export const Tree = ({
     root = false,
 }: Component & Edit & PathProps & { root?: boolean }) => {
     const dispatch = useDispatch()
-    const mould = useContext(MouldContext)
     const selected = useIsSelectedPath(path)
-    const included = useIsIncludePath(path)
-    const [{ isOver, canDrop }, drop] = useDrop<
+    const [{ canDrop }, drop] = useDrop<
         { type: string; name: string; props?: object; children?: Component[] },
-        { res: boolean },
-        { isOver: boolean; canDrop: boolean }
+        void,
+        { canDrop: boolean }
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
-            if (monitor.getDropResult() && monitor.getDropResult().res) {
-                return { res: true }
-            }
+            const canDrop =
+                monitor.canDrop() && monitor.isOver({ shallow: true })
 
-            if (!selected) {
-                return
-            }
-
-            onChange({
-                type,
-                props,
-                children: [
-                    ...(children || []),
-                    {
-                        type: item.name,
-                        props: item.props || {},
-                        children: item.children,
-                    },
-                ],
-            })
-
-            return { res: true }
+            canDrop &&
+                dispatch(
+                    insertComponentOnPath({
+                        component: {
+                            type: item.name,
+                            props: item.props || {},
+                            children: item.children,
+                        },
+                        path,
+                    })
+                )
         },
         collect: (monitor) => {
             let canDrop = false
@@ -119,11 +72,11 @@ export const Tree = ({
             } catch (e) {}
 
             return {
-                isOver: monitor.isOver(),
-                canDrop,
+                canDrop: canDrop && monitor.isOver({ shallow: true }),
             }
         },
     })
+    const isDragging = useIsDraggingComponent()
 
     const compRef = useRef()
 
@@ -154,38 +107,17 @@ export const Tree = ({
               })
             : null
 
-    if (inside && canDrop) {
-        const handleDrop = (index) => (droppedType) => {
-            const nextChildren = [...(children || [])]
-            nextChildren.splice(index, 0, {
-                type: droppedType,
-                props: {},
-                children: [],
-            })
-            onChange({
-                type,
-                props,
-                children: nextChildren,
-            })
-        }
-        inside = inside.reduce(
-            (prev, curr, index) => [
-                ...prev,
-                curr,
-                <Gap onDrop={handleDrop(index + 1)}></Gap>,
-            ],
-            [<Gap onDrop={handleDrop(0)}></Gap>]
-        )
-    }
-
     return (
         <>
-            {selected && !root && compRef.current && (
+            {!isDragging && selected && !root && compRef.current && (
+                <Moveable target={compRef.current} origin={false}></Moveable>
+            )}
+            {canDrop && (
                 <Moveable target={compRef.current} origin={false}></Moveable>
             )}
             <Comp
                 ref={(dom) => {
-                    drop(dom)
+                    plugin.acceptChildren && drop(dom)
                     compRef.current = dom
                 }}
                 onDoubleClick={() => {

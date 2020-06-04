@@ -8,7 +8,12 @@ import { ArcherElement } from 'react-archer'
 import { useCurrentState } from '../utils'
 import { useDrop, useDrag } from 'react-dnd'
 import { useDispatch, useSelector } from 'react-redux'
-import { modifyKitName, deleteKit, disconnectScopeToKit } from '../appShell'
+import {
+    modifyKitName,
+    deleteKit,
+    disconnectScopeToKit,
+    updateDraggingStatus,
+} from '../appShell'
 import { Kit, EditorState } from '../types'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 
@@ -74,6 +79,12 @@ const MouldKitItem = ({
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
+        begin: () => {
+            dispatch(updateDraggingStatus({ isDragging: true }))
+        },
+        end: () => {
+            dispatch(updateDraggingStatus({ isDragging: false }))
+        },
     })
 
     useEffect(() => {

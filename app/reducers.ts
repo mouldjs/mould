@@ -10,7 +10,6 @@ import {
     handleAddState,
     handleRemoveState,
     handleResizeView,
-    // handleAddMould,
     handleModifyMouldTree,
     handleWaitingForCreating,
     handleStartCreating,
@@ -33,6 +32,8 @@ import {
     handleRenderRecursiveMould,
     handleToggleViews,
     handleDisConnectScopeToKit,
+    handleUpdateDraggingStatus,
+    handleInsertComponentOnPath,
 } from './appShell'
 
 export default () => [
@@ -49,7 +50,6 @@ export default () => [
     handleAddState,
     handleRemoveState,
     handleResizeView,
-    // handleAddMould,
     handleWaitingForCreating,
     handleStartCreating,
     handleUpdateCreating,
@@ -71,4 +71,6 @@ export default () => [
     handleRenderRecursiveMould,
     handleToggleViews,
     handleDisConnectScopeToKit,
+    handleUpdateDraggingStatus,
+    handleInsertComponentOnPath,
 ]
