@@ -1,24 +1,25 @@
-import { EditorState, Path, StateName, MouldID, Component } from './types'
+import { EditorState, Path, StateName, Component, Mould } from './types'
 import { useSelector } from 'react-redux'
+import nanoid from 'nanoid'
 import data from './initialData'
 
 export const initialData = (data as any) as EditorState
 
-export const useIsSelectedMould = (mouldId: MouldID) => {
+export const useIsSelectedMould = (mouldName: string) => {
     const currentComponentPath = useSelector(
         (state: EditorState) => state.selection || []
     )[0]
 
-    return currentComponentPath[0] === mouldId
+    return currentComponentPath[0] === mouldName
 }
 
-export const useIsSelectedState = (mouldId: MouldID, stateName: StateName) => {
+export const useIsSelectedState = (mouldName: string, stateName: StateName) => {
     const currentComponentPath = useSelector(
         (state: EditorState) => state.selection || []
     )[0]
 
     return (
-        currentComponentPath[0] === mouldId &&
+        currentComponentPath[0] === mouldName &&
         currentComponentPath[1] === stateName
     )
 }
@@ -55,18 +56,15 @@ export const rootTree = (props: object, children: Component[]) => {
 }
 
 export const useCurrentMould = () => {
-    const moulds = useSelector((state: EditorState) => {
-        return state.moulds
-    })
-    const selection = useSelector((state: EditorState) => {
-        return state.selection
+    const mould = useSelector((state: EditorState) => {
+        if (!state.selection) {
+            return
+        }
+
+        return findMould(state, state.selection[0][0])
     })
 
-    if (!selection) {
-        return
-    }
-
-    return moulds[selection[0][0]]
+    return mould
 }
 
 export const useCurrentState = () => {
@@ -91,3 +89,69 @@ export const nameToParam = (name: string): string => {
 
 export const useIsDraggingComponent = () =>
     useSelector((state: EditorState) => state.isDragging)
+
+export const findMould = (state: EditorState, mouldName: string) =>
+    state.moulds.find((m) => m.name === mouldName)
+
+export const ensureMould = (state: EditorState, mouldName: string) => {
+    const mould = findMould(state, mouldName)
+    if (!mould) {
+        throw Error(`Mould '${mouldName}' was not found.`)
+    }
+
+    return mould
+}
+
+export const deleteMould = (state: EditorState, mouldName: string) => {
+    const mouldIndex = state.moulds.findIndex((m) => m.name === mouldName)
+    if (mouldIndex === -1) {
+        throw Error(`Mould '${mouldName}' was not found to delete.`)
+    }
+
+    return state.moulds.splice(mouldIndex, 1)
+}
+
+export const isDuplicateMould = (state: EditorState, mouldName: string) =>
+    !!state.moulds.find((m) => m.name === mouldName)
+
+export const getDefaultMouldName = (state: EditorState) => {
+    const len = state.moulds.length
+    let mouldName = `mould${len}`
+    if (isDuplicateMould(state, mouldName)) {
+        mouldName = `mould${len}` + nanoid(2)
+    }
+    if (isDuplicateMould(state, mouldName)) {
+        mouldName = `mould${len}` + nanoid(2)
+    }
+    if (isDuplicateMould(state, mouldName)) {
+        mouldName = `mould${len}` + nanoid(2)
+    }
+    // repeat only 2 times avoid endless loop
+    if (isDuplicateMould(state, mouldName)) {
+        throw Error(`Cannot find a available mould name.`)
+    }
+
+    return mouldName
+}
+
+export const isDuplicateState = (mould: Mould, stateName: string) =>
+    Object.keys(mould.states).includes(stateName)
+
+export const getDefaultStateName = (mould: Mould) => {
+    const len = Object.keys(mould.states).length
+    let stateName = `state${len}`
+    if (isDuplicateState(mould, stateName)) {
+        stateName = `state${len}${nanoid(2)}`
+    }
+    if (isDuplicateState(mould, stateName)) {
+        stateName = `state${len}${nanoid(2)}`
+    }
+    if (isDuplicateState(mould, stateName)) {
+        stateName = `state${len}${nanoid(2)}`
+    }
+    if (isDuplicateState(mould, stateName)) {
+        throw Error(`Cannot find a available state name.`)
+    }
+
+    return stateName
+}

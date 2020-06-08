@@ -8,10 +8,18 @@ import {
     Component,
     ID,
     Kit,
-    StateName,
     InputConfig,
 } from './types'
-import { initialData, pathToString, viewPathToString } from './utils'
+import {
+    initialData,
+    pathToString,
+    viewPathToString,
+    ensureMould,
+    findMould,
+    getDefaultMouldName,
+    deleteMould,
+    getDefaultStateName,
+} from './utils'
 import nanoid from 'nanoid'
 import { filter, remove, find } from 'lodash'
 
@@ -26,10 +34,6 @@ export const handleSelectComponent = handleAction<
 >(
     SELECT_COMPONENT,
     (state, { payload: { pathes } }) => {
-        // if (action.payload.selection === state.selection) {
-        //     return state
-        // }
-        // state.selection = action.payload.selection
         if (pathes.length === 0) {
             state.selection = undefined
         } else if (!state.selection) {
@@ -87,35 +91,36 @@ export const handleSelectComponentFromTree = handleAction<
     initialData
 )
 
-type AddInputAction = { mouldId: string; inputKey: string; config: InputConfig }
+type AddInputAction = {
+    mouldName: string
+    inputKey: string
+    config: InputConfig
+}
 const ADD_INPUT = 'ADD_INPUT'
 export const addInput = createAction<AddInputAction>(ADD_INPUT)
 export const handleAddInput = handleAction<EditorState, AddInputAction>(
     ADD_INPUT,
     (state, action) => {
-        if (!state.moulds[action.payload.mouldId].input) {
-            state.moulds[action.payload.mouldId].input = {}
+        const mould = ensureMould(state, action.payload.mouldName)
+        if (!mould.input) {
+            mould.input = {}
         }
-        state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
-            action.payload.config
+        mould.input[action.payload.inputKey] = action.payload.config
 
         return state
     },
     initialData
 )
 
-type RemoveInputAction = { mouldId: string; inputKey: string }
+type RemoveInputAction = { mouldName: string; inputKey: string }
 const REMOVE_INPUT = 'REMOTE_INPUT'
 export const removeInput = createAction<RemoveInputAction>(REMOVE_INPUT)
 export const handleRemoveInput = handleAction<EditorState, RemoveInputAction>(
     REMOVE_INPUT,
     (state = initialData, action) => {
-        state.moulds[action.payload.mouldId].input[
-            action.payload.inputKey
-        ] = undefined
-        delete state.moulds[action.payload.mouldId].input[
-            action.payload.inputKey
-        ]
+        const mould = ensureMould(state, action.payload.mouldName)
+        mould.input[action.payload.inputKey] = undefined
+        delete mould.input[action.payload.inputKey]
 
         return state
     },
@@ -123,7 +128,7 @@ export const handleRemoveInput = handleAction<EditorState, RemoveInputAction>(
 )
 
 type ModifyScopeAction = {
-    mouldId: string
+    mouldName: string
     scope: string[]
 }
 const MODIFY_SCOPE = 'MODIFY_SCOPE'
@@ -131,7 +136,8 @@ export const modifyScope = createAction<ModifyScopeAction>(MODIFY_SCOPE)
 export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
     MODIFY_SCOPE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].scope = action.payload.scope
+        ensureMould(state, action.payload.mouldName).scope =
+            action.payload.scope
 
         return state
     },
@@ -139,19 +145,18 @@ export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
 )
 
 type DeleteScopeAction = {
-    mouldId: string
+    mouldName: string
     scopeName: string
 }
 const DELETE_SCOPE = 'DELETE_SCOPE'
 export const deleteScope = createAction<DeleteScopeAction>(DELETE_SCOPE)
 export const handleDeleteScope = handleAction<EditorState, DeleteScopeAction>(
     DELETE_SCOPE,
-    (state, { payload: { mouldId, scopeName } }) => {
-        state.moulds[mouldId].scope = state.moulds[mouldId].scope.filter(
-            (name) => name !== scopeName
-        )
+    (state, { payload: { mouldName, scopeName } }) => {
+        const mould = ensureMould(state, mouldName)
+        mould.scope = mould.scope.filter((name) => name !== scopeName)
 
-        const kits = state.moulds[mouldId].kits.filter((k) =>
+        const kits = mould.kits.filter((k) =>
             k.dataMappingVector.flat().includes(scopeName)
         )
         kits.forEach((kit) => {
@@ -168,7 +173,7 @@ export const handleDeleteScope = handleAction<EditorState, DeleteScopeAction>(
 )
 
 type AddScopeAction = {
-    mouldId: string
+    mouldName: string
     scope: string
 }
 const ADD_SCOPE = 'ADD_SCOPE'
@@ -176,7 +181,8 @@ export const addScope = createAction<AddScopeAction>(ADD_SCOPE)
 export const handleAddScope = handleAction<EditorState, AddScopeAction>(
     ADD_SCOPE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].scope.push(action.payload.scope)
+        const mould = ensureMould(state, action.payload.mouldName)
+        mould.scope.push(action.payload.scope)
 
         return state
     },
@@ -184,7 +190,7 @@ export const handleAddScope = handleAction<EditorState, AddScopeAction>(
 )
 
 type RemoveScopeAction = {
-    mouldId: string
+    mouldName: string
     scope: string
 }
 const REMOVE_SCOPE = 'REMOVE_SCOPE'
@@ -192,11 +198,12 @@ export const removeScope = createAction<RemoveScopeAction>(REMOVE_SCOPE)
 export const handleRemoveScope = handleAction<EditorState, RemoveScopeAction>(
     REMOVE_SCOPE,
     (state, action) => {
-        const index = state.moulds[action.payload.mouldId].scope.findIndex(
+        const mould = ensureMould(state, action.payload.mouldName)
+        const index = mould.scope.findIndex(
             (value) => value === action.payload.scope
         )
         if (index !== -1) {
-            state.moulds[action.payload.mouldId].scope.splice(index, 1)
+            mould.scope.splice(index, 1)
         }
 
         return state
@@ -205,7 +212,7 @@ export const handleRemoveScope = handleAction<EditorState, RemoveScopeAction>(
 )
 
 type AddStateAction = {
-    mouldId: string
+    mouldName: string
     state: string
 }
 const ADD_STATE = 'ADD_STATE'
@@ -213,10 +220,12 @@ export const addState = createAction<AddStateAction>(ADD_STATE)
 export const handleAddState = handleAction<EditorState, AddStateAction>(
     ADD_STATE,
     (state, action) => {
-        state.moulds[action.payload.mouldId].states[action.payload.state] = null
+        ensureMould(state, action.payload.mouldName).states[
+            action.payload.state
+        ] = null
         const view: View = {
             id: nanoid(6),
-            mouldId: action.payload.mouldId,
+            mouldName: action.payload.mouldName,
             state: action.payload.state,
             width: 300,
             height: 500,
@@ -231,7 +240,7 @@ export const handleAddState = handleAction<EditorState, AddStateAction>(
 )
 
 type RemoveStateAction = {
-    mouldId: string
+    mouldName: string
     state: string
 }
 const REMOVE_STATE = 'REMOVE_STATE'
@@ -241,14 +250,11 @@ export const handleRemoveState = handleAction<EditorState, RemoveStateAction>(
     (state, action) => {
         const viewId = (<any>Object)
             .values(state.views)
-            .find((g) => g.mouldId === action.payload.mouldId).id
+            .find((g) => g.mouldName === action.payload.mouldName).id
 
-        // state.moulds[action.payload.mouldId].states[
-        //     action.payload.state
-        // ] = undefined
-        delete state.moulds[action.payload.mouldId].states[action.payload.state]
-
-        // state.views[viewId] = undefined
+        delete ensureMould(state, action.payload.mouldName).states[
+            action.payload.state
+        ]
         delete state.views[viewId]
 
         return state
@@ -273,7 +279,11 @@ export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
     initialData
 )
 
-type ModifyMouldTreeAction = { id: string; tree: Component; state: string }
+type ModifyMouldTreeAction = {
+    mouldName: string
+    tree: Component
+    state: string
+}
 const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
 export const modifyMouldTree = createAction<ModifyMouldTreeAction>(
     MODIFY_MOULD_TREE
@@ -284,7 +294,7 @@ export const handleModifyMouldTree = handleAction<
 >(
     MODIFY_MOULD_TREE,
     (state, action) => {
-        const mould = state.moulds[action.payload.id]
+        const mould = ensureMould(state, action.payload.mouldName)
         mould.states[action.payload.state] = action.payload.tree
 
         return state
@@ -293,8 +303,7 @@ export const handleModifyMouldTree = handleAction<
 )
 
 type WaitingForCreatingAction = {
-    mouldId: string
-    stateName: string
+    mouldName?: string
     injectedKitName?: string
 }
 const WAITING_FOR_CREATING = 'WAITING_FOR_CREATING'
@@ -306,13 +315,15 @@ export const handleWaitingForCreating = handleAction<
     WaitingForCreatingAction
 >(
     WAITING_FOR_CREATING,
-    (state, { payload: { mouldId, stateName, injectedKitName } }) => {
+    (state, { payload: { mouldName, injectedKitName } }) => {
         state.creating = {
             status: 'waiting',
             view: {
                 id: nanoid(6),
-                mouldId,
-                state: stateName,
+                mouldName: mouldName || getDefaultMouldName(state),
+                state: mouldName
+                    ? getDefaultStateName(ensureMould(state, mouldName))
+                    : 'state0',
                 x: 0,
                 y: 0,
                 width: 0,
@@ -394,17 +405,18 @@ export const handleFinishCreating = handleAction<
         ) {
             state.views[view.id] = view
             state.testWorkspace.views = [...state.testWorkspace.views, view.id]
-            if (!state.moulds[view.mouldId]) {
-                state.moulds[view.mouldId] = {
-                    id: view.mouldId,
-                    name: `mould ${Object.keys(state.moulds).length}`,
+            let mould = findMould(state, view.mouldName)
+            if (!mould) {
+                mould = {
+                    name: view.mouldName,
                     scope: [],
                     kits: [],
                     input: {},
                     states: {},
                 }
+                state.moulds.push(mould)
             }
-            state.moulds[view.mouldId].states[view.state] = injectedKitName
+            mould.states[view.state] = injectedKitName
                 ? { type: injectedKitName, props: {} }
                 : null
         }
@@ -457,9 +469,10 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
     SORT_TREE,
     (state, { payload: { info } }) => {
         const selection = state.selection
-        const moulds = state.moulds
+
         const selectedTree =
-            selection && moulds[selection[0][0]].states[selection[0][1]]
+            selection &&
+            ensureMould(state, selection[0][0]).states[selection[0][1]]
 
         if (selectedTree && selection) {
             let dropKey = info.node.props.eventKey
@@ -533,7 +546,7 @@ export const handleSortTree = handleAction<EditorState, SortTreeAction>(
                 }
             }
 
-            moulds[selection[0][0]].states[selection[0][1]] = data
+            ensureMould(state, selection[0][0]).states[selection[0][1]] = data
             selection[1] = []
         }
 
@@ -571,31 +584,35 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
             if (selection[1].length) {
                 deleteChildren(
                     {
-                        children:
-                            state.moulds[selection[0][0]].states[
-                                selection[0][1]
-                            ]?.children,
+                        children: ensureMould(state, selection[0][0]).states[
+                            selection[0][1]
+                        ]?.children,
                     },
                     selection[1]
                 )
                 selection[1] = []
             } else {
                 if (
-                    state.moulds[selection[0][0]].states[selection[0][1]] !==
-                    null
+                    ensureMould(state, selection[0][0]).states[
+                        selection[0][1]
+                    ] !== null
                 ) {
-                    state.moulds[selection[0][0]].states[selection[0][1]] = null
+                    ensureMould(state, selection[0][0]).states[
+                        selection[0][1]
+                    ] = null
                 } else {
-                    delete state.moulds[selection[0][0]].states[selection[0][1]]
+                    delete ensureMould(state, selection[0][0]).states[
+                        selection[0][1]
+                    ]
                     if (
-                        Object.keys(state.moulds[selection[0][0]].states)
+                        Object.keys(ensureMould(state, selection[0][0]).states)
                             .length === 0
                     ) {
-                        delete state.moulds[selection[0][0]]
+                        deleteMould(state, selection[0][0])
                     }
                     const view = Object.values(state.views).find(
                         (view) =>
-                            view.mouldId === selection[0][0] &&
+                            view.mouldName === selection[0][0] &&
                             view.state === selection[0][1]
                     )
                     delete state.views[view!.id]
@@ -613,20 +630,26 @@ export const handleDeleteNode = handleAction<EditorState, DeleteNodeAction>(
     initialData
 )
 
-type AddKitAction = { type: string; mouldId: ID; name?: string; param?: object }
+type AddKitAction = {
+    type: string
+    mouldName: string
+    name?: string
+    param?: object
+}
 const ADD_KIT = 'ADD_KIT'
 export const addKit = createAction<AddKitAction>(ADD_KIT)
 export const handleAddKit = handleAction<EditorState, AddKitAction>(
     ADD_KIT,
-    (state, { payload: { type, mouldId, name, param } }) => {
-        const { kits } = state.moulds[mouldId]
+    (state, { payload: { type, mouldName, name, param } }) => {
+        const mould = ensureMould(state, mouldName)
+        const { kits } = mould
 
         let kitName = name || `kit ${kits.length}`
         const names = kits.map((k) => k.name)
         if (names.includes(kitName)) {
             kitName = 'New-' + kitName
         }
-        const mould = state.moulds[mouldId]
+
         const kit: Kit = {
             type,
             name: kitName,
@@ -644,7 +667,7 @@ export const handleAddKit = handleAction<EditorState, AddKitAction>(
 type ConnectScopeToKit = {
     scope: string
     prop: string
-    mouldId: ID
+    mouldName: string
     kitIndex: number
 }
 const CONNECT_SCOPE_TO_KIT = 'CONNECT_SCOPE_TO_KIT'
@@ -656,8 +679,8 @@ export const handleConnectScopeToKit = handleAction<
     ConnectScopeToKit
 >(
     CONNECT_SCOPE_TO_KIT,
-    (state, { payload: { scope, prop, mouldId, kitIndex } }) => {
-        const mould = state.moulds[mouldId]
+    (state, { payload: { scope, prop, mouldName, kitIndex } }) => {
+        const mould = ensureMould(state, mouldName)
         const kit = mould.kits[kitIndex]
         kit.dataMappingVector.push([prop, scope])
 
@@ -669,7 +692,7 @@ export const handleConnectScopeToKit = handleAction<
 type DisConnectScopeToKit = {
     scope: string
     prop: string
-    mouldId: ID
+    mouldName: string
     kitName: string
 }
 const DISCONNECT_SCOPE_TO_KIT = 'DISCONNECT_SCOPE_TO_KIT'
@@ -681,8 +704,8 @@ export const handleDisConnectScopeToKit = handleAction<
     DisConnectScopeToKit
 >(
     DISCONNECT_SCOPE_TO_KIT,
-    (state, { payload: { scope, prop, mouldId, kitName } }) => {
-        const mould = state.moulds[mouldId]
+    (state, { payload: { scope, prop, mouldName, kitName } }) => {
+        const mould = ensureMould(state, mouldName)
         const kit = find(mould.kits, (k) => k.name === kitName)
 
         remove(kit.dataMappingVector, (v) => v[0] === prop && v[1] === scope)
@@ -692,7 +715,7 @@ export const handleDisConnectScopeToKit = handleAction<
 )
 
 type ModifyInputAction = {
-    mouldId: string
+    mouldName: string
     inputKey: string
     config: InputConfig
 }
@@ -701,8 +724,9 @@ export const modifyInput = createAction<ModifyInputAction>(MODIFY_INPUT)
 export const handleModifyInput = handleAction<EditorState, ModifyInputAction>(
     MODIFY_INPUT,
     (state, action) => {
-        state.moulds[action.payload.mouldId].input[action.payload.inputKey] =
-            action.payload.config
+        ensureMould(state, action.payload.mouldName).input[
+            action.payload.inputKey
+        ] = action.payload.config
 
         return state
     },
@@ -710,18 +734,24 @@ export const handleModifyInput = handleAction<EditorState, ModifyInputAction>(
 )
 
 type ModifyMetaAction = {
-    mouldId: ID
-    name?: string
-    hookFunctionName?: string
+    mouldName: string
+    name: string
 }
 const MODIFY_META = 'MOULD_META'
 export const modifyMeta = createAction<ModifyMetaAction>(MODIFY_META)
 export const handleModifyMeta = handleAction<EditorState, ModifyMetaAction>(
     MODIFY_META,
-    (state, { payload: { mouldId, name, hookFunctionName } }) => {
-        name && (state.moulds[mouldId].name = name)
-        hookFunctionName &&
-            (state.moulds[mouldId].hookFunctionName = hookFunctionName)
+    (state, { payload: { mouldName, name } }) => {
+        const mould = ensureMould(state, mouldName)
+        mould.name = name
+        const view = Object.values(state.views).find(
+            (v) => v.mouldName === mouldName
+        )!
+        view.mouldName = name
+
+        if (state.selection) {
+            state.selection[0][0] = name
+        }
 
         return state
     },
@@ -729,7 +759,7 @@ export const handleModifyMeta = handleAction<EditorState, ModifyMetaAction>(
 )
 
 type ModifyKitAction = {
-    mouldId: ID
+    mouldName: string
     kitName: string
     [key: string]: any
 }
@@ -737,8 +767,10 @@ const MODIFY_KIT = 'MODIFY_KIT'
 export const modifyKit = createAction<ModifyKitAction>(MODIFY_KIT)
 export const handleModifyKit = handleAction<EditorState, ModifyKitAction>(
     MODIFY_KIT,
-    (state, { payload: { mouldId, kitName, ...rest } }) => {
-        const kit = state.moulds[mouldId].kits.find((k) => k.name === kitName)
+    (state, { payload: { mouldName, kitName, ...rest } }) => {
+        const kit = ensureMould(state, mouldName).kits.find(
+            (k) => k.name === kitName
+        )
         Object.assign(kit, rest)
 
         return state
@@ -757,9 +789,9 @@ export const handleDragToView = handleAction<EditorState, DragToViewAction>(
     (state, { payload: { tree, viewId } }) => {
         const view = state.views[viewId]
         const stateName = view.state
-        const mould = state.moulds[view.mouldId]
+        const mould = ensureMould(state, view.mouldName)
         mould.states[stateName] = tree
-        state.selection = [[mould.id, stateName], []]
+        state.selection = [[mould.name, stateName], []]
 
         return state
     },
@@ -767,7 +799,7 @@ export const handleDragToView = handleAction<EditorState, DragToViewAction>(
 )
 
 type ModifyStateName = {
-    mouldId: string
+    mouldName: string
     stateName: string
     name: string
 }
@@ -775,8 +807,8 @@ const MODIFY_STATENAME = 'STATE_NAME'
 export const modifyStateName = createAction<ModifyStateName>(MODIFY_STATENAME)
 export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
     MODIFY_STATENAME,
-    (state, { payload: { mouldId, stateName, name } }) => {
-        const currentMould = state.moulds[mouldId]
+    (state, { payload: { mouldName, stateName, name } }) => {
+        const currentMould = ensureMould(state, mouldName)
         currentMould.states[name] = currentMould.states[stateName]
         delete currentMould.states[stateName]
 
@@ -791,7 +823,7 @@ export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
 )
 
 type ModifyKitNameAction = {
-    mouldId: ID
+    mouldName: string
     kitName: string
     newKitName: string
     stateName: string
@@ -803,8 +835,8 @@ export const handleModifyKitName = handleAction<
     ModifyKitNameAction
 >(
     MODIFY_KITNAME,
-    (state, { payload: { mouldId, kitName, newKitName, stateName } }) => {
-        const { kits, states } = state.moulds[mouldId]
+    (state, { payload: { mouldName, kitName, newKitName, stateName } }) => {
+        const { kits, states } = ensureMould(state, mouldName)
         const currentKit = kits.find((k) => k.name === kitName)
         const currentState = states[stateName]
 
@@ -836,7 +868,7 @@ export const handleModifyKitName = handleAction<
 )
 
 type DeleteKitAction = {
-    mouldId: ID
+    mouldName: string
     kitName: string
     stateName: string
 }
@@ -844,8 +876,8 @@ const DELETE_KIT = 'DELETE_KIT'
 export const deleteKit = createAction<DeleteKitAction>(DELETE_KIT)
 export const handleDeleteKit = handleAction<EditorState, DeleteKitAction>(
     DELETE_KIT,
-    (state, { payload: { mouldId, kitName, stateName } }) => {
-        const { kits, states } = state.moulds[mouldId]
+    (state, { payload: { mouldName, kitName, stateName } }) => {
+        const { kits, states } = ensureMould(state, mouldName)
         const currentKitIndex = kits.findIndex((k) => k.name === kitName)
         const currentState = states[stateName]
         const recursiveRemove = (children, propSet) => {
@@ -860,7 +892,7 @@ export const handleDeleteKit = handleAction<EditorState, DeleteKitAction>(
             })
         }
 
-        Object.assign(state.moulds[mouldId], {
+        Object.assign(ensureMould(state, mouldName), {
             kits: [
                 ...kits.slice(0, currentKitIndex),
                 ...kits.slice(currentKitIndex + 1),
@@ -901,31 +933,6 @@ export const handleRenderRecursiveMould = handleAction<
     initialData
 )
 
-type ToggleViewsAction = {
-    excludes: string
-}
-
-const TOGGLE_VIEWS = 'TOGGLE_VIEWS'
-export const toggleViews = createAction<ToggleViewsAction>(TOGGLE_VIEWS)
-export const handleToggleViews = handleAction<EditorState, ToggleViewsAction>(
-    TOGGLE_VIEWS,
-    (state, { payload: { excludes } }) => {
-        const { views } = state
-        const target = excludes
-
-        const allViews = Object.keys(views)
-        const ownViews = filter(allViews, (v) => views[v].mouldId === target)
-
-        state.testWorkspace.views =
-            state.testWorkspace.views.length === allViews.length
-                ? ownViews
-                : allViews
-
-        return state
-    },
-    initialData
-)
-
 type UpdateDraggingStatusAction = {
     isDragging: boolean
 }
@@ -960,8 +967,8 @@ export const handleInsertComponentOnPath = handleAction<
 >(
     INSERT_COMPONENT_ON_PATH,
     (state, { payload: { component, path } }) => {
-        const [[mouldId, stateName], indexArr] = path
-        const tree = state.moulds[mouldId].states[stateName]
+        const [[mouldName, stateName], indexArr] = path
+        const tree = ensureMould(state, mouldName).states[stateName]
         let parent = tree!
         indexArr.forEach((i) => {
             parent = parent.children![i]

@@ -3,12 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating, updateDraggingStatus } from '../appShell'
-import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
+import { Popover } from '@blueprintjs/core'
 import { Layers, Move, Type } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
-import nanoid from 'nanoid'
 
 const icons = ['Stack', 'Text']
 const getIcon = (name, isActive) => {
@@ -103,26 +102,17 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
                 }}
                 onClick={() => {
                     const waitingParams: {
-                        mouldId: string
-                        stateName: string
+                        mouldName: string
                         injectedKitName: string
                     } = {
-                        mouldId: '',
-                        stateName: '',
+                        mouldName: '',
                         injectedKitName: '',
                     }
 
                     if (currentMould) {
-                        waitingParams.mouldId = currentMould.id
-                        waitingParams.stateName = `state ${
-                            Object.keys(currentMould.states).length
-                        }`
-                        waitingParams.injectedKitName = name
-                    } else {
-                        waitingParams.mouldId = nanoid(6)
-                        waitingParams.stateName = 'state 0'
-                        waitingParams.injectedKitName = name
+                        waitingParams.mouldName = currentMould.name
                     }
+                    waitingParams.injectedKitName = name
 
                     dispatch(waitingForCreating(waitingParams))
                 }}

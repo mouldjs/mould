@@ -41,16 +41,16 @@ export const View = ({ viewId }: { viewId: string }) => {
     const views = useSelector((state: EditorState) => state.views)
     const workspace = useSelector((state: EditorState) => state.testWorkspace)
     const view = views[viewId]
-    const { mouldId, state, x, y, width, height } = view
+    const { mouldName, state, x, y, width, height } = view
     const moulds = useSelector((state: EditorState) => state.moulds)
-    const mould = moulds[mouldId]
+    const mould = moulds.find((m) => m.name === mouldName)!
     const isDragging = useIsDraggingComponent()
 
     const [, drag] = useDrag({
         item: {
             type: 'TREE',
             name: 'Mould',
-            props: { __mouldId: mouldId, __state: state },
+            props: { __mouldName: mouldName, __state: state },
         },
         begin: () => {
             dispatch(updateDraggingStatus({ isDragging: true }))
@@ -93,7 +93,7 @@ export const View = ({ viewId }: { viewId: string }) => {
         },
     })
 
-    const path: Path = [[mouldId, state], []]
+    const path: Path = [[mouldName, state], []]
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
     const [paused, setPaused] = useState(true)
@@ -221,7 +221,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                                                                     dispatch(
                                                                         removeInput(
                                                                             {
-                                                                                mouldId,
+                                                                                mouldName,
                                                                                 inputKey: input,
                                                                             }
                                                                         )
@@ -287,7 +287,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                             dispatch(
                                 removeInput({
                                     inputKey: editControlName,
-                                    mouldId,
+                                    mouldName,
                                 })
                             )
                         }
@@ -295,7 +295,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                             modifyInput({
                                 inputKey: name,
                                 config,
-                                mouldId,
+                                mouldName,
                             })
                         )
                     }}
@@ -350,7 +350,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                         ></EditingMould>
                     ) : (
                         <RuntimeMould
-                            __mouldId={mould.id}
+                            __mouldName={mould.name}
                             {...inputValue}
                         ></RuntimeMould>
                     )}

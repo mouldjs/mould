@@ -76,7 +76,7 @@ export const MouldInput = ({
         return mould && name && mould.input[name]
             ? omit(['type'], { ...mould.input[name], name })
             : undefined
-    }, [mould?.id, name])
+    }, [mould?.name, name])
     const [addingControlType, setAddingControlType] = useState<string | null>(
         type || mould!.input[name].type
     )

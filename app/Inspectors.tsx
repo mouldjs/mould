@@ -14,8 +14,8 @@ export const ComponentInspector = ({ path, children }) => {
     )
 }
 
-export const MouldInspector = ({ mouldId, children }) => {
-    const selected = useIsSelectedMould(mouldId)
+export const MouldInspector = ({ mouldName, children }) => {
+    const selected = useIsSelectedMould(mouldName)
 
     return (
         selected && (

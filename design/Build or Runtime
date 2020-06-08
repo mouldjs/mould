@@ -33,3 +33,24 @@ const Components = {
 
     return render(tree)
 }
+
+
+//
+import {Stack, Text} from 'mould'
+import resolvers from 'mould/user_land'
+
+const MouldName = (props) => {
+    const [scopes, stateName] = resolvers['MouldName'](props)
+    const trees = {}
+
+    switch(stateName) {
+        case stateName:
+            return <ComponentType prop1={scopes[]}></ComponentType>
+    }
+
+    trees[stateName] = <ComponentType prop1={scopes[]}>
+
+    </ComponentType>
+
+    return Comp
+}

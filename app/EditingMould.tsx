@@ -3,7 +3,6 @@ import { Mould } from './types'
 import { Tree } from './Tree'
 import { useDispatch } from 'react-redux'
 import { modifyMouldTree } from './appShell'
-import { rootTree } from './utils'
 import { MouldContext } from './Contexts'
 
 const { Provider } = MouldContext
@@ -12,7 +11,7 @@ type currentState = { currentState: string }
 
 export default ({ currentState, ...mould }: Mould & currentState) => {
     const dispatch = useDispatch()
-    const { states, id } = mould
+    const { states, name } = mould
     const tree = states[currentState]
 
     if (!tree) {
@@ -23,9 +22,15 @@ export default ({ currentState, ...mould }: Mould & currentState) => {
         <Provider value={mould}>
             <Tree
                 root
-                path={[[id, currentState], []]}
+                path={[[name, currentState], []]}
                 onChange={(tree) => {
-                    dispatch(modifyMouldTree({ id, tree, state: currentState }))
+                    dispatch(
+                        modifyMouldTree({
+                            mouldName: name,
+                            tree,
+                            state: currentState,
+                        })
+                    )
                 }}
                 {...tree}
             ></Tree>

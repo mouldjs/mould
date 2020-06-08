@@ -10,23 +10,22 @@ export default {
     views: {
         jxkXWm: {
             id: 'jxkXWm',
-            mouldId: 'DptLOn',
-            state: 'state 0',
+            mouldName: 'mould0',
+            state: 'state0',
             x: 51,
             y: 23,
             width: 467,
             height: 518,
         },
     },
-    moulds: {
-        DptLOn: {
-            id: 'DptLOn',
-            name: 'mould 0',
+    moulds: [
+        {
+            name: 'mould0',
             scope: [],
             kits: [],
             input: {},
             states: {
-                'state 0': {
+                state0: {
                     type: 'Stack',
                     props: {
                         color: '',
@@ -34,6 +33,6 @@ export default {
                 },
             },
         },
-    },
-    selection: [['DptLOn', 'state 0'], []],
+    ],
+    selection: [['mould0', 'state0'], []],
 } as EditorState

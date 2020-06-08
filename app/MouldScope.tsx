@@ -104,7 +104,7 @@ export const MouldScope = () => {
                             handleAddition={(tag) =>
                                 dispatch(
                                     modifyScope({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         scope: [...mould.scope, tag.text],
                                     })
                                 )
@@ -112,7 +112,7 @@ export const MouldScope = () => {
                             handleDelete={(i) => {
                                 dispatch(
                                     deleteScope({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         scopeName: mould.scope[i],
                                     })
                                 )
@@ -125,7 +125,7 @@ export const MouldScope = () => {
 
                                 dispatch(
                                     modifyScope({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         scope: newScopes,
                                     })
                                 )

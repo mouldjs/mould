@@ -21,14 +21,7 @@ const AddMouldTrigger = () => {
                     paddingLeft: '10px',
                     paddingRight: '10px',
                 }}
-                onClick={() =>
-                    dispatch(
-                        waitingForCreating({
-                            mouldId: nanoid(6),
-                            stateName: 'state 0',
-                        })
-                    )
-                }
+                onClick={() => dispatch(waitingForCreating({}))}
             >
                 <Plus color="#fff"></Plus>
                 <p className={`clickable m-t-sm m-b-0 pure`}>Add Mould</p>

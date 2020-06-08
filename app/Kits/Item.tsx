@@ -25,16 +25,16 @@ const MouldKitItem = ({
     dataMappingVector,
     onConnect,
     onIsListChange,
-    mouldId,
+    mouldName,
 }: Kit & {
     onConnect: (prop: string, scope: string) => void
     onIsListChange: (checked: boolean) => void
-    mouldId: string
+    mouldName: string
 }) => {
     const moulds = useSelector((state: EditorState) => state.moulds)
     const dispatch = useDispatch()
     const stateName = useCurrentState()
-    const { kits } = moulds[mouldId]
+    const { kits } = moulds.find((m) => m.name === mouldName)!
     const kitNames = kits.map((k) => (k.name === name ? '' : k.name))
     const ready = isList !== undefined
     const [draggingScope, setDraggingScope] = useState<string>('')
@@ -61,7 +61,7 @@ const MouldKitItem = ({
                           type,
                           props:
                               type === 'Mould'
-                                  ? { __mouldId: (param as any).mouldId }
+                                  ? { __mouldName: (param as any).mouldName }
                                   : {},
                       },
                   ],
@@ -102,7 +102,9 @@ const MouldKitItem = ({
 
     const fields =
         plugin.type === 'Mould'
-            ? Object.keys(moulds[(param as any).mouldId].input)
+            ? Object.keys(
+                  moulds.find((m) => m.name === (param as any).mouldName)!.input
+              )
             : Object.keys(plugin.Standard!._def.shape)
     const [inputValue, setInputValue] = useState(name)
 
@@ -110,16 +112,16 @@ const MouldKitItem = ({
 
     const doDelete = ({
         kitName,
-        mouldId,
+        mouldName,
         stateName,
     }: {
         kitName: string
-        mouldId: string
+        mouldName: string
         stateName: string
     }) => {
         dispatch(
             deleteKit({
-                mouldId: mouldId,
+                mouldName: mouldName,
                 kitName: kitName,
                 stateName,
             })
@@ -195,7 +197,7 @@ const MouldKitItem = ({
                                             modifyKitName({
                                                 newKitName: inputValue,
                                                 kitName: name,
-                                                mouldId: mouldId,
+                                                mouldName: mouldName,
                                                 stateName,
                                             })
                                         )
@@ -275,7 +277,7 @@ const MouldKitItem = ({
                                 onClick={() =>
                                     stateName &&
                                     doDelete({
-                                        mouldId,
+                                        mouldName,
                                         stateName,
                                         kitName: name,
                                     })
@@ -319,7 +321,7 @@ const MouldKitItem = ({
                                                         disconnectScopeToKit({
                                                             scope: target,
                                                             prop: source,
-                                                            mouldId,
+                                                            mouldName,
                                                             kitName: name,
                                                         })
                                                     )
