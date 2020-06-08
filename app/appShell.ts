@@ -1003,7 +1003,7 @@ export const handleInsertComponentOnPath = handleAction<
     initialData
 )
 
-type MoveWorkspaceActionType = { id: string } & Vector
+type MoveWorkspaceActionType = Vector
 export const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
 export const moveWorkspace = createAction<MoveWorkspaceActionType>(
     MOVE_WORKSPACE

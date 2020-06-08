@@ -17,7 +17,12 @@ import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
+import {
+    cancelCreating,
+    deleteNode,
+    waitingForCreating,
+    zoomWorkspace,
+} from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
@@ -90,6 +95,17 @@ const App = () => {
     const mould = useCurrentMould()
 
     const creatingStep = creating && creating.status
+
+    const zoomOut = (step, zoom) => {
+        const result = zoom - step <= 0 ? 0.01 : zoom - step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
+
+    const zoomIn = (step, zoom) => {
+        const result = zoom + step >= 5 ? zoom : zoom + step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
+
     return (
         <Flex
             translate
@@ -220,14 +236,18 @@ const App = () => {
                     </div>
                 </Box>
             </Flex>
-            {/* <KeyboardEventHandler
+            <KeyboardEventHandler
                 handleKeys={['ctrl+plus']}
-                onKeyEvent={zoomIn}
+                onKeyEvent={() => {
+                    zoomIn(0.25, testWorkspace.zoom)
+                }}
             ></KeyboardEventHandler>
             <KeyboardEventHandler
                 handleKeys={['ctrl+minus']}
-                onKeyEvent={zoomOut}
-            ></KeyboardEventHandler> */}
+                onKeyEvent={() => {
+                    zoomOut(0.25, testWorkspace.zoom)
+                }}
+            ></KeyboardEventHandler>
             <div style={{ overflow: 'visible' }}>
                 <Workspace {...testWorkspace}></Workspace>
             </div>

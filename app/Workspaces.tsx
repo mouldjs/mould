@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Workspace as WorkspaceType, EditorState } from './types'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
@@ -13,22 +13,28 @@ import { View } from './View'
 import { tick } from './selectionTick'
 import useClientRect from '../lib/useClientRect'
 
-export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
+export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const creation = creating && creating.view
-    const [zoomOffset, setZoomOffset] = useState([0, 0])
-    const [scaling, setScaling] = useState(1)
+    const [zoomOffset, setZoomOffset] = useState([x, y])
+
+    const [scaling, setScaling] = useState(zoom)
 
     const STEP = 0.99
     const MAX_SCALE = 5
     const MIN_SCALE = 0.01
 
+    useEffect(() => {
+        if (zoom !== scaling) {
+            setScaling(zoom)
+        }
+    }, [zoom])
+
     const [wrapperRect, wrapperRef] = useClientRect()
-    const [, contentRef] = useClientRect()
     const contentRefDOM =
         typeof window !== 'undefined'
-            ? document.getElementById('contentRef')
+            ? document.getElementById('contentRefDOM')
             : null
 
     const originCenterX = wrapperRect
@@ -43,6 +49,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             const xy = [zoomOffset[0] - delta[0], zoomOffset[1] - delta[1]]
             setZoomOffset(xy)
             if (last) {
+                dispatch(moveWorkspace({ x: xy[0], y: xy[1] }))
             }
         },
         onDrag: ({ xy, initial }) => {
@@ -80,7 +87,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             )
                 return
 
-            const scaleChanged = Math.pow(STEP, factor)
+            const changed = Math.pow(STEP, factor)
 
             const contentRect =
                 contentRefDOM && contentRefDOM.getBoundingClientRect()
@@ -100,18 +107,19 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
 
             const newCenterX =
                 currentCenterX +
-                mousePosToCurrentCenterDistanceX * (1 - scaleChanged)
+                mousePosToCurrentCenterDistanceX * (1 - changed)
             const newCenterY =
                 currentCenterY +
-                mousePosToCurrentCenterDistanceY * (1 - scaleChanged)
+                mousePosToCurrentCenterDistanceY * (1 - changed)
 
             const offsetX = newCenterX - originCenterX
             const offsetY = newCenterY - originCenterY
 
-            setScaling(scaling * scaleChanged)
+            setScaling(scaling * changed)
             setZoomOffset([offsetX, offsetY])
 
             if (e.last) {
+                dispatch(moveWorkspace({ x: offsetX, y: offsetY }))
                 dispatch(zoomWorkspace({ zoom: scaling }))
             }
         },
@@ -140,8 +148,7 @@ export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
             }}
         >
             <div
-                id="contentRef"
-                ref={contentRef}
+                id="contentRefDOM"
                 style={{
                     position: 'absolute',
                     width: '100vw',

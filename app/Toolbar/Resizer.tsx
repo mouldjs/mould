@@ -1,19 +1,39 @@
 import { useState } from 'react'
 import { ZoomIn } from 'react-feather'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { EditorState } from '../types'
-import { minBy } from 'lodash'
+import { zoomWorkspace } from '../appShell'
 import '../style/Toolbar.scss'
 
 const Resizer = ({}) => {
-    const { testWorkspace, views } = useSelector((state: EditorState) => state)
+    const dispatch = useDispatch()
+    const testWorkspace = useSelector(
+        (state: EditorState) => state.testWorkspace
+    )
     const [showDropdown, setShowDropdown] = useState(false)
     const onHover = () => {
         setShowDropdown(!showDropdown)
     }
-    const scaleValues = [1, 3, 5, 13, 25, 50, 100, 200, 400, 800, 1600, 3200]
-    const scaleCenter = [100, 100]
-    // const scaleCenter = [minBy(views, 'x') / 2, minBy(views, 'y') / 2]
+
+    const STEP = 0.25
+
+    const zoomOut = (step, zoom) => {
+        const result = zoom - step <= 0 ? 0.01 : zoom - step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
+
+    const zoomIn = (step, zoom) => {
+        const result = zoom + step >= 5 ? zoom : zoom + step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
+
+    const zoomTo100 = () => {
+        dispatch(zoomWorkspace({ zoom: 1 }))
+    }
+
+    const transferToPercent = (zoom) => {
+        return zoom && Math.round(zoom * 100)
+    }
 
     return (
         <div
@@ -29,9 +49,10 @@ const Resizer = ({}) => {
             }}
         >
             <ZoomIn className="pure"></ZoomIn>
-            <p className={`clickable m-t-sm m-b-0 pure`}>{`${
-                testWorkspace.zoom ? Math.round(testWorkspace.zoom * 100) : 1
-            } %`}</p>
+            <p className={`clickable m-t-sm m-b-0 pure`}>
+                {testWorkspace.zoom &&
+                    `${transferToPercent(testWorkspace.zoom)}%`}
+            </p>
             <div
                 style={{
                     display: showDropdown ? 'block' : 'none',
@@ -48,7 +69,9 @@ const Resizer = ({}) => {
                 <ul style={{ margin: 0, paddingLeft: 0 }} className="list pure">
                     <li
                         className="flex clickable justify-space-between p-sm list-item"
-                        // onClick={(e) => {zoomIn(e)}}
+                        onClick={() => {
+                            zoomIn(STEP, testWorkspace.zoom)
+                        }}
                     >
                         <span>Zoom In</span>
                         <span
@@ -62,7 +85,9 @@ const Resizer = ({}) => {
                     </li>
                     <li
                         className="flex clickable justify-space-between p-sm list-item"
-                        // onClick={(e) => {zoomOut(e)}}
+                        onClick={(e) => {
+                            zoomOut(STEP, testWorkspace.zoom)
+                        }}
                     >
                         <span>Zoom Out</span>
                         <span
@@ -76,7 +101,9 @@ const Resizer = ({}) => {
                     </li>
                     <li
                         className="flex clickable justify-space-between p-sm list-item"
-                        // onClick={() => { setScale(1) }}
+                        onClick={() => {
+                            zoomTo100()
+                        }}
                     >
                         <span>Zoom To 100%</span>
                         <span
