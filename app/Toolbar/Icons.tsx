@@ -4,12 +4,12 @@ import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating, updateDraggingStatus } from '../appShell'
 import { Popover } from '@blueprintjs/core'
-import { Layers, Move, Type } from 'react-feather'
+import { Layers, Move, Type, Star } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
 
-const icons = ['Stack', 'Text']
+const icons = ['Stack', 'Text', 'Icon']
 const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
@@ -41,6 +41,33 @@ const getIcon = (name, isActive) => {
             icon: (
                 <Layers className={`${isActive ? 'primary' : 'pure'}`}></Layers>
             ),
+            descInPopover: (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Move size={32} color="#666"></Move>
+                    </div>
+                    <Text
+                        as="p"
+                        mt={15}
+                        sx={{ color: '#666', textAlign: 'center' }}
+                    >
+                        Create a {name}
+                    </Text>
+                    <Text
+                        size={2}
+                        as="p"
+                        mt={10}
+                        sx={{ color: '#666', lineHeight: '1.3' }}
+                    >
+                        Grabbing to kits or your working view directly. Or click
+                        and drag a new state with having a {name} in workspace
+                        below.
+                    </Text>
+                </>
+            ),
+        },
+        Icon: {
+            icon: <Star className={`${isActive ? 'primary' : 'pure'}`}></Star>,
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
