@@ -61,7 +61,6 @@
         "react-teleporter": "^1.1.1",
         "react-treeview": "^0.4.7",
         "react-use-gesture": "^7.0.15",
-        "react-zoom-pan-pinch": "^1.6.1",
         "reduce-reducers": "^1.0.4",
         "redux": "^4.0.4",
         "redux-actions": "^2.6.5",

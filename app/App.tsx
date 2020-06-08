@@ -17,13 +17,7 @@ import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import {
-    cancelCreating,
-    deleteNode,
-    waitingForCreating,
-    zoomWorkspace,
-    moveWorkspaceOffset,
-} from './appShell'
+import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
@@ -35,8 +29,6 @@ import DebugPanel from './DebugPanel'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { useCurrentMould } from './utils'
-import { TransformWrapper } from 'react-zoom-pan-pinch'
-import { debounce } from 'lodash'
 
 const schemaQuery = gql`
     query {
@@ -146,6 +138,7 @@ const App = () => {
                 handleKeys={['shift+meta+z']}
                 onKeyEvent={() => dispatch(redo())}
             ></KeyboardEventHandler>
+            <Toolbar></Toolbar>
             <Flex
                 translate
                 style={{
@@ -155,7 +148,7 @@ const App = () => {
                     alignContent: 'stretch',
                     flex: 1,
                     overflow: 'hidden',
-                    width: '100%',
+                    width: '100vw',
                     height: '100%',
                 }}
             >
@@ -227,57 +220,17 @@ const App = () => {
                     </div>
                 </Box>
             </Flex>
-            <TransformWrapper
-                defaultScale={1}
-                options={{
-                    limitToBounds: true,
-                    transformEnabled: true,
-                    disabled: false,
-                    limitToWrapper: false,
-                    minScale: 0.1,
-                    maxScale: 3,
-                    centerContent: false,
-                }}
-                pan={{ disabled: true }}
-                pinch={{ disabled: true }}
-                doubleClick={{ disabled: true }}
-                onZoomChange={debounce((e) => {
-                    dispatch(zoomWorkspace({ zoom: e.scale }))
-                }, 500)}
-                wheel={{
-                    disabled: false,
-                    wheelEnabled: false,
-                    touchPadEnabled: true,
-                    limitsOnWheel: false,
-                    step: 30,
-                }}
-                onWheelStop={(e) => {
-                    dispatch(zoomWorkspace({ zoom: e.scale }))
-                    dispatch(
-                        moveWorkspaceOffset({
-                            positionX: e.positionX,
-                            positionY: e.positionY,
-                        })
-                    )
-                }}
-            >
-                {({ zoomIn, zoomOut }) => (
-                    <Fragment>
-                        <KeyboardEventHandler
-                            handleKeys={['ctrl+plus']}
-                            onKeyEvent={zoomIn}
-                        ></KeyboardEventHandler>
-                        <KeyboardEventHandler
-                            handleKeys={['ctrl+minus']}
-                            onKeyEvent={zoomOut}
-                        ></KeyboardEventHandler>
-                        <Toolbar zoomIn={zoomIn} zoomOut={zoomOut}></Toolbar>
-                        <div style={{ overflow: 'visible' }}>
-                            <Workspace {...testWorkspace}></Workspace>
-                        </div>
-                    </Fragment>
-                )}
-            </TransformWrapper>
+            {/* <KeyboardEventHandler
+                handleKeys={['ctrl+plus']}
+                onKeyEvent={zoomIn}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+minus']}
+                onKeyEvent={zoomOut}
+            ></KeyboardEventHandler> */}
+            <div style={{ overflow: 'visible' }}>
+                <Workspace {...testWorkspace}></Workspace>
+            </div>
         </Flex>
     )
 }

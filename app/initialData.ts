@@ -7,8 +7,6 @@ export default {
         y: 87,
         views: ['jxkXWm'],
         zoom: 1,
-        positionX: 0,
-        positionY: 0,
     },
     views: {
         jxkXWm: {

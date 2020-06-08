@@ -34,7 +34,6 @@ import {
     handleInsertComponentOnPath,
     handleZoomWorkspace,
     handleMoveWorkspace,
-    handleMoveWorkspaceOffset,
 } from './appShell'
 
 export default () => [
@@ -75,5 +74,4 @@ export default () => [
     handleInsertComponentOnPath,
     handleZoomWorkspace,
     handleMoveWorkspace,
-    handleMoveWorkspaceOffset,
 ]

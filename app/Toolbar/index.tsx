@@ -6,8 +6,9 @@ import { transform } from '../../compile/transform'
 import { EditorState } from '../types'
 import Resizer from './Resizer'
 
-const Toolbar = ({ zoomIn, zoomOut }) => {
+const Toolbar = ({}) => {
     const state = useSelector((state: EditorState) => state)
+
     return (
         <div
             style={{
@@ -34,7 +35,7 @@ const Toolbar = ({ zoomIn, zoomOut }) => {
             <div className="flex">
                 <Icons></Icons>
             </div>
-            <Resizer zoomIn={zoomIn} zoomOut={zoomOut}></Resizer>
+            <Resizer></Resizer>
             <PanelTrigger></PanelTrigger>
         </div>
     )

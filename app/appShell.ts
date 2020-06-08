@@ -9,7 +9,6 @@ import {
     ID,
     Kit,
     InputConfig,
-    OffsetVector,
 } from './types'
 import {
     initialData,
@@ -1017,25 +1016,6 @@ export const handleMoveWorkspace = handleAction<
     (state, action) => {
         state.testWorkspace.x = action.payload.x
         state.testWorkspace.y = action.payload.y
-
-        return state
-    },
-    initialData
-)
-
-type MoveWorkspaceOffsetActionType = OffsetVector
-export const MOVE_WORKSPACE_OFFSET = 'MOVE_WORKSPACE_OFFSET'
-export const moveWorkspaceOffset = createAction<MoveWorkspaceOffsetActionType>(
-    MOVE_WORKSPACE_OFFSET
-)
-export const handleMoveWorkspaceOffset = handleAction<
-    EditorState,
-    MoveWorkspaceOffsetActionType
->(
-    MOVE_WORKSPACE_OFFSET,
-    (state, action) => {
-        state.testWorkspace.positionX = action.payload.positionX
-        state.testWorkspace.positionY = action.payload.positionY
 
         return state
     },

@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import { TransformComponent } from 'react-zoom-pan-pinch'
-import { Workspace as WorkspaceType, EditorState, Vector } from './types'
+import React, { useState, useMemo, useRef } from 'react'
+import { Workspace as WorkspaceType, EditorState } from './types'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
 import {
@@ -8,33 +7,45 @@ import {
     finishCreating,
     updateCreating,
     moveWorkspace,
+    zoomWorkspace,
 } from './appShell'
 import { View } from './View'
 import { tick } from './selectionTick'
+import useClientRect from '../lib/useClientRect'
 
-export const Workspace = ({
-    views,
-    x,
-    y,
-    id,
-    zoom = 1,
-    positionX,
-    positionY,
-}: WorkspaceType) => {
+export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const creation = creating && creating.view
-    const [xy, setXY] = useState([x, y])
+    const [zoomOffset, setZoomOffset] = useState([0, 0])
+    const [scaling, setScaling] = useState(1)
+
+    const STEP = 0.99
+    const MAX_SCALE = 5
+    const MIN_SCALE = 0.01
+
+    const [wrapperRect, wrapperRef] = useClientRect()
+    const [, contentRef] = useClientRect()
+    const contentRefDOM =
+        typeof window !== 'undefined'
+            ? document.getElementById('contentRef')
+            : null
+
+    const originCenterX = wrapperRect
+        ? wrapperRect.left + wrapperRect.width / 2
+        : 0
+    const originCenterY = wrapperRect
+        ? wrapperRect.top + wrapperRect.height / 2
+        : 0
 
     const bind = useGesture({
-        onWheel: ({ last, movement }) => {
-            const xy = [x - movement[0], y - movement[1]]
-            setXY(xy)
+        onWheel: ({ last, delta }) => {
+            const xy = [zoomOffset[0] - delta[0], zoomOffset[1] - delta[1]]
+            setZoomOffset(xy)
             if (last) {
-                dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
             }
         },
-        onDrag: ({ event, offset, xy, previous, initial }) => {
+        onDrag: ({ xy, initial }) => {
             const [px, py] = xy
             const [ix, iy] = initial
             if (creating?.status === 'waiting') {
@@ -59,6 +70,51 @@ export const Workspace = ({
         onMouseUp: (event) => {
             dispatch(finishCreating())
         },
+        onPinch: (e) => {
+            const origin = e.origin
+            const factor = e.delta[1]
+
+            if (
+                (scaling >= MAX_SCALE && factor < 0) ||
+                (scaling <= MIN_SCALE && factor > 0)
+            )
+                return
+
+            const scaleChanged = Math.pow(STEP, factor)
+
+            const contentRect =
+                contentRefDOM && contentRefDOM.getBoundingClientRect()
+            const currentCenterX = contentRect
+                ? contentRect.left + contentRect.width / 2
+                : 0
+            const currentCenterY = contentRect
+                ? contentRect.top + contentRect.height / 2
+                : 0
+
+            const mousePosToCurrentCenterDistanceX = origin
+                ? origin[0] - currentCenterX
+                : 0
+            const mousePosToCurrentCenterDistanceY = origin
+                ? origin[1] - currentCenterY
+                : 0
+
+            const newCenterX =
+                currentCenterX +
+                mousePosToCurrentCenterDistanceX * (1 - scaleChanged)
+            const newCenterY =
+                currentCenterY +
+                mousePosToCurrentCenterDistanceY * (1 - scaleChanged)
+
+            const offsetX = newCenterX - originCenterX
+            const offsetY = newCenterY - originCenterY
+
+            setScaling(scaling * scaleChanged)
+            setZoomOffset([offsetX, offsetY])
+
+            if (e.last) {
+                dispatch(zoomWorkspace({ zoom: scaling }))
+            }
+        },
     })
 
     const VS = useMemo(
@@ -71,9 +127,11 @@ export const Workspace = ({
 
     return (
         <div
+            ref={wrapperRef}
             style={{
-                position: 'relative',
+                position: 'absolute',
                 height: '100vh',
+                width: '100vw',
                 background: '#f1f1f1',
             }}
             {...bind()}
@@ -81,31 +139,29 @@ export const Workspace = ({
                 tick((data = []) => data)
             }}
         >
-            <TransformComponent>
-                <div
-                    style={{
-                        position: 'inherit',
-                        width: '100vw',
-                        height: '100vh',
-                        top: 0,
-                        left: 0,
-                        transform: `translate(${xy[0]}px,${xy[1]}px)`,
-                    }}
-                >
-                    {VS}
-                    {creation && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                background: '#fff',
-                                transform: `translateX(${creation.x}px) translateY(${creation.y}px)`,
-                                width: creation.width,
-                                height: creation.height,
-                            }}
-                        ></div>
-                    )}
-                </div>
-            </TransformComponent>
+            <div
+                id="contentRef"
+                ref={contentRef}
+                style={{
+                    position: 'absolute',
+                    width: '100vw',
+                    height: '100vh',
+                    transform: `translate(${zoomOffset[0]}px, ${zoomOffset[1]}px) scale(${scaling})`,
+                }}
+            >
+                {VS}
+                {creation && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            background: '#fff',
+                            transform: `translateX(${creation.x}px) translateY(${creation.y}px)`,
+                            width: creation.width,
+                            height: creation.height,
+                        }}
+                    ></div>
+                )}
+            </div>
         </div>
     )
 }
