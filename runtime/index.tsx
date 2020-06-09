@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react'
 import { pick } from 'ramda'
-import { Mould, useScopeFn, Component, ID } from '../app/types'
+import { Mould, useScopeFn, Component } from '../app/types'
 import Components from '../components'
 import List from '../components/List'
-import './tempFunctions'
+import resolvers from '../.mould/resolvers'
 
 const returnEmptyObject = (defaultState) => (): [string, object] => {
     return [defaultState, {}]
@@ -21,9 +21,8 @@ export const runtime = (moulds: Mould[]) => {
             ref
         ) => {
             const __mouldProps = moulds.find((m) => m.name === __mouldName)!
-            const { input, states, kits, hookFunctionName } = __mouldProps
-            let useScope: useScopeFn =
-                hookFunctionName && window[hookFunctionName]
+            const { input, states, kits } = __mouldProps
+            let useScope: useScopeFn = resolvers[__mouldName]
 
             if (!useScope) {
                 useScope = returnEmptyObject(Object.keys(states)[0])
