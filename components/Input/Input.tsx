@@ -151,6 +151,8 @@ export const Input = forwardRef(
             InputProps,
             blurProps,
             filtersProps,
+            fillProps,
+            borderProps,
         })
 
         return (
