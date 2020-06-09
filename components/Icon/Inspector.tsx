@@ -24,6 +24,11 @@ import {
     BlockAlignBottom,
 } from '../../resources/Icons'
 import { IconSelect } from '../../inspector/IconSelect'
+import {
+    LayoutSize,
+    LayoutSizeUnit,
+    unitMapDefaultAmount,
+} from '../../inspector/Layout'
 
 type TextStyleType = 'normal' | 'italic'
 
@@ -31,6 +36,7 @@ export type IconPropTypes = {
     namespace: string
     name: string
     color: ColorType
+    size: LayoutSize
 }
 
 export const IconInspector: Inspector<IconPropTypes> = ({
@@ -65,19 +71,50 @@ export const IconInspector: Inspector<IconPropTypes> = ({
                                 }}
                             ></IconSelect>
                         </ControlGridItem>
-                        {/* <ControlGridItem area="value / value / control / control">
-                            <InputGroup
-                                value={data.name}
-                                onChange={(e) =>
+                    </ControlGrid>
+                    <ControlGrid>
+                        <ControlGridItem area="active / active / visual / visual">
+                            <Text size={1}>Size</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="value">
+                            <NumericInput
+                                value={data.size.amount}
+                                onValueChange={(value) => {
                                     onChange({
                                         ...data,
-                                        name: e.target.value,
+                                        size: { ...data.size, amount: value },
                                     })
-                                }
-                            ></InputGroup>
-                        </ControlGridItem> */}
+                                }}
+                                fill
+                                buttonPosition="none"
+                                min={0}
+                            ></NumericInput>
+                        </ControlGridItem>
+                        <ControlGridItem area="control">
+                            <HTMLSelect
+                                value={data.size.unit}
+                                onChange={(event) => {
+                                    const unit = event.target
+                                        .value as LayoutSizeUnit
+
+                                    onChange({
+                                        ...data,
+                                        size: {
+                                            amount: unitMapDefaultAmount[unit],
+                                            unit,
+                                        },
+                                    })
+                                }}
+                                options={['px', '%', 'fr'] as LayoutSizeUnit[]}
+                                fill
+                                iconProps={{
+                                    iconSize: 0,
+                                    icon: null,
+                                }}
+                            ></HTMLSelect>
+                        </ControlGridItem>
                     </ControlGrid>
-                    <ControlGrid marginTop={8}>
+                    {/* <ControlGrid marginTop={8}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Namespace</Text>
                         </ControlGridItem>
@@ -92,7 +129,7 @@ export const IconInspector: Inspector<IconPropTypes> = ({
                                 }
                             ></InputGroup>
                         </ControlGridItem>
-                    </ControlGrid>
+                    </ControlGrid> */}
                     <ControlGrid marginTop={8}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Color</Text>

@@ -20,15 +20,8 @@ const Container = styled.div.attrs<IconProps>((props) => ({
     onClickCapture: mouseEventWrapper(props.onClickCapture),
 }))<IconProps>`
     display: flex;
-    border-width: ${(props) => props.borderWidth};
-    border-style: ${(props) => props.borderStyle};
-    border-color: ${(props) => props.borderColor};
-    background: ${(props) => props.fill};
-    width: ${(props) => props.width || '100%'};
-    height: ${(props) => props.height || '100%'};
-    overflow: ${(props) => props.overflow};
-    opacity: ${(props) => parseFloat(props.opacity || '1')};
-    border-radius: ${(props) => props.radius};
+    width: ${(props) => props.size || '100%'};
+    height: ${(props) => props.size || '100%'};
 `
 
 export const RawIcon: SFC<IconProps & { ref: any }> = forwardRef(

@@ -20,7 +20,6 @@ import { transformColorToStr } from '../../inspector/Color'
 import { Filter } from '../../standard/common'
 
 type IconProps = {
-    layoutProps?: LayoutPropTypes
     shadowsProps?: ShadowsPropTypes
     iconProps?: IconPropTypes
     blurProps?: BlurPropTypes
@@ -36,6 +35,10 @@ const initialIconProps: IconPropTypes = {
         b: 0,
         a: 1,
     },
+    size: {
+        amount: 100,
+        unit: '%',
+    },
 }
 
 const transformIconProps = (iconProps: IconPropTypes = initialIconProps) => {
@@ -43,6 +46,7 @@ const transformIconProps = (iconProps: IconPropTypes = initialIconProps) => {
         namespace: iconProps.namespace,
         name: iconProps.name,
         color: transformColorToStr(iconProps.color),
+        size: `${iconProps.size.amount}${iconProps.size.unit}`,
     }
 }
 
@@ -96,14 +100,12 @@ const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
 }
 
 export const transform = ({
-    layoutProps,
     shadowsProps,
     iconProps,
     blurProps,
     filtersProps,
 }: IconProps = {}) => {
     return {
-        ...transformLayout(layoutProps),
         ...transformIconProps(iconProps!),
         ...transformFilterProps(blurProps, filtersProps, shadowsProps),
     }
@@ -115,7 +117,6 @@ export const Icon = forwardRef(
             requestUpdateProps,
             path,
             connectedFields,
-            layoutProps,
             shadowsProps,
             iconProps = initialIconProps,
             filtersProps,
@@ -125,7 +126,6 @@ export const Icon = forwardRef(
         ref
     ) => {
         const props = transform({
-            layoutProps,
             shadowsProps,
             iconProps,
             blurProps,
@@ -136,14 +136,6 @@ export const Icon = forwardRef(
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <LayoutInspector
-                            title="Layout"
-                            data={layoutProps}
-                            onChange={(data) =>
-                                requestUpdateProps({ layoutProps: data })
-                            }
-                            connectedFields={connectedFields}
-                        ></LayoutInspector>
                         <IconInspector
                             title="Icon"
                             data={iconProps}
