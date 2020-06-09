@@ -77,6 +77,18 @@ export const useCurrentState = () => {
     return selection[0][1]
 }
 
+export const useCurrentView = () => {
+    const view = useSelector((state: EditorState) => {
+        if (!state.selection) {
+            return
+        }
+        const currentState = useCurrentState()
+        return Object.values(state.views).find((v) => v.state === currentState)
+    })
+
+    return view
+}
+
 export const pathToString = (path: Path) =>
     path[0].join('/') + '/' + path[1].join('-')
 
