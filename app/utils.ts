@@ -111,24 +111,24 @@ export const deleteMould = (state: EditorState, mouldName: string) => {
     return state.moulds.splice(mouldIndex, 1)
 }
 
+const INCREMENTED = {}
+
+const incrementedId = (field) => {
+    if (!INCREMENTED[field]) {
+        INCREMENTED[field] = 1
+    }
+
+    return INCREMENTED[field]++
+}
+
 export const isDuplicateMould = (state: EditorState, mouldName: string) =>
     !!state.moulds.find((m) => m.name === mouldName)
 
 export const getDefaultMouldName = (state: EditorState) => {
     const len = state.moulds.length
     let mouldName = `mould${len}`
-    if (isDuplicateMould(state, mouldName)) {
-        mouldName = `mould${len}` + nanoid(2)
-    }
-    if (isDuplicateMould(state, mouldName)) {
-        mouldName = `mould${len}` + nanoid(2)
-    }
-    if (isDuplicateMould(state, mouldName)) {
-        mouldName = `mould${len}` + nanoid(2)
-    }
-    // repeat only 2 times avoid endless loop
-    if (isDuplicateMould(state, mouldName)) {
-        throw Error(`Cannot find a available mould name.`)
+    while (isDuplicateMould(state, mouldName)) {
+        mouldName = `mould${len}_${incrementedId('mould')}`
     }
 
     return mouldName
@@ -140,17 +140,8 @@ export const isDuplicateState = (mould: Mould, stateName: string) =>
 export const getDefaultStateName = (mould: Mould) => {
     const len = Object.keys(mould.states).length
     let stateName = `state${len}`
-    if (isDuplicateState(mould, stateName)) {
-        stateName = `state${len}${nanoid(2)}`
-    }
-    if (isDuplicateState(mould, stateName)) {
-        stateName = `state${len}${nanoid(2)}`
-    }
-    if (isDuplicateState(mould, stateName)) {
-        stateName = `state${len}${nanoid(2)}`
-    }
-    if (isDuplicateState(mould, stateName)) {
-        throw Error(`Cannot find a available state name.`)
+    while (isDuplicateState(mould, stateName)) {
+        stateName = `state${len}_${incrementedId('state')}`
     }
 
     return stateName
