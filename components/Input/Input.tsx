@@ -8,8 +8,14 @@ import {
     LayoutPropTypes,
     transformLayout,
 } from '../../inspector/Layout'
-import { ShadowsInspector, ShadowsPropTypes } from '../../inspector/Shadows'
 import { InputInspector, InputPropTypes } from './Inspector'
+import {
+    BorderInspector,
+    BorderPropTypes,
+    transformBorderProps,
+} from '../../inspector/Border'
+import { FillInspector, FillPropTypes } from '../../inspector/Fill'
+import { ShadowsInspector, ShadowsPropTypes } from '../../inspector/Shadows'
 import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
 import {
     FiltersInspector,
@@ -23,12 +29,15 @@ type InputProps = {
     layoutProps?: LayoutPropTypes
     shadowsProps?: ShadowsPropTypes
     InputProps?: InputPropTypes
+    fillProps?: FillPropTypes
+    borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
 }
 
 const initialInputProps: InputPropTypes = {
     value: '',
+    placeholder: '',
     color: {
         r: 0,
         g: 0,
@@ -43,6 +52,7 @@ const transformInputProps = (
 ) => {
     return {
         value: InputProps.value,
+        placeholder: InputProps.placeholder,
         color: transformColorToStr(InputProps.color),
         size: InputProps.size + 'px',
     }
@@ -97,10 +107,20 @@ export const transform = ({
     layoutProps,
     shadowsProps,
     InputProps,
+    fillProps,
+    borderProps,
     blurProps,
     filtersProps,
 }: InputProps = {}) => {
+    let res = {}
+    if (fillProps && fillProps.active) {
+        res = { ...res, fill: transformColorToStr(fillProps.color) }
+    }
+    if (borderProps) {
+        res = { ...res, ...transformBorderProps(borderProps) }
+    }
     return {
+        ...res,
         ...transformLayout(layoutProps),
         ...transformInputProps(InputProps!),
         ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
@@ -119,6 +139,8 @@ export const Input = forwardRef(
             InputProps = initialInputProps,
             filtersProps,
             blurProps,
+            fillProps,
+            borderProps,
             ...rest
         }: ComponentPropTypes & InputProps,
         ref
@@ -151,6 +173,22 @@ export const Input = forwardRef(
                             }}
                             connectedFields={connectedFields}
                         ></InputInspector>
+                        <FillInspector
+                            title="Fill"
+                            data={fillProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ fillProps: data })
+                            }}
+                            connectedFields={connectedFields}
+                        ></FillInspector>
+                        <BorderInspector
+                            data={borderProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ borderProps: data })
+                            }}
+                            title="Border"
+                            connectedFields={connectedFields}
+                        ></BorderInspector>
                         <ShadowsInspector
                             title="Shadows"
                             data={shadowsProps}

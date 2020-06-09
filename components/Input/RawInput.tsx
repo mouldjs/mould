@@ -18,6 +18,7 @@ export const RawInput: SFC<InputProps & { ref: any }> = styled.input.attrs<
     InputProps
 >((props) => ({
     value: props.value || '',
+    placeholder: props.placeholder || '',
     onClick: mouseEventWrapper(props.onClick),
     onClickCapture: mouseEventWrapper(props.onClickCapture),
     onChange: props.onChange,
@@ -26,11 +27,18 @@ export const RawInput: SFC<InputProps & { ref: any }> = styled.input.attrs<
     onBlur: props.onBlur,
 }))<InputProps>`
     display: flex;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
     color: ${(props) => props.color};
     box-shadow: ${(props) => props.shadow};
     font-size: ${(props) => props.size};
     width: ${(props) => props.width};
     height: ${(props) => props.height};
+    border-width: ${(props) => props.borderWidth};
+    border-style: ${(props) => props.borderStyle};
+    border-color: ${(props) => props.borderColor};
+    background: ${(props) => props.fill};
     overflow: ${(props) => props.overflow};
     opacity: ${(props) => parseFloat(props.opacity || '1')};
     border-radius: ${(props) => props.radius};

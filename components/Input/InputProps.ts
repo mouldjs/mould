@@ -1,6 +1,8 @@
 import * as z from 'zod'
 import {
     Layout,
+    Fill,
+    Border,
     Filter,
     Shadow,
     MouseEventHandlers,
@@ -14,6 +16,8 @@ export const InputSpecific = z.object({
 })
 
 export const Input = InputSpecific.merge(Layout)
+    .merge(Fill)
+    .merge(Border)
     .merge(Shadow)
     .merge(Filter)
     .merge(MouseEventHandlers)

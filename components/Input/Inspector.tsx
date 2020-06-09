@@ -11,6 +11,7 @@ import { ColorType, ColorControl } from '../../inspector/Color'
 
 export type InputPropTypes = {
     value: string
+    placeholder: string
     color: ColorType
     size: number
 }
@@ -42,6 +43,22 @@ export const InputInspector: Inspector<InputPropTypes> = ({
                                     onChange({
                                         ...data,
                                         value: e.target.value,
+                                    })
+                                }
+                            ></InputGroup>
+                        </ControlGridItem>
+                    </ControlGrid>
+                    <ControlGrid marginTop={8}>
+                        <ControlGridItem area="active / active / visual / visual">
+                            <Text size={1}>Placeholder</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="value / value / control / control">
+                            <InputGroup
+                                value={data.placeholder}
+                                onChange={(e) =>
+                                    onChange({
+                                        ...data,
+                                        placeholder: e.target.value,
                                     })
                                 }
                             ></InputGroup>
