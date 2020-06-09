@@ -82,7 +82,8 @@ export const useCurrentView = () => {
         if (!state.selection) {
             return
         }
-        const currentState = useCurrentState()
+
+        const currentState = state.selection[0][1]
         return Object.values(state.views).find((v) => v.state === currentState)
     })
 
