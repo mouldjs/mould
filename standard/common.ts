@@ -68,6 +68,23 @@ export const MouseEventHandlers = z.object({
     onMouseUpCapture: OptionalDefaultMouseEventHandler,
 })
 
+const DefaultFormEventHandler = z.function(z.tuple([]), z.undefined())
+const OptionalDefaultFormEventHandler = DefaultFormEventHandler.optional()
+export const FormEventHandlers = z.object({
+    onChange: OptionalDefaultFormEventHandler,
+    onChangeCapture: OptionalDefaultFormEventHandler,
+    onBeforeInput: OptionalDefaultFormEventHandler,
+    onBeforeInputCapture: OptionalDefaultFormEventHandler,
+    onInput: OptionalDefaultFormEventHandler,
+    onInputCapture: OptionalDefaultFormEventHandler,
+    onReset: OptionalDefaultFormEventHandler,
+    onResetCapture: OptionalDefaultFormEventHandler,
+    onSubmit: OptionalDefaultFormEventHandler,
+    onSubmitCapture: OptionalDefaultFormEventHandler,
+    onInvalid: OptionalDefaultFormEventHandler,
+    onInvalidCapture: OptionalDefaultFormEventHandler,
+})
+
 export const Common = Initial.merge(Fill)
     .merge(Border)
     .merge(Filter)

@@ -21,11 +21,13 @@ export const RawInput: SFC<InputProps & { ref: any }> = styled.input.attrs<
     onClick: mouseEventWrapper(props.onClick),
     onClickCapture: mouseEventWrapper(props.onClickCapture),
     onChange: props.onChange,
+    onChangeCapture: props.onChangeCapture,
+    onFocus: props.onFocus,
     onBlur: props.onBlur,
 }))<InputProps>`
     display: flex;
     color: ${(props) => props.color};
-    text-shadow: ${(props) => props.shadow};
+    box-shadow: ${(props) => props.shadow};
     font-size: ${(props) => props.size};
     width: ${(props) => props.width};
     height: ${(props) => props.height};
