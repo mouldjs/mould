@@ -7,6 +7,8 @@ import { Input } from '@modulz/radix'
 import { Path, EditorState } from './types'
 import { useCurrentMould, useCurrentState } from './utils'
 import { selectComponent } from './appShell'
+import { truncate } from 'lodash'
+
 export const MouldStates = () => {
     const mould = useCurrentMould()
     const state = useCurrentState()
@@ -118,6 +120,7 @@ export const MouldStates = () => {
                     style={{
                         boxShadow: '5px 5px 5px #ddd',
                         maxHeight: '600px',
+                        backgroundColor: '#f1f1f1',
                     }}
                 >
                     <div style={currentMouldStyle}>
@@ -198,7 +201,9 @@ export const MouldStates = () => {
                                             }}
                                             style={listItemStyle}
                                         >
-                                            {stateName}
+                                            {truncate(stateName, {
+                                                length: 12,
+                                            })}
                                         </li>
                                     )
                                 }

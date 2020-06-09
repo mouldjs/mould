@@ -22,6 +22,7 @@ import {
     deleteNode,
     waitingForCreating,
     zoomWorkspace,
+    duplicateView,
 } from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
@@ -33,7 +34,8 @@ import { useWheel } from 'react-use-gesture'
 import DebugPanel from './DebugPanel'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import { useCurrentMould } from './utils'
+import { useCurrentMould, useCurrentView, initialData } from './utils'
+import { debounce } from 'lodash'
 
 const schemaQuery = gql`
     query {
@@ -93,6 +95,7 @@ const App = () => {
         (state: EditorState) => state
     )
     const mould = useCurrentMould()
+    const currentView = useCurrentView()
 
     const creatingStep = creating && creating.status
 
@@ -153,6 +156,25 @@ const App = () => {
             <KeyboardEventHandler
                 handleKeys={['shift+meta+z']}
                 onKeyEvent={() => dispatch(redo())}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+plus']}
+                onKeyEvent={() => {
+                    zoomIn(0.25, testWorkspace.zoom)
+                }}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+minus']}
+                onKeyEvent={() => {
+                    zoomOut(0.25, testWorkspace.zoom)
+                }}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+d']}
+                onKeyEvent={debounce(() => {
+                    currentView &&
+                        dispatch(duplicateView({ viewId: currentView.id }))
+                }, 300)}
             ></KeyboardEventHandler>
             <Toolbar></Toolbar>
             <Flex
@@ -236,18 +258,6 @@ const App = () => {
                     </div>
                 </Box>
             </Flex>
-            <KeyboardEventHandler
-                handleKeys={['ctrl+plus']}
-                onKeyEvent={() => {
-                    zoomIn(0.25, testWorkspace.zoom)
-                }}
-            ></KeyboardEventHandler>
-            <KeyboardEventHandler
-                handleKeys={['ctrl+minus']}
-                onKeyEvent={() => {
-                    zoomOut(0.25, testWorkspace.zoom)
-                }}
-            ></KeyboardEventHandler>
             <div style={{ overflow: 'visible' }}>
                 <Workspace {...testWorkspace}></Workspace>
             </div>
