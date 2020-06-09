@@ -40,7 +40,7 @@ const ComponentTree = ({
         >
             {label ||
                 (comp.type === 'Mould'
-                    ? moulds[(comp.props as any).mouldId].name
+                    ? (comp.props as any).mouldName
                     : comp.type)}
         </Box>
     )
@@ -70,8 +70,8 @@ const ComponentTree2 = ({
     label?: ReactNode
 }) => {
     const dispatch = useDispatch()
-    const { moulds, selection } = useSelector((state: EditorState) => {
-        return { moulds: state.moulds, selection: state.selection }
+    const selection = useSelector((state: EditorState) => {
+        return state.selection
     })
     const isSelected = useIsSelectedPath(path)
 
@@ -91,7 +91,7 @@ const ComponentTree2 = ({
         >
             {label ||
                 (comp.type === 'Mould'
-                    ? moulds[(comp.props as any).mouldId].name
+                    ? (comp.props as any).mouldName
                     : comp.type)}
         </Box>
     )
@@ -128,7 +128,7 @@ export const Explorer2 = () => {
     if (!selection) {
         return null
     }
-    const mould = moulds[selection[0][0]]
+    const mould = moulds.find((m) => m.name === selection[0][0])!
     const stateName = selection[0][1]
 
     const selectedTree = mould.states[stateName]
@@ -167,21 +167,19 @@ export const Explorer2 = () => {
             >
                 {label ||
                     (comp.type === 'Mould'
-                        ? !moulds[(comp.props as any).__mouldId]
-                            ? (comp.props as any).__mouldId
-                            : moulds[(comp.props as any).__mouldId].name
+                        ? !moulds.find(
+                              (m) => m.name === (comp.props as any).__mouldName
+                          )
+                            ? (comp.props as any).__mouldName
+                            : moulds.find(
+                                  (m) =>
+                                      m.name === (comp.props as any).__mouldName
+                              )!.name
                         : comp.type === 'Kit'
                         ? (comp.props as any).__kitName
                         : comp.type)}
             </Box>
         )
-
-        // const resolveMouldChildren = (mouldComp: Component) => {
-        //     const mould = moulds[(comp.props as any).__mouldId]
-        //     const mouldChildren = mould.states[(comp.props as any).__state]?.children
-
-        //     return mouldChildren?.map(c => resolveMouldChildren())
-        // }
 
         const transformChildren = (
             children: Component[]
@@ -210,7 +208,9 @@ export const Explorer2 = () => {
             }
         }
 
-        const mould = moulds[(comp.props as any).__mouldId]
+        const mould = moulds.find(
+            (m) => m.name === (comp.props as any).__mouldName
+        )!
 
         const children =
             comp.type === 'Mould' && mould

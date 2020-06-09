@@ -26,9 +26,9 @@ import { MouldKits } from './Kits/index'
 import { ArcherContainer } from 'react-archer'
 import { useWheel } from 'react-use-gesture'
 import DebugPanel from './DebugPanel'
-import nanoid from 'nanoid'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
+import { useCurrentMould } from './utils'
 
 const schemaQuery = gql`
     query {
@@ -87,11 +87,7 @@ const App = () => {
     const { testWorkspace, creating, selection } = useSelector(
         (state: EditorState) => state
     )
-    const mould = useSelector((state: EditorState) => {
-        const [[mouldId]] = state.selection || [[]]
-
-        return state.moulds[mouldId || -1]
-    })
+    const mould = useCurrentMould()
 
     const creatingStep = creating && creating.status
 
@@ -119,12 +115,7 @@ const App = () => {
             <KeyboardEventHandler
                 handleKeys={['m']}
                 onKeyEvent={() => {
-                    dispatch(
-                        waitingForCreating({
-                            mouldId: nanoid(6),
-                            stateName: 'state 0',
-                        })
-                    )
+                    dispatch(waitingForCreating({}))
                 }}
             />
             {/* hit s to easy add a new mould */}
@@ -134,10 +125,7 @@ const App = () => {
                     mould &&
                         dispatch(
                             waitingForCreating({
-                                mouldId: mould.id,
-                                stateName: `state ${
-                                    Object.keys(mould.states).length
-                                }`,
+                                mouldName: mould.name,
                             })
                         )
                 }}

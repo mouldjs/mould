@@ -74,7 +74,7 @@ export const MouldStates = () => {
     const [inputValue, setInputValue] = useState('')
     const [mouldName, setMouldName] = useState(mould?.name)
 
-    const mouldNames = Object.keys(moulds).map((m) => moulds[m].name)
+    const mouldNames = moulds.map((m) => m.name)
 
     useEffect(() => {
         mould && setMouldName(mould.name)
@@ -83,8 +83,8 @@ export const MouldStates = () => {
     if (mould) {
         const currentStates = mould.states || {}
         const stateList = Object.keys(currentStates)
-        const selectView = ({ mouldId, stateName }) => {
-            const path: Path = [[mouldId, stateName], []]
+        const selectView = ({ mouldName, stateName }) => {
+            const path: Path = [[mouldName, stateName], []]
             const pathData: any = [path]
             dispatch(
                 selectComponent({
@@ -92,7 +92,7 @@ export const MouldStates = () => {
                 })
             )
         }
-        const updateStateName = ({ name, stateName, mouldId }) => {
+        const updateStateName = ({ name, stateName, mouldName }) => {
             if (!name || name === stateName) {
                 setInputValue('')
                 return
@@ -107,13 +107,13 @@ export const MouldStates = () => {
             state &&
                 dispatch(
                     modifyStateName({
-                        mouldId,
+                        mouldName,
                         stateName,
                         name,
                     })
                 )
             setInputValue('')
-            selectView({ mouldId, stateName: name })
+            selectView({ mouldName, stateName: name })
         }
 
         return mould ? (
@@ -141,7 +141,7 @@ export const MouldStates = () => {
                                 }
                                 dispatch(
                                     modifyMeta({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         name: mouldName,
                                     })
                                 )
@@ -185,7 +185,7 @@ export const MouldStates = () => {
                                                 updateStateName({
                                                     name: inputValue,
                                                     stateName,
-                                                    mouldId: mould.id,
+                                                    mouldName: mould.name,
                                                 })
                                             }}
                                         ></Input>
@@ -196,7 +196,7 @@ export const MouldStates = () => {
                                             key={stateName}
                                             onClick={() => {
                                                 selectView({
-                                                    mouldId: mould.id,
+                                                    mouldName: mould.name,
                                                     stateName,
                                                 })
                                             }}
@@ -216,11 +216,7 @@ export const MouldStates = () => {
                                     onClick={() => {
                                         dispatch(
                                             waitingForCreating({
-                                                mouldId: mould.id,
-                                                stateName: `state ${
-                                                    Object.keys(mould.states)
-                                                        .length
-                                                }`,
+                                                mouldName: mould.name,
                                             })
                                         )
                                     }}

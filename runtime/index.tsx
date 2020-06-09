@@ -9,18 +9,18 @@ const returnEmptyObject = (defaultState) => (): [string, object] => {
     return [defaultState, {}]
 }
 
-export const runtime = (moulds: { [key: string]: Mould }) => {
+export const runtime = (moulds: Mould[]) => {
     const RuntimeMould = forwardRef(
         (
             {
-                __mouldId,
+                __mouldName,
                 ...rest
             }: {
-                __mouldId: ID
+                __mouldName: string
             },
             ref
         ) => {
-            const __mouldProps = moulds[__mouldId]
+            const __mouldProps = moulds.find((m) => m.name === __mouldName)!
             const { input, states, kits, hookFunctionName } = __mouldProps
             let useScope: useScopeFn =
                 hookFunctionName && window[hookFunctionName]
@@ -65,7 +65,7 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                             if (kit?.type === 'Mould') {
                                 props = {
                                     ...props,
-                                    __mouldId: (kit!.param as any).mouldId,
+                                    __mouldName: (kit!.param as any).mouldName,
                                 } as any
                                 Comp = RuntimeMould
                             } else {
@@ -94,7 +94,8 @@ export const runtime = (moulds: { [key: string]: Mould }) => {
                                 if (kit?.type === 'Mould') {
                                     kitProps = {
                                         ...kitProps,
-                                        __mouldId: (kit.param as any).mouldId,
+                                        __mouldName: (kit.param as any)
+                                            .mouldName,
                                     } as any
                                 }
 

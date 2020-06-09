@@ -7,17 +7,17 @@ const PanelTrigger = () => {
     const dispatch = useDispatch()
 
     const { selection, moulds } = useSelector((state: EditorState) => state)
-    const specific: { mouldId?: string; states?: object } = {}
-    const mould = moulds && moulds[Object.keys(moulds)[0]]
+    const specific: { mouldName?: string; states?: object } = {}
+    const mould = moulds && moulds[0]
     if (mould) {
-        specific.mouldId = mould.id
+        specific.mouldName = mould.name
         specific.states = mould.states
     }
 
     const stateName = specific.states && Object.keys(specific.states)[0]
 
-    const select = ({ mouldId, stateName }) => {
-        const path: Path = [[mouldId, stateName], []]
+    const select = ({ mouldName, stateName }) => {
+        const path: Path = [[mouldName, stateName], []]
         const pathData: any = [path]
         dispatch(
             selectComponent({
@@ -33,7 +33,7 @@ const PanelTrigger = () => {
             })
         )
     }
-    const visible = specific.mouldId && stateName
+    const visible = specific.mouldName && stateName
 
     return (
         <>
@@ -43,7 +43,7 @@ const PanelTrigger = () => {
                         selection
                             ? unselect()
                             : select({
-                                  mouldId: specific.mouldId,
+                                  mouldName: specific.mouldName,
                                   stateName,
                               })
                     }}

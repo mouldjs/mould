@@ -2,7 +2,7 @@ import { ComponentType, ForwardRefExoticComponent, SFC } from 'react'
 import * as z from 'zod'
 
 export type ID = string
-export type MouldID = ID
+export type MouldName = string
 export type StateName = string
 export type ComponentIndex = number
 export type Desc = string
@@ -17,13 +17,13 @@ export type Size = {
     height: number
 }
 
-export type ComponentPath = [MouldID, StateName]
+export type ComponentPath = [MouldName, StateName]
 
 export type Path = [ComponentPath, ComponentIndex[]]
 
 export type View = {
     id: ID
-    mouldId: MouldID
+    mouldName: MouldName
     state: StateName
 } & Size &
     Vector
@@ -56,8 +56,7 @@ export type InputConfig<Config = any> = {
 } & Config
 
 export type Mould = {
-    id: string
-    name?: string
+    name: string
     hookFunctionName?: string
     scope: string[]
     kits: Kit[]
@@ -85,8 +84,8 @@ export type Creating = {
 export type EditorState = {
     testWorkspace: Workspace
     views: { [key: string]: View }
-    moulds: { [key: string]: Mould }
-    selection?: Path //[[mouldId, state], indexPath[]]
+    moulds: Mould[]
+    selection?: Path //[[mouldName, state], indexPath[]]
     creating?: Creating
     recursiveRendered?: string[]
     isDragging?: boolean

@@ -18,11 +18,11 @@ export const MouldKits = () => {
         drop: (item) => {
             dispatch(
                 addKit({
-                    mouldId: mould!.id,
+                    mouldName: mould!.name,
                     type: item.name,
                     param:
                         item.name === 'Mould'
-                            ? { mouldId: (item.props as any).__mouldId }
+                            ? { mouldName: (item.props as any).__mouldName }
                             : undefined,
                 })
             )
@@ -41,11 +41,11 @@ export const MouldKits = () => {
                         <Item
                             key={kit.name}
                             {...kit}
-                            mouldId={mould.id}
+                            mouldName={mould.name}
                             onConnect={(prop, scope) => {
                                 dispatch(
                                     connectScopeToKit({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         kitIndex: i,
                                         prop,
                                         scope,
@@ -55,7 +55,7 @@ export const MouldKits = () => {
                             onIsListChange={(checked) => {
                                 dispatch(
                                     modifyKit({
-                                        mouldId: mould.id,
+                                        mouldName: mould.name,
                                         kitName: kit.name,
                                         isList: checked,
                                     })

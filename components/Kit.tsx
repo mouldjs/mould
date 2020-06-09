@@ -20,14 +20,14 @@ export default forwardRef(
         if (!mould || !view) {
             return null
         }
-        const isHostMould = mould.id === view.mouldId
+        const isHostMould = mould.name === view.mouldName
         const kit = mould.kits.find((kit) => kit.name === __kitName)
         if (!kit) {
             return null
         }
         const isMould = kit.type === 'Mould'
         const mouldProp = isMould
-            ? { __mouldId: (kit.param as any).mouldId }
+            ? { __mouldName: (kit.param as any).mouldName }
             : {}
         const connectedFields = isHostMould
             ? undefined

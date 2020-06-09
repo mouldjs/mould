@@ -25,7 +25,7 @@ type PropPatch = {
 const Mould = forwardRef(
     (
         {
-            __mouldId,
+            __mouldName,
             __state,
             __patches = {},
             children,
@@ -34,7 +34,7 @@ const Mould = forwardRef(
             path,
             ...rest
         }: ComponentPropTypes & {
-            __mouldId: string
+            __mouldName: string
             __state: string
             __patches: PropPatch
             onDoubleClick: any
@@ -47,7 +47,7 @@ const Mould = forwardRef(
                 return state.recursiveRendered
             }) || []
         const mould = useSelector((state: EditorState) => {
-            return state.moulds[__mouldId]
+            return state.moulds.find((m) => m.name === __mouldName)
         })
         const view = useContext(ViewContext)
 
@@ -55,13 +55,13 @@ const Mould = forwardRef(
             return (
                 <Error
                     ref={ref as any}
-                >{`Mould ${__mouldId} not found.`}</Error>
+                >{`Mould ${__mouldName} not found.`}</Error>
             )
         }
 
         const { states, input, kits } = mould
 
-        if (__mouldId === view?.mouldId) {
+        if (__mouldName === view?.mouldName) {
             const pathStr = pathToString(path!)
             const recursiveRender = recursiveRendered.includes(pathStr)
 
