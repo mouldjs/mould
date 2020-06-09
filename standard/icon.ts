@@ -3,7 +3,6 @@ import { Filter, Shadow, MouseEventHandlers } from './common'
 
 export const IconSpecific = z.object({
     name: z.string().optional(),
-    namespace: z.string().optional(),
     color: z.string().optional(),
     size: z.string().optional(),
 })

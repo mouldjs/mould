@@ -27,7 +27,6 @@ type IconProps = {
 }
 
 const initialIconProps: IconPropTypes = {
-    namespace: 'Feather',
     name: 'Star',
     color: {
         r: 0,
@@ -43,7 +42,6 @@ const initialIconProps: IconPropTypes = {
 
 const transformIconProps = (iconProps: IconPropTypes = initialIconProps) => {
     return {
-        namespace: iconProps.namespace,
         name: iconProps.name,
         color: transformColorToStr(iconProps.color),
         size: `${iconProps.size.amount}${iconProps.size.unit}`,

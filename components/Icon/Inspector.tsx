@@ -33,7 +33,6 @@ import {
 type TextStyleType = 'normal' | 'italic'
 
 export type IconPropTypes = {
-    namespace: string
     name: string
     color: ColorType
     size: LayoutSize
@@ -114,22 +113,6 @@ export const IconInspector: Inspector<IconPropTypes> = ({
                             ></HTMLSelect>
                         </ControlGridItem>
                     </ControlGrid>
-                    {/* <ControlGrid marginTop={8}>
-                        <ControlGridItem area="active / active / visual / visual">
-                            <Text size={1}>Namespace</Text>
-                        </ControlGridItem>
-                        <ControlGridItem area="value / value / control / control">
-                            <InputGroup
-                                value={data.namespace}
-                                onChange={(e) =>
-                                    onChange({
-                                        ...data,
-                                        namespace: e.target.value,
-                                    })
-                                }
-                            ></InputGroup>
-                        </ControlGridItem>
-                    </ControlGrid> */}
                     <ControlGrid marginTop={8}>
                         <ControlGridItem area="active / active / visual / visual">
                             <Text size={1}>Color</Text>
