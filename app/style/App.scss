@@ -19,6 +19,17 @@ radix-portal div {
     height: 100%;
 }
 
+.bp3-select-popover .bp3-menu:not(:first-child) {
+    padding-top: 5px;
+}
+
+.bp3-select-popover .bp3-menu {
+    max-height: 300px;
+    max-width: 400px;
+    overflow: auto;
+    padding: 0;
+}
+
 .m-l {
     margin-left: 10px;
 }
