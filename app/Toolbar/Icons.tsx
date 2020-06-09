@@ -92,7 +92,7 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
             <div
                 style={{
                     display: 'flex',
-                    padding: '5px 10px',
+                    padding: '5px 5px',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',

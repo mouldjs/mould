@@ -374,6 +374,7 @@ export const handleUpdateCreating = handleAction<
                 state.creating.status === 'updating')
         ) {
             state.creating.status = 'updating'
+
             state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
             state.creating.view.height = Math.abs(y - state.creating.beginAt.y)
             state.creating.view.x = Math.min(x, state.creating.beginAt.x)
@@ -953,6 +954,24 @@ export const handleUpdateDraggingStatus = handleAction<
     initialData
 )
 
+type ZoomWorkspaceActionType = { zoom: number }
+export const ZOOM_WORKSPACE = 'ZOOM_WORKSPACE'
+export const zoomWorkspace = createAction<ZoomWorkspaceActionType>(
+    ZOOM_WORKSPACE
+)
+export const handleZoomWorkspace = handleAction<
+    EditorState,
+    ZoomWorkspaceActionType
+>(
+    ZOOM_WORKSPACE,
+    (state, action) => {
+        state.testWorkspace.zoom = action.payload.zoom
+
+        return state
+    },
+    initialData
+)
+
 type InsertComponentOnPathAction = {
     component: Component
     path: Path
@@ -978,6 +997,25 @@ export const handleInsertComponentOnPath = handleAction<
         }
         parent.children.push(component)
         state.selection = path
+
+        return state
+    },
+    initialData
+)
+
+type MoveWorkspaceActionType = Vector
+export const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
+export const moveWorkspace = createAction<MoveWorkspaceActionType>(
+    MOVE_WORKSPACE
+)
+export const handleMoveWorkspace = handleAction<
+    EditorState,
+    MoveWorkspaceActionType
+>(
+    MOVE_WORKSPACE,
+    (state, action) => {
+        state.testWorkspace.x = action.payload.x
+        state.testWorkspace.y = action.payload.y
 
         return state
     },

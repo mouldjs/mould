@@ -1,169 +1,174 @@
-import React, { useState, useRef, DOMElement, useEffect } from 'react'
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
-import { Box } from '@modulz/radix'
-import { Workspace as WorkspaceType, EditorState, Vector } from './types'
-import { createAction, handleAction } from 'redux-actions'
-import { initialData } from './utils'
+import React, { useState, useMemo, useEffect } from 'react'
+import { Workspace as WorkspaceType, EditorState } from './types'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
 import {
-    selectComponent,
     startCreating,
     finishCreating,
     updateCreating,
+    moveWorkspace,
+    zoomWorkspace,
 } from './appShell'
 import { View } from './View'
 import { tick } from './selectionTick'
+import useClientRect from '../lib/useClientRect'
 
-type MoveWorkspaceActionType = { id: string } & Vector
-const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
-const moveWorkspace = createAction<MoveWorkspaceActionType>(MOVE_WORKSPACE)
-export const handleMoveWorkspace = handleAction<
-    EditorState,
-    MoveWorkspaceActionType
->(
-    MOVE_WORKSPACE,
-    (state, action) => {
-        state.testWorkspace.x = action.payload.x
-        state.testWorkspace.y = action.payload.y
-
-        return state
-    },
-    initialData
-)
-
-type ZoomWorkspaceActionType = { zoom: number }
-const ZOOM_WORKSPACE = 'ZOOM_WORKSPACE'
-const zoomWorkspace = createAction<ZoomWorkspaceActionType>(ZOOM_WORKSPACE)
-export const handleZoomWorkspace = handleAction<
-    EditorState,
-    ZoomWorkspaceActionType
->(
-    ZOOM_WORKSPACE,
-    (state, action) => {
-        state.testWorkspace.zoom = action.payload.zoom
-
-        return state
-    },
-    initialData
-)
-
-export const Workspace = ({ views, x, y, id, zoom = 1 }: WorkspaceType) => {
+export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
     const dispatch = useDispatch()
-    const creating = useSelector((state: EditorState) => {
-        return state.creating
-    })
-
+    const creating = useSelector((state: EditorState) => state.creating)
     const creation = creating && creating.view
-    const [xy, setXY] = useState([x, y])
+    const [zoomOffset, setZoomOffset] = useState([x, y])
+
+    const [scaling, setScaling] = useState(zoom)
+
+    const STEP = 0.99
+    const MAX_SCALE = 5
+    const MIN_SCALE = 0.01
+
+    useEffect(() => {
+        if (zoom !== scaling) {
+            setScaling(zoom)
+        }
+    }, [zoom])
+
+    const [wrapperRect, wrapperRef] = useClientRect()
+    const contentRefDOM =
+        typeof window !== 'undefined'
+            ? document.getElementById('contentRefDOM')
+            : null
+
+    const originCenterX = wrapperRect
+        ? wrapperRect.left + wrapperRect.width / 2
+        : 0
+    const originCenterY = wrapperRect
+        ? wrapperRect.top + wrapperRect.height / 2
+        : 0
+
     const bind = useGesture({
-        onWheel: ({ last, movement }) => {
-            const xy = [x - movement[0], y - movement[1]]
-            setXY(xy)
+        onWheel: ({ last, delta }) => {
+            const xy = [zoomOffset[0] - delta[0], zoomOffset[1] - delta[1]]
+            setZoomOffset(xy)
             if (last) {
-                dispatch(moveWorkspace({ id, x: xy[0], y: xy[1] }))
+                dispatch(moveWorkspace({ x: xy[0], y: xy[1] }))
             }
         },
-        onDrag: ({ event }) => {
-            event!.stopPropagation()
+        onDrag: ({ xy, initial }) => {
+            const [px, py] = xy
+            const [ix, iy] = initial
+            if (creating?.status === 'waiting') {
+                dispatch(
+                    startCreating({
+                        x: ix - x,
+                        y: iy - y,
+                    })
+                )
+            }
+
             dispatch(
                 updateCreating({
-                    x: (event as any).offsetX - x,
-                    y: (event as any).offsetY - y,
+                    x: px - x,
+                    y: py - y,
                 })
             )
         },
         onMouseDown: (event) => {
             event.stopPropagation()
-            dispatch(
-                startCreating({
-                    x: event.nativeEvent.offsetX - x,
-                    y: event.nativeEvent.offsetY - y,
-                })
-            )
         },
         onMouseUp: (event) => {
-            // event.stopPropagation()
             dispatch(finishCreating())
+        },
+        onPinch: (e) => {
+            const origin = e.origin
+            const factor = e.delta[1]
+
+            if (
+                (scaling >= MAX_SCALE && factor < 0) ||
+                (scaling <= MIN_SCALE && factor > 0)
+            )
+                return
+
+            const changed = Math.pow(STEP, factor)
+
+            const contentRect =
+                contentRefDOM && contentRefDOM.getBoundingClientRect()
+            const currentCenterX = contentRect
+                ? contentRect.left + contentRect.width / 2
+                : 0
+            const currentCenterY = contentRect
+                ? contentRect.top + contentRect.height / 2
+                : 0
+
+            const mousePosToCurrentCenterDistanceX = origin
+                ? origin[0] - currentCenterX
+                : 0
+            const mousePosToCurrentCenterDistanceY = origin
+                ? origin[1] - currentCenterY
+                : 0
+
+            const newCenterX =
+                currentCenterX +
+                mousePosToCurrentCenterDistanceX * (1 - changed)
+            const newCenterY =
+                currentCenterY +
+                mousePosToCurrentCenterDistanceY * (1 - changed)
+
+            const offsetX = newCenterX - originCenterX
+            const offsetY = newCenterY - originCenterY
+
+            setScaling(scaling * changed)
+            setZoomOffset([offsetX, offsetY])
+
+            if (e.last) {
+                dispatch(moveWorkspace({ x: offsetX, y: offsetY }))
+                dispatch(zoomWorkspace({ zoom: scaling }))
+            }
         },
     })
 
-    const [viewCacheKey, setViewCacheKey] = useState('')
-
-    const vs = Object.values(views).map((viewId) => {
-        return <View key={`${viewId}-${viewCacheKey}`} viewId={viewId}></View>
-    })
+    const VS = useMemo(
+        () =>
+            Object.values(views).map((viewId) => {
+                return <View key={`${viewId}-${zoom}`} viewId={viewId}></View>
+            }),
+        [views]
+    )
 
     return (
-        <TransformWrapper
-            options={{
-                limitToBounds: true,
-                transformEnabled: true,
-                disabled: false,
-                limitToWrapper: false,
-                minScale: 0.1,
-                maxScale: 3,
-                centerContent: false,
+        <div
+            ref={wrapperRef}
+            style={{
+                position: 'absolute',
+                height: '100vh',
+                width: '100vw',
+                background: '#f1f1f1',
             }}
-            pan={{
-                disabled: true,
-            }}
-            pinch={{ disabled: true }}
-            doubleClick={{ disabled: true }}
-            wheel={{
-                disabled: false,
-                wheelEnabled: false,
-                touchPadEnabled: true,
-                limitsOnWheel: false,
-                step: 30,
-            }}
-            onWheelStop={(e) => {
-                const zoom = e.scale
-
-                setViewCacheKey(zoom)
-                zoomWorkspace({ zoom })
+            {...bind()}
+            onDoubleClick={() => {
+                tick((data = []) => data)
             }}
         >
-            <Box
-                translate
-                bg="#f1f1f1"
-                height="100vh"
-                position="relative"
-                {...bind()}
-                onDoubleClick={() => {
-                    tick((data = []) => data)
+            <div
+                id="contentRefDOM"
+                style={{
+                    position: 'absolute',
+                    width: '100vw',
+                    height: '100vh',
+                    transform: `translate(${zoomOffset[0]}px, ${zoomOffset[1]}px) scale(${scaling})`,
                 }}
             >
-                <TransformComponent>
+                {VS}
+                {creation && (
                     <div
                         style={{
-                            position: 'inherit',
-                            width: '100vw',
-                            height: '100vh',
-                            top: 0,
-                            left: 0,
-                            transform: `translate(${xy[0]}px,${xy[1]}px)`,
+                            position: 'absolute',
+                            background: '#fff',
+                            transform: `translateX(${creation.x}px) translateY(${creation.y}px)`,
+                            width: creation.width,
+                            height: creation.height,
                         }}
-                    >
-                        {vs}
-                        {creation && (
-                            <Box
-                                translate
-                                position="absolute"
-                                bg="white"
-                                style={{
-                                    left: creation.x,
-                                    top: creation.y,
-                                    width: creation.width,
-                                    height: creation.height,
-                                }}
-                            >
-                                {/* <Mould editable {...mould} currentState={state}></Mould> */}
-                            </Box>
-                        )}
-                    </div>
-                </TransformComponent>
-            </Box>
-        </TransformWrapper>
+                    ></div>
+                )}
+            </div>
+        </div>
     )
 }
