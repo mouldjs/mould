@@ -4,16 +4,41 @@ import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating, updateDraggingStatus } from '../appShell'
 import { Popover } from '@blueprintjs/core'
-import { Layers, Move, Type, Star } from 'react-feather'
+import { Layers, Move, Type, Edit, Star } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
 
-const icons = ['Stack', 'Text', 'Icon']
+const icons = ['Stack', 'Text', 'Input', 'Icon']
 const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
             icon: <Type className={`${isActive ? 'primary' : 'pure'}`}></Type>,
+            descInPopover: (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Move size={32} color="#666"></Move>
+                    </div>
+                    <Text
+                        as="p"
+                        mt={15}
+                        sx={{ color: '#666', textAlign: 'center' }}
+                    >
+                        Create a {name}
+                    </Text>
+                    <Text
+                        size={2}
+                        as="p"
+                        mt={10}
+                        sx={{ color: '#666', lineHeight: '1.3' }}
+                    >
+                        Grabbing to kits or your working view directly.
+                    </Text>
+                </>
+            ),
+        },
+        Input: {
+            icon: <Edit className={`${isActive ? 'primary' : 'pure'}`}></Edit>,
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
