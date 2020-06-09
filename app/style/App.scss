@@ -19,8 +19,23 @@ radix-portal div {
     height: 100%;
 }
 
+.bp3-select-popover .bp3-menu:not(:first-child) {
+    padding-top: 5px;
+}
+
+.bp3-select-popover .bp3-menu {
+    max-height: 300px;
+    max-width: 400px;
+    overflow: auto;
+    padding: 0;
+}
+
 .m-l {
     margin-left: 10px;
+}
+
+.m-l-lg {
+    margin-left: 20px;
 }
 
 .m-l-sm {
@@ -43,8 +58,28 @@ radix-portal div {
     margin-bottom: 0px;
 }
 
+.m-r {
+    margin-right: 10px;
+}
+
+.m-r-lg {
+    margin-right: 20px;
+}
+
+.p-sm {
+    padding: 5px;
+}
+
 .clickable {
     cursor: pointer;
+}
+
+.draggable {
+    cursor: crosshair;
+}
+
+.cursor-unset {
+    cursor: unset;
 }
 
 .warn {
@@ -82,15 +117,17 @@ input.editable-state {
     }
 }
 
-// customize a scroll bar
 
-::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 15px;
-}
-
-::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background-color: rgba(0,0,0,.5);
-    box-shadow: 0 0 5px rgba(255, 255, 255,.5);
+.flex {
+    display: flex;
+    justify-content: flex-start;
+    &.justify-center {
+        justify-content: center;
+    }
+    &.justify-space-between {
+        justify-content: space-between;
+    }
+    &.align-center {
+        align-items: center;
+    }
 }

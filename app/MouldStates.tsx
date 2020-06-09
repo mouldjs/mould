@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { PlusCircle } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { waitingForCreating, modifyStateName, modifyMeta } from './appShell'
-import {
-    Popover,
-    PopoverInteractionKind,
-    EditableText,
-} from '@blueprintjs/core'
-import { Text, Input } from '@modulz/radix'
+import { EditableText } from '@blueprintjs/core'
+import { Input } from '@modulz/radix'
 import { Path, EditorState } from './types'
 import { useCurrentMould, useCurrentState } from './utils'
 import { selectComponent } from './appShell'
+import { truncate } from 'lodash'
+
 export const MouldStates = () => {
     const mould = useCurrentMould()
     const state = useCurrentState()
@@ -122,6 +120,7 @@ export const MouldStates = () => {
                     style={{
                         boxShadow: '5px 5px 5px #ddd',
                         maxHeight: '600px',
+                        backgroundColor: '#f1f1f1',
                     }}
                 >
                     <div style={currentMouldStyle}>
@@ -202,36 +201,25 @@ export const MouldStates = () => {
                                             }}
                                             style={listItemStyle}
                                         >
-                                            {stateName}
+                                            {truncate(stateName, {
+                                                length: 12,
+                                            })}
                                         </li>
                                     )
                                 }
                             }),
-                            <Popover
-                                key="Popover"
-                                interactionKind={PopoverInteractionKind.HOVER}
+                            <li
+                                style={listItemStyle}
+                                onClick={() => {
+                                    dispatch(
+                                        waitingForCreating({
+                                            mouldName: mould.name,
+                                        })
+                                    )
+                                }}
                             >
-                                <li
-                                    style={listItemStyle}
-                                    onClick={() => {
-                                        dispatch(
-                                            waitingForCreating({
-                                                mouldName: mould.name,
-                                            })
-                                        )
-                                    }}
-                                >
-                                    <PlusCircle></PlusCircle>
-                                </li>
-                                <Text
-                                    size={2}
-                                    as="p"
-                                    p={5}
-                                    sx={{ color: '#666', lineHeight: '1.3' }}
-                                >
-                                    Tips: Hit S and easy drag a new state!
-                                </Text>
-                            </Popover>,
+                                <PlusCircle></PlusCircle>
+                            </li>,
                         ]}
                     </ul>
                 </div>

@@ -10,14 +10,20 @@ import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
 import { RadixProvider, Flex, Box } from '@modulz/radix'
 import { EditorState } from './types'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Fragment } from 'react'
 import { undo, redo } from '../lib/undo-redux'
 import Toolbar from './Toolbar/index'
 import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { Explorer2 } from './Explorer'
-import { cancelCreating, deleteNode, waitingForCreating } from './appShell'
+import {
+    cancelCreating,
+    deleteNode,
+    waitingForCreating,
+    zoomWorkspace,
+    duplicateView,
+} from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
 import { MouldScope } from './MouldScope'
@@ -28,7 +34,8 @@ import { useWheel } from 'react-use-gesture'
 import DebugPanel from './DebugPanel'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import { useCurrentMould } from './utils'
+import { useCurrentMould, useCurrentView, initialData } from './utils'
+import { debounce } from 'lodash'
 
 const schemaQuery = gql`
     query {
@@ -88,17 +95,29 @@ const App = () => {
         (state: EditorState) => state
     )
     const mould = useCurrentMould()
+    const currentView = useCurrentView()
 
     const creatingStep = creating && creating.status
+
+    const zoomOut = (step, zoom) => {
+        const result = zoom - step <= 0 ? 0.01 : zoom - step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
+
+    const zoomIn = (step, zoom) => {
+        const result = zoom + step >= 5 ? zoom : zoom + step
+        dispatch(zoomWorkspace({ zoom: result }))
+    }
 
     return (
         <Flex
             translate
+            position="absolute"
             flexDirection="column"
             bg="#f1f1f1"
             minHeight="100vh"
             alignItems="stretch"
-            style={{ cursor: creatingStep ? 'crosshair' : 'unset' }}
+            className={`${creatingStep ? 'draggable' : 'cursor-unset'}`}
             onMouseDown={() => {
                 if (creatingStep) {
                     dispatch(cancelCreating())
@@ -138,34 +157,52 @@ const App = () => {
                 handleKeys={['shift+meta+z']}
                 onKeyEvent={() => dispatch(redo())}
             ></KeyboardEventHandler>
-            <div style={{ width: '100vw' }}>
-                <Toolbar></Toolbar>
-            </div>
-
+            <KeyboardEventHandler
+                handleKeys={['ctrl+plus']}
+                onKeyEvent={() => {
+                    zoomIn(0.25, testWorkspace.zoom)
+                }}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+minus']}
+                onKeyEvent={() => {
+                    zoomOut(0.25, testWorkspace.zoom)
+                }}
+            ></KeyboardEventHandler>
+            <KeyboardEventHandler
+                handleKeys={['ctrl+d']}
+                onKeyEvent={debounce(() => {
+                    currentView &&
+                        dispatch(duplicateView({ viewId: currentView.id }))
+                }, 300)}
+            ></KeyboardEventHandler>
+            <Toolbar></Toolbar>
             <Flex
                 translate
                 style={{
-                    position: 'relative',
+                    position: 'absolute',
                     flexDirection: 'row',
                     alignItems: 'stretch',
                     alignContent: 'stretch',
                     flex: 1,
                     overflow: 'hidden',
+                    width: '100vw',
+                    height: '100%',
                 }}
             >
                 <Box
                     translate
-                    width={215}
                     style={{
                         transition: '0.3s',
                         position: 'absolute',
                         left: selection ? 0 : -215,
-                        top: 0,
+                        top: '55px',
+                        height: 'calc(100vh - 55px)',
+                        width: '215px',
                         zIndex: 1,
+                        borderRight: '1px solid #aaaaaa',
+                        backgroundColor: '#e1e1e1',
                     }}
-                    height="100vh"
-                    borderRight="1px solid #aaaaaa"
-                    backgroundColor="#e1e1e1"
                 >
                     <ArcherContainer
                         style={{
@@ -191,24 +228,12 @@ const App = () => {
                 </Box>
                 <Box
                     translate
-                    flex={1}
-                    style={{
-                        // zoom: selection ? 1 : 0.7,
-                        transition: '0.3s',
-                        // transform: selection ? 'scale(1)' : 'scale(0.75)',
-                        overflow: 'visible',
-                    }}
-                >
-                    <Workspace {...testWorkspace}></Workspace>
-                </Box>
-                <Box
-                    translate
                     width={215}
                     style={{
                         transition: '0.3s',
                         position: 'absolute',
                         right: selection ? 0 : -215,
-                        top: 0,
+                        top: '55px',
                         zIndex: 1,
                         height: 'calc(100vh - 55px)',
                         borderLeft: '1px solid #aaa',
@@ -233,6 +258,9 @@ const App = () => {
                     </div>
                 </Box>
             </Flex>
+            <div style={{ overflow: 'visible' }}>
+                <Workspace {...testWorkspace}></Workspace>
+            </div>
         </Flex>
     )
 }

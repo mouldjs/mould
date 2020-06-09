@@ -23,9 +23,9 @@ import { Inspector } from '../app/types'
 import { intersection } from 'ramda'
 import { nameToParam } from '../app/utils'
 
-type LayoutSizeUnit = 'px' | '%' | 'fr'
+export type LayoutSizeUnit = 'px' | '%' | 'fr'
 
-type LayoutSize = {
+export type LayoutSize = {
     amount: number
     unit: LayoutSizeUnit
 }
@@ -107,7 +107,7 @@ const initialData: LayoutPropTypes = {
     radius: 0,
 }
 
-const unitMapDefaultAmount: {
+export const unitMapDefaultAmount: {
     [unit in LayoutSizeUnit]: number
 } = {
     px: 100,

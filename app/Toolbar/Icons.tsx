@@ -4,12 +4,12 @@ import { EditorState } from '../types'
 import { Text } from '@modulz/radix'
 import { waitingForCreating, updateDraggingStatus } from '../appShell'
 import { Popover } from '@blueprintjs/core'
-import { Layers, Move, Type, Edit } from 'react-feather'
+import { Layers, Move, Type, Edit, Star } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
 
-const icons = ['Stack', 'Text', 'Input']
+const icons = ['Stack', 'Text', 'Input', 'Icon']
 const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
@@ -91,6 +91,33 @@ const getIcon = (name, isActive) => {
                 </>
             ),
         },
+        Icon: {
+            icon: <Star className={`${isActive ? 'primary' : 'pure'}`}></Star>,
+            descInPopover: (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Move size={32} color="#666"></Move>
+                    </div>
+                    <Text
+                        as="p"
+                        mt={15}
+                        sx={{ color: '#666', textAlign: 'center' }}
+                    >
+                        Create a {name}
+                    </Text>
+                    <Text
+                        size={2}
+                        as="p"
+                        mt={10}
+                        sx={{ color: '#666', lineHeight: '1.3' }}
+                    >
+                        Grabbing to kits or your working view directly. Or click
+                        and drag a new state with having a {name} in workspace
+                        below.
+                    </Text>
+                </>
+            ),
+        },
     }
     return baseComponents[name]
 }
@@ -117,7 +144,7 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
             <div
                 style={{
                     display: 'flex',
-                    padding: '5px 10px',
+                    padding: '5px 5px',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',

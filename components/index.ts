@@ -5,6 +5,7 @@ import Kit from './Kit'
 import * as Stack from './Stack'
 import * as Text from './Text'
 import * as Input from './Input'
+import * as Icon from './Icon'
 
 export default [
     {
@@ -18,6 +19,10 @@ export default [
     {
         type: 'Input',
         ...Input,
+    },
+    {
+        type: 'Icon',
+        ...Icon,
     },
 
     //TODO: move Kit and Mould to /app

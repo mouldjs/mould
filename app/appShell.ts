@@ -21,7 +21,7 @@ import {
     getDefaultStateName,
 } from './utils'
 import nanoid from 'nanoid'
-import { filter, remove, find } from 'lodash'
+import { remove, find, cloneDeep } from 'lodash'
 
 type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
@@ -374,6 +374,7 @@ export const handleUpdateCreating = handleAction<
                 state.creating.status === 'updating')
         ) {
             state.creating.status = 'updating'
+
             state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
             state.creating.view.height = Math.abs(y - state.creating.beginAt.y)
             state.creating.view.x = Math.min(x, state.creating.beginAt.x)
@@ -953,6 +954,24 @@ export const handleUpdateDraggingStatus = handleAction<
     initialData
 )
 
+type ZoomWorkspaceActionType = { zoom: number }
+export const ZOOM_WORKSPACE = 'ZOOM_WORKSPACE'
+export const zoomWorkspace = createAction<ZoomWorkspaceActionType>(
+    ZOOM_WORKSPACE
+)
+export const handleZoomWorkspace = handleAction<
+    EditorState,
+    ZoomWorkspaceActionType
+>(
+    ZOOM_WORKSPACE,
+    (state, action) => {
+        state.testWorkspace.zoom = action.payload.zoom
+
+        return state
+    },
+    initialData
+)
+
 type InsertComponentOnPathAction = {
     component: Component
     path: Path
@@ -978,6 +997,62 @@ export const handleInsertComponentOnPath = handleAction<
         }
         parent.children.push(component)
         state.selection = path
+
+        return state
+    },
+    initialData
+)
+
+type MoveWorkspaceActionType = Vector
+export const MOVE_WORKSPACE = 'MOVE_WORKSPACE'
+export const moveWorkspace = createAction<MoveWorkspaceActionType>(
+    MOVE_WORKSPACE
+)
+export const handleMoveWorkspace = handleAction<
+    EditorState,
+    MoveWorkspaceActionType
+>(
+    MOVE_WORKSPACE,
+    (state, action) => {
+        state.testWorkspace.x = action.payload.x
+        state.testWorkspace.y = action.payload.y
+
+        return state
+    },
+    initialData
+)
+
+type DuplicateView = { viewId: string }
+const DUPLICATE_VIEW = 'DUPLICATE_VIEW'
+export const duplicateView = createAction<DuplicateView>(DUPLICATE_VIEW)
+export const handleDuplicateView = handleAction<EditorState, DuplicateView>(
+    DUPLICATE_VIEW,
+    (state, { payload: { viewId } }) => {
+        const targetView = state.views[viewId]
+        const targetMould = findMould(state, targetView.mouldName)
+        const targetState = targetMould?.states[targetView.state]
+
+        const newStateName = `dup-${targetView.state}`
+        const newViewId = nanoid(6)
+
+        const newView = {
+            id: newViewId,
+            x: targetView.x + 50,
+            y: targetView.y + 50,
+            state: newStateName,
+            mouldName: targetView.mouldName,
+            width: targetView.width,
+            height: targetView.height,
+        }
+
+        const newState = cloneDeep(targetState)
+
+        if (targetMould) {
+            targetMould.states[newStateName] = newState
+            state.views[newViewId] = newView
+            state.testWorkspace.views.push(newViewId)
+            state.selection = [[targetView.mouldName, newStateName], []]
+        }
 
         return state
     },
