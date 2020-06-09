@@ -20,8 +20,6 @@ const Container = styled.div.attrs<IconProps>((props) => ({
     onClickCapture: mouseEventWrapper(props.onClickCapture),
 }))<IconProps>`
     display: flex;
-    box-shadow: ${(props) => props.shadow};
-    filter: ${(props) => props.filter};
     border-width: ${(props) => props.borderWidth};
     border-style: ${(props) => props.borderStyle};
     border-color: ${(props) => props.borderColor};
@@ -43,6 +41,7 @@ export const RawIcon: SFC<IconProps & { ref: any }> = forwardRef(
                         <SelectedIcon
                             color={prop.color}
                             size="100%"
+                            filter={prop.filter}
                         ></SelectedIcon>
                     </Container>
                 )

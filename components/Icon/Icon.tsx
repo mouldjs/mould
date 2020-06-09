@@ -48,7 +48,8 @@ const transformIconProps = (iconProps: IconPropTypes = initialIconProps) => {
 
 const transformFilterProps = (
     blurProps?: BlurPropTypes,
-    filtersProps?: FilterPropTypes
+    filtersProps?: FilterPropTypes,
+    shadowProps?: ShadowsPropTypes
 ) => {
     const res: z.infer<typeof Filter> = {}
     if (filtersProps) {
@@ -73,6 +74,11 @@ const transformFilterProps = (
         }
     }
 
+    if (shadowProps) {
+        const shadowStr = `drop-shadow(${transformShadowsProps(shadowProps)})`
+        res.filter = `${shadowStr} ${res.filter || ''}`.trim()
+    }
+
     return res
 }
 
@@ -86,9 +92,7 @@ const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
         }
     })
 
-    return {
-        shadow: shadowStr,
-    }
+    return shadowStr
 }
 
 export const transform = ({
@@ -101,8 +105,7 @@ export const transform = ({
     return {
         ...transformLayout(layoutProps),
         ...transformIconProps(iconProps!),
-        ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
-        ...transformFilterProps(blurProps, filtersProps),
+        ...transformFilterProps(blurProps, filtersProps, shadowsProps),
     }
 }
 
