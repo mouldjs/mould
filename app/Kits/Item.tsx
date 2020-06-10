@@ -61,7 +61,10 @@ const MouldKitItem = ({
                           type,
                           props:
                               type === 'Mould'
-                                  ? { __mouldName: (param as any).mouldName }
+                                  ? {
+                                        __mouldName: (param as any).mouldName,
+                                        __state: (param as any).mouldState,
+                                    }
                                   : {},
                       },
                   ],

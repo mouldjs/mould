@@ -27,7 +27,10 @@ export default forwardRef(
         }
         const isMould = kit.type === 'Mould'
         const mouldProp = isMould
-            ? { __mouldName: (kit.param as any).mouldName }
+            ? {
+                  __mouldName: (kit.param as any).mouldName,
+                  __state: (kit.param as any).mouldState,
+              }
             : {}
         const connectedFields = isHostMould
             ? undefined
