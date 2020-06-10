@@ -40,6 +40,26 @@ function logger({ getState }) {
     }
 }
 
+const diff = (prev: EditorState, next: EditorState) => {
+    if (prev.testWorkspace.views !== next.testWorkspace.views) {
+        return true
+    }
+
+    if (prev.views !== next.views) {
+        return true
+    }
+
+    if (prev.moulds !== next.moulds) {
+        return true
+    }
+
+    if (prev.recursiveRendered !== next.recursiveRendered) {
+        return true
+    }
+
+    return false
+}
+
 let store
 
 export const getStore = (schemas = {}) => {
@@ -47,7 +67,10 @@ export const getStore = (schemas = {}) => {
         store = createStore(
             reduceReducers(
                 schemas || initialData,
-                createProcessReducers<EditorState>()(...reducers()) as any
+                createProcessReducers<EditorState>({
+                    fieldFilter: diff,
+                    actionFilter: () => true,
+                })(...reducers()) as any
             ),
             composeEnhancers(applyMiddleware(logger))
         )
