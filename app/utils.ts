@@ -83,8 +83,10 @@ export const useCurrentView = () => {
             return
         }
 
-        const currentState = state.selection[0][1]
-        return Object.values(state.views).find((v) => v.state === currentState)
+        const [currentMould, currentState] = state.selection[0]
+        return Object.values(state.views).find(
+            (v) => v.state === currentState && v.mouldName === currentMould
+        )
     })
 
     return view

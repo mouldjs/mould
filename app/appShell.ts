@@ -814,7 +814,7 @@ export const handleModifyStateName = handleAction<EditorState, ModifyStateName>(
         delete currentMould.states[stateName]
 
         const view = Object.values(state.views).find(
-            (view) => view.state === stateName
+            (view) => view.state === stateName && view.mouldName === mouldName
         )
         if (view) view.state = name
 
