@@ -57,7 +57,6 @@ export type InputConfig<Config = any> = {
 
 export type Mould = {
     name: string
-    hookFunctionName?: string
     scope: string[]
     kits: Kit[]
     input: { [key: string]: InputConfig }
