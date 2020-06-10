@@ -7,8 +7,9 @@ const path = require('path')
 
 const { MOULD_DIRECTORY } = require('./constants')
 
-const originalDirectory = process.cwd()
 const appPath = path.join(__dirname, '..')
+const originalDirectory = process.cwd()
+
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 
 if (fs.existsSync(mouldPath)) {
