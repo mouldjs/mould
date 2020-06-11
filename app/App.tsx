@@ -30,11 +30,15 @@ import { MouldScope } from './MouldScope'
 import { MouldStates } from './MouldStates'
 import { MouldKits } from './Kits/index'
 import { ArcherContainer } from 'react-archer'
-import { useWheel } from 'react-use-gesture'
 import DebugPanel from './DebugPanel'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import { useCurrentMould, useCurrentView, initialData } from './utils'
+import {
+    useCurrentMould,
+    useCurrentView,
+    initialData,
+    useSimulateScroll,
+} from './utils'
 import { debounce } from 'lodash'
 
 const schemaQuery = gql`
@@ -55,8 +59,10 @@ function handleTouchMove(e) {
 const App = () => {
     const HierarchyBlockRef = useRef<HTMLDivElement>(null)
     const InspectorsBlockRef = useRef<HTMLDivElement>(null)
-    const LeftPanelRef = useRef<HTMLDivElement>(null)
+    const KitsBlockRef = useRef<HTMLDivElement>(null)
+    const DebugPanelRef = useRef<HTMLDivElement>(null)
     const [hierarchyBlockHeight, setHierarchyBlockHeight] = useState(50)
+    const [kitsBlockHeight, setKitsBlockHeight] = useState(50)
 
     useEffect(() => {
         //阻止二指滑动的默认浏览器 后退/前进 行为
@@ -71,40 +77,17 @@ const App = () => {
         }
     }, [])
 
-    const bindWheelOnInspectorsBlock = useWheel(
-        ({ event, delta: [, dy] }) => {
-            if (InspectorsBlockRef && InspectorsBlockRef.current) {
-                InspectorsBlockRef.current.scrollTop += dy
-            }
-
-            event && event.stopPropagation()
-        },
-        {
-            domTarget: InspectorsBlockRef,
-        }
-    )
-
-    const bindWheelOnLeftPanel = useWheel(
-        ({ event, delta: [, dy] }) => {
-            if (LeftPanelRef && LeftPanelRef.current) {
-                LeftPanelRef.current.scrollTop += dy
-            }
-
-            event && event.stopPropagation()
-        },
-        {
-            domTarget: LeftPanelRef,
-        }
-    )
-
     useEffect(() => {
         if (HierarchyBlockRef.current) {
             setHierarchyBlockHeight(HierarchyBlockRef.current.clientHeight)
         }
+        if (KitsBlockRef.current) {
+            setKitsBlockHeight(KitsBlockRef.current.clientHeight)
+        }
     })
 
-    useEffect(bindWheelOnInspectorsBlock, [bindWheelOnInspectorsBlock])
-    useEffect(bindWheelOnLeftPanel, [bindWheelOnLeftPanel])
+    useSimulateScroll(InspectorsBlockRef)
+    useSimulateScroll(DebugPanelRef)
 
     const dispatch = useDispatch()
     const { testWorkspace, creating, selection } = useSelector(
@@ -207,7 +190,6 @@ const App = () => {
                 }}
             >
                 <Box
-                    ref={LeftPanelRef}
                     translate
                     style={{
                         transition: '0.3s',
@@ -219,12 +201,10 @@ const App = () => {
                         zIndex: 1,
                         borderRight: '1px solid #aaaaaa',
                         backgroundColor: '#e1e1e1',
-                        overflowY: 'auto',
                     }}
                 >
                     <ArcherContainer
                         style={{
-                            height: '100%',
                             backgroundColor: '#e1e1e1',
                         }}
                         svgContainerStyle={{
@@ -237,12 +217,22 @@ const App = () => {
                         strokeWidth={1}
                     >
                         <MouldScope></MouldScope>
-                        <TitledBoard title="Kits">
-                            <MouldKits></MouldKits>
-                        </TitledBoard>
+                        <div ref={KitsBlockRef}>
+                            <TitledBoard title="Kits">
+                                <MouldKits></MouldKits>
+                            </TitledBoard>
+                        </div>
+                    </ArcherContainer>
+                    <div
+                        ref={DebugPanelRef}
+                        style={{
+                            height: `calc(100% - ${kitsBlockHeight}px)`,
+                            overflowY: 'auto',
+                        }}
+                    >
                         <MouldMetas></MouldMetas>
                         <DebugPanel.Target></DebugPanel.Target>
-                    </ArcherContainer>
+                    </div>
                 </Box>
                 <Box
                     translate
