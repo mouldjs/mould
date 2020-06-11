@@ -32,7 +32,7 @@ const Toolbar = ({}) => {
                 test
             </button>
             <AddMouldTrigger></AddMouldTrigger>
-            <div className="flex">
+            <div className="flex m-l m-r">
                 <Icons></Icons>
             </div>
             <Resizer></Resizer>

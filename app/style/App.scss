@@ -30,6 +30,10 @@ radix-portal div {
     padding: 0;
 }
 
+.bp3-control {
+    margin-bottom: 0;
+}
+
 .m-l {
     margin-left: 10px;
 }
@@ -68,6 +72,14 @@ radix-portal div {
 
 .p-sm {
     padding: 5px;
+}
+
+.p-l-lg {
+    padding-left: 20px;
+}
+
+.p-r-lg {
+    padding-right: 20px;
 }
 
 .clickable {
@@ -129,5 +141,27 @@ input.editable-state {
     }
     &.align-center {
         align-items: center;
+    }
+}
+
+.left-divider {
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 1px;
+        height: 20px;
+        background-color: #bbb;
+    }
+}
+
+.right-divider {
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        width: 1px;
+        height: 20px;
+        background-color: #bbb;
     }
 }

@@ -55,6 +55,7 @@ function handleTouchMove(e) {
 const App = () => {
     const HierarchyBlockRef = useRef<HTMLDivElement>(null)
     const InspectorsBlockRef = useRef<HTMLDivElement>(null)
+    const LeftPanelRef = useRef<HTMLDivElement>(null)
     const [hierarchyBlockHeight, setHierarchyBlockHeight] = useState(50)
 
     useEffect(() => {
@@ -70,7 +71,7 @@ const App = () => {
         }
     }, [])
 
-    const bind = useWheel(
+    const bindWheelOnInspectorsBlock = useWheel(
         ({ event, delta: [, dy] }) => {
             if (InspectorsBlockRef && InspectorsBlockRef.current) {
                 InspectorsBlockRef.current.scrollTop += dy
@@ -83,12 +84,27 @@ const App = () => {
         }
     )
 
+    const bindWheelOnLeftPanel = useWheel(
+        ({ event, delta: [, dy] }) => {
+            if (LeftPanelRef && LeftPanelRef.current) {
+                LeftPanelRef.current.scrollTop += dy
+            }
+
+            event && event.stopPropagation()
+        },
+        {
+            domTarget: LeftPanelRef,
+        }
+    )
+
     useEffect(() => {
         if (HierarchyBlockRef.current) {
             setHierarchyBlockHeight(HierarchyBlockRef.current.clientHeight)
         }
     })
-    useEffect(bind, [bind])
+
+    useEffect(bindWheelOnInspectorsBlock, [bindWheelOnInspectorsBlock])
+    useEffect(bindWheelOnLeftPanel, [bindWheelOnLeftPanel])
 
     const dispatch = useDispatch()
     const { testWorkspace, creating, selection } = useSelector(
@@ -191,6 +207,7 @@ const App = () => {
                 }}
             >
                 <Box
+                    ref={LeftPanelRef}
                     translate
                     style={{
                         transition: '0.3s',
@@ -202,6 +219,7 @@ const App = () => {
                         zIndex: 1,
                         borderRight: '1px solid #aaaaaa',
                         backgroundColor: '#e1e1e1',
+                        overflowY: 'auto',
                     }}
                 >
                     <ArcherContainer
