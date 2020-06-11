@@ -131,7 +131,7 @@ export const Explorer2 = () => {
     const mould = moulds.find((m) => m.name === selection[0][0])!
     const stateName = selection[0][1]
 
-    const selectedTree = mould.states[stateName]
+    const selectedTree = mould && mould.states[stateName]
 
     const onDrop = (info) =>
         dispatch(

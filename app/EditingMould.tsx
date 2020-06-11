@@ -12,7 +12,7 @@ type currentState = { currentState: string }
 export default ({ currentState, ...mould }: Mould & currentState) => {
     const dispatch = useDispatch()
     const { states, name } = mould
-    const tree = states[currentState]
+    const tree = states && states[currentState]
 
     if (!tree) {
         return null
