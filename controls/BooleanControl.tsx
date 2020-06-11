@@ -32,18 +32,15 @@ export const Editor = () => {
     )
 }
 
-export const Renderer = ({ config, onChange }) => {
-    const [checked, setChecked] = useState(config.default)
-
+export const Renderer = ({ config, data, onChange }) => {
     return (
         <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <Switch
                 large
-                checked={checked}
+                checked={data === undefined ? config.default : data}
                 onChange={(e) => {
                     const value = e.currentTarget.checked
 
-                    setChecked(value)
                     onChange(value)
                 }}
             />
