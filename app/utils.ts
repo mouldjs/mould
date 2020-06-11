@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { EditorState, Path, StateName, Component, Mould } from './types'
 import { useSelector } from 'react-redux'
 import nanoid from 'nanoid'
 import data from './initialData'
+import { useWheel } from 'react-use-gesture'
 
 export const initialData = (data as any) as EditorState
 
@@ -160,4 +162,23 @@ export const getDefaultStateName = (mould: Mould) => {
     }
 
     return stateName
+}
+
+export const useSimulateScroll = (ref) => {
+    const bind = useWheel(
+        ({ event, delta: [, dy] }) => {
+            if (ref && ref.current) {
+                ref.current.scrollTop += dy
+            }
+
+            event && event.stopPropagation()
+        },
+        {
+            domTarget: ref,
+        }
+    )
+
+    useEffect(() => {
+        bind()
+    }, [bind])
 }
