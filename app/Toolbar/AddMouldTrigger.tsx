@@ -11,8 +11,9 @@ const AddMouldTrigger = () => {
     return (
         <Popover interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}>
             <div
-                className="m-r-lg"
+                className="p-r-lg right-divider"
                 style={{
+                    position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',

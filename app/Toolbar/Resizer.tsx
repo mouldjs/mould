@@ -37,7 +37,7 @@ const Resizer = ({}) => {
 
     return (
         <div
-            className="m-l-lg"
+            className="p-l-lg left-divider"
             onMouseEnter={onHover}
             onMouseLeave={onHover}
             style={{
