@@ -12,6 +12,7 @@ const originalDirectory = process.cwd()
 const appPath = path.join(__dirname, '..')
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const symlinkMouldPath = path.join(appPath, SYMLINK_MOULD_DIRECTORY)
+const nextPath = path.join(appPath, 'node_modules', '.bin', 'next')
 
 if (fs.existsSync(mouldPath)) {
     if (fs.existsSync(symlinkMouldPath)) {
@@ -19,9 +20,27 @@ if (fs.existsSync(mouldPath)) {
     }
     fs.symlinkSync(mouldPath, symlinkMouldPath, 'dir')
 
-    spawn('bash', ['-c', `cd ${appPath} && WORKDIR=${mouldPath} next dev`], {
-        stdio: 'inherit',
-    })
+    const cdToAppDir = `cd ${appPath}`
+    const setWorkdirEnvVar = `WORKDIR=${mouldPath}`
+    const runNextDev = `${nextPath} dev`
+
+    if (
+        process.platform === 'win32' ||
+        process.env.OSTYPE === 'msys' ||
+        process.env.OSTYPE === 'cygwin'
+    ) {
+        spawn(
+            'cmd.exe',
+            ['/c', `${cdToAppDir} && set ${setWorkdirEnvVar} && ${runNextDev}`],
+            { stdio: 'inherit' }
+        )
+    } else {
+        spawn(
+            'bash',
+            ['-c', `${cdToAppDir} && ${setWorkdirEnvVar} ${runNextDev}`],
+            { stdio: 'inherit' }
+        )
+    }
 
     fs.watch(
         mouldPath,
