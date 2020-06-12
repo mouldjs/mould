@@ -27,7 +27,7 @@ import { tick } from './selectionTick'
 import Controls from '../controls'
 import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { MouldInput } from './MouldInput'
-import { without } from 'lodash'
+import { without, isObject } from 'lodash'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -263,7 +263,16 @@ export const View = ({ viewId }: { viewId: string }) => {
                                                                     setInputValue(
                                                                         {
                                                                             ...inputValue,
-                                                                            [input]: value,
+                                                                            [input]: isObject(
+                                                                                value
+                                                                            )
+                                                                                ? {
+                                                                                      ...inputValue[
+                                                                                          input
+                                                                                      ],
+                                                                                      ...value,
+                                                                                  }
+                                                                                : value,
                                                                         }
                                                                     )
                                                                 }}
