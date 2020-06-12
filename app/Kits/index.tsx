@@ -22,7 +22,10 @@ export const MouldKits = () => {
                     type: item.name,
                     param:
                         item.name === 'Mould'
-                            ? { mouldName: (item.props as any).__mouldName }
+                            ? {
+                                  mouldName: (item.props as any).__mouldName,
+                                  mouldState: (item.props as any).__state,
+                              }
                             : undefined,
                 })
             )

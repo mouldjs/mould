@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, EditorState, Path } from './types'
-import { MouldContext } from './Contexts'
+import { MouldContext, ViewContext } from './Contexts'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useSelector, useDispatch } from 'react-redux'
@@ -42,6 +42,8 @@ export const Tree = ({
     root = false,
 }: Component & Edit & PathProps & { root?: boolean }) => {
     const dispatch = useDispatch()
+    const mould = useContext(MouldContext)
+    const view = useContext(ViewContext)
     const selected = useIsSelectedPath(path)
     const [{ canDrop }, drop] = useDrop<
         { type: string; name: string; props?: object; children?: Component[] },
@@ -80,6 +82,9 @@ export const Tree = ({
 
     const compRef = useRef()
 
+    if (!mould) {
+        return null
+    }
     const plugin = Components.find((c) => c.type === type)
     if (!plugin) {
         return null
@@ -117,7 +122,23 @@ export const Tree = ({
             )}
             <Comp
                 ref={(dom) => {
-                    plugin.acceptChildren && drop(dom)
+                    // TODO temp fix, need to find a better solution
+                    let acceptChildren = plugin.acceptChildren
+                    if (
+                        plugin.type === 'Kit' &&
+                        view?.mouldName === mould.name
+                    ) {
+                        const __kitName = (props as any).__kitName
+                        const kit = mould.kits.find(
+                            (kit) => kit.name === __kitName
+                        )
+                        if (!kit) {
+                            throw Error(`Kit '${__kitName}' not found`)
+                        }
+                        const p = Components.find((c) => c.type === kit.type)
+                        acceptChildren = p?.acceptChildren
+                    }
+                    acceptChildren && drop(dom)
                     compRef.current = dom
                 }}
                 onDoubleClick={() => {
