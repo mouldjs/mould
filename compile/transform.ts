@@ -125,7 +125,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
             )`
     }
 
-    return `const ${mouldName} = (props) => {
+    return `export const ${mouldName} = (props) => {
     const [scopes, stateName] = ${RESOLVERS}['${mouldName}'](props)
 
     switch(stateName) {
