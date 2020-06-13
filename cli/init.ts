@@ -1,9 +1,7 @@
-'use strict'
+import fs from 'fs'
+import path from 'path'
 
-const fs = require('fs')
-const path = require('path')
-
-const { MOULD_DIRECTORY, RESOLVERS } = require('./constants')
+import { MOULD_DIRECTORY, RESOLVERS } from './constants'
 
 const originalDirectory = process.cwd()
 
