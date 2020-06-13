@@ -45,9 +45,17 @@ if (args['--help'] || !args._.length) {
 const [command] = args._
 
 if (commands.includes(command)) {
-    const result = spawn.sync('node', [require.resolve('./' + command)], {
-        stdio: 'inherit',
-    })
+    const result = spawn.sync(
+        'node',
+        [
+            '-r',
+            'esm',
+            '-r',
+            'ts-node/register',
+            require.resolve(`./${command}.ts`),
+        ],
+        { stdio: 'inherit' }
+    )
 
     if (result.signal) {
         if (result.signal === 'SIGKILL') {

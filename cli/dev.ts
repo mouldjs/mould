@@ -1,11 +1,9 @@
-'use strict'
+import spawn from 'cross-spawn'
+import fs from 'fs'
+import { debounce } from 'lodash'
+import path from 'path'
 
-const spawn = require('cross-spawn')
-const fs = require('fs')
-const { debounce } = require('lodash')
-const path = require('path')
-
-const { MOULD_DIRECTORY, SYMLINK_MOULD_DIRECTORY } = require('./constants')
+import { MOULD_DIRECTORY, SYMLINK_MOULD_DIRECTORY } from './constants'
 
 const originalDirectory = process.cwd()
 
