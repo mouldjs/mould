@@ -3,6 +3,8 @@ import path from 'path'
 
 import { MOULD_DIRECTORY } from './constants'
 
+import { transform } from '../compile/transform'
+
 const originalDirectory: string = process.cwd()
 
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
@@ -10,7 +12,7 @@ const schemaPath = path.join(mouldPath, '.mould')
 
 if (fs.existsSync(schemaPath)) {
     fs.readFile(schemaPath, 'utf8', (err, schema) => {
-        console.log(JSON.parse(schema))
+        console.log(transform(JSON.parse(schema)))
     })
 } else if (fs.existsSync(mouldPath)) {
     console.warn(
