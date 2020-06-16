@@ -1,5 +1,5 @@
 import { EditorState, Mould, Component } from '../app/types'
-import * as m from '../index'
+import * as m from '../mould'
 
 const ensureComponentName = (mouldName: string) =>
     mouldName[0].toUpperCase() + mouldName.substring(1)
@@ -13,7 +13,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
     const generateComponent = (comp: Component) => {
         const { type, props, children = [] } = comp
-        let compType = `${MOULD}.component.${type}`
+        let compType = `${MOULD}.components.${type}`
 
         const propsClone = { ...props }
         delete propsClone['__mouldName']
@@ -39,7 +39,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
             if (type === 'Mould') {
                 compType = ensureComponentName((param as any).mouldName)
             } else {
-                compType = `${MOULD}.component.${type}`
+                compType = `${MOULD}.components.${type}`
             }
 
             if (isList) {
@@ -137,8 +137,9 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
 export const transform = (schema: EditorState): string => {
     return `// Generated from Mould (github.com/mouldjs/mould)
-import ${RESOLVERS} from './.mould/resolvers'
-import ${MOULD} from 'mould'
+import React from 'react'
+import * as ${RESOLVERS} from '../.mould/resolvers'
+import * as ${MOULD} from '../mould'
 
 ${Object.values(schema.moulds).map(transformMouldToReactComponent).join('\n')}
 `
