@@ -62,19 +62,22 @@ export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
                         y: iy - y,
                     })
                 )
+            } else if (creating?.status === 'updating') {
+                dispatch(
+                    updateCreating({
+                        x: px - x,
+                        y: py - y,
+                    })
+                )
             }
-
-            dispatch(
-                updateCreating({
-                    x: px - x,
-                    y: py - y,
-                })
-            )
         },
         onMouseDown: (event) => {
             event.stopPropagation()
         },
         onMouseUp: (event) => {
+            if (creating?.status !== 'updating') {
+                return
+            }
             dispatch(finishCreating())
         },
         onPinch: (e) => {
