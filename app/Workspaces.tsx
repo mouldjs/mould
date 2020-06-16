@@ -86,7 +86,8 @@ export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
 
             if (
                 (scaling >= MAX_SCALE && factor < 0) ||
-                (scaling <= MIN_SCALE && factor > 0)
+                (scaling <= MIN_SCALE && factor > 0) ||
+                Math.abs(factor) > 10
             )
                 return
 
