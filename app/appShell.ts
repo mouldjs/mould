@@ -348,7 +348,7 @@ export const handleStartCreating = handleAction<
     START_CREATING,
     (state, { payload: { x, y } }) => {
         if (state.creating && state.creating.status === 'waiting') {
-            state.creating.status = 'start'
+            state.creating.status = 'updating'
             state.creating.beginAt = { x, y }
         }
 
@@ -368,11 +368,7 @@ export const handleUpdateCreating = handleAction<
 >(
     UPDATE_CREATING,
     (state, { payload: { x, y } }) => {
-        if (
-            state.creating &&
-            (state.creating.status === 'start' ||
-                state.creating.status === 'updating')
-        ) {
+        if (state.creating && state.creating.status === 'updating') {
             state.creating.status = 'updating'
 
             state.creating.view.width = Math.abs(x - state.creating.beginAt.x)
