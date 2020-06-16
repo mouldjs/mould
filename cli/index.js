@@ -59,7 +59,7 @@ if (commands.includes(command)) {
             stdio: 'inherit',
             env: {
                 ...process.env,
-                TS_NODE_PROJECT: path.join(__dirname, './tsconfig.json'),
+                TS_NODE_PROJECT: path.join(__dirname, 'tsconfig.json'),
             },
         }
     )
