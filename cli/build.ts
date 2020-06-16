@@ -1,18 +1,37 @@
 import fs from 'fs'
 import path from 'path'
 
-import { MOULD_DIRECTORY } from './constants'
+import { COMPONENTS_DIRECTORY, MOULD_DIRECTORY } from './constants'
 
 import { transform } from '../compile/transform'
 
 const originalDirectory: string = process.cwd()
 
+const appPath = path.join(__dirname, '..')
+const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY, 'index.js')
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, '.mould')
 
 if (fs.existsSync(schemaPath)) {
     fs.readFile(schemaPath, 'utf8', (err, schema) => {
-        console.log(transform(JSON.parse(schema)))
+        if (err) {
+            console.error('Failed to read Mould Schema\n' + err)
+            process.exit(1)
+        }
+
+        fs.writeFile(
+            componentsPath,
+            transform(JSON.parse(schema)),
+            'utf8',
+            (err) => {
+                if (err) {
+                    console.error('Failed to write Mould Components\n' + err)
+                    process.exit(1)
+                }
+
+                console.log('Compiled Mould Components successfully')
+            }
+        )
     })
 } else if (fs.existsSync(mouldPath)) {
     console.warn(
