@@ -703,7 +703,7 @@ export const handleDisConnectScopeToKit = handleAction<
     DISCONNECT_SCOPE_TO_KIT,
     (state, { payload: { scope, prop, mouldName, kitName } }) => {
         const mould = ensureMould(state, mouldName)
-        const kit = find(mould.kits, (k) => k.name === kitName)
+        const kit = find(mould.kits, (k) => k.name === kitName)!
 
         remove(kit.dataMappingVector, (v) => v[0] === prop && v[1] === scope)
         return state
@@ -1044,7 +1044,7 @@ export const handleDuplicateView = handleAction<EditorState, DuplicateView>(
         const newState = cloneDeep(targetState)
 
         if (targetMould) {
-            targetMould.states[newStateName] = newState
+            targetMould.states[newStateName] = newState as any
             state.views[newViewId] = newView
             state.testWorkspace.views.push(newViewId)
             state.selection = [[targetView.mouldName, newStateName], []]

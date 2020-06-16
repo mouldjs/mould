@@ -197,7 +197,7 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
 
 const Icons: any = () => {
     const [opening, setOpening] = useState(null)
-    let timer = undefined
+    let timer: number | undefined = undefined
     const onHover = (icon) => {
         setOpening(icon)
     }

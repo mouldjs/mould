@@ -1,5 +1,6 @@
 import React, { forwardRef, Fragment, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { omit } from 'lodash'
 import { ZoomIn } from 'react-feather'
 import {
     TitledBoard,
@@ -15,6 +16,7 @@ import Components from '.'
 import Controls from '../controls'
 import { Error, Info } from '../app/Messager'
 import { renderRecursiveMould } from '../app/appShell'
+import { tick } from '../app/selectionTick'
 
 const { Provider } = MouldContext
 
@@ -98,6 +100,8 @@ const Mould = forwardRef(
 
             const Comp = plugin.Editable
 
+            let index = 0
+
             if (type === 'Kit') {
                 const pathStr = pathToString(path)
                 const kitName = (props as any).__kitName
@@ -109,29 +113,50 @@ const Mould = forwardRef(
                     ([propField]) => propField
                 )
                 const patch = __patches[pathStr] || {}
+                const Comp = Components.find((c) => c.type === kit.type)!
+                    .Editable
 
                 return (
-                    <Tree
+                    <Comp
+                        {...{ ...props, ...patch }}
                         path={path}
-                        type={type}
-                        props={{ ...props, ...patch }}
-                        onChange={(tree) => {
-                            const patch = tree.props
+                        ref={isRoot ? ref : undefined}
+                        onDoubleClick={
+                            isRoot
+                                ? onDoubleClick
+                                : () => {
+                                      tick((tickData = []) => {
+                                          tickData.unshift(path)
+
+                                          return tickData
+                                      })
+                                  }
+                        }
+                        requestUpdateProps={(nextProps) => {
                             const nextPatch = {
                                 __patches: {
                                     ...__patches,
-                                    [pathStr]: patch,
+                                    [pathStr]: nextProps,
                                 },
                             }
+
                             requestUpdateProps && requestUpdateProps(nextPatch)
                         }}
+                        connectedFields={fields}
                     >
-                        {children}
-                    </Tree>
+                        {children &&
+                            children.map((c) =>
+                                renderTree(c, [
+                                    path[0],
+                                    [
+                                        ...path[1],
+                                        c.type === 'Kit' ? index++ : 10000000,
+                                    ],
+                                ])
+                            )}
+                    </Comp>
                 )
             }
-
-            let index = 0
 
             return (
                 <Comp
