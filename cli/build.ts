@@ -13,6 +13,8 @@ const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, '.mould')
 
 if (fs.existsSync(schemaPath)) {
+    const time = process.hrtime()
+
     fs.readFile(schemaPath, 'utf8', (err, schema) => {
         if (err) {
             console.error('Failed to read Mould Schema\n' + err)
@@ -29,7 +31,12 @@ if (fs.existsSync(schemaPath)) {
                     process.exit(1)
                 }
 
-                console.log('Compiled Mould Components successfully')
+                const [s, ns] = process.hrtime(time)
+                console.log(
+                    `Compiled Mould Components successfully in ${s}s ${
+                        ns / 1e6
+                    }ms`
+                )
             }
         )
     })

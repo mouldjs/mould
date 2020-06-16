@@ -46,7 +46,7 @@ if (fs.existsSync(mouldPath)) {
             if (filename) {
                 console.log(`${filename} file was changed`)
             }
-        }, 500)
+        }, 1000)
     )
 } else {
     console.warn(
