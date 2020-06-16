@@ -2,6 +2,7 @@
 
 const arg = require('arg')
 const spawn = require('cross-spawn')
+const path = require('path')
 
 const packageJson = require('../package.json')
 
@@ -54,7 +55,13 @@ if (commands.includes(command)) {
             'ts-node/register',
             require.resolve(`./${command}.ts`),
         ],
-        { stdio: 'inherit' }
+        {
+            stdio: 'inherit',
+            env: {
+                ...process.env,
+                TS_NODE_PROJECT: path.join(__dirname, 'tsconfig.json'),
+            },
+        }
     )
 
     if (result.signal) {
