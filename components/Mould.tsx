@@ -1,6 +1,5 @@
 import React, { forwardRef, Fragment, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { omit } from 'lodash'
 import { ZoomIn } from 'react-feather'
 import {
     TitledBoard,
@@ -8,10 +7,9 @@ import {
     ControlGrid,
 } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
-import { ComponentPropTypes, Component, EditorState } from '../app/types'
+import { ComponentPropTypes, Component, EditorState, Path } from '../app/types'
 import { MouldContext, ViewContext } from '../app/Contexts'
 import { pathToString } from '../app/utils'
-import { Tree } from '../app/Tree'
 import Components from '.'
 import Controls from '../controls'
 import { Error, Info } from '../app/Messager'
@@ -89,7 +87,7 @@ const Mould = forwardRef(
 
         const renderTree = (
             { type, children, props }: Component,
-            path,
+            localPath,
             isRoot = false
         ) => {
             const plugin = Components.find((c) => c.type === type)
@@ -101,79 +99,63 @@ const Mould = forwardRef(
             const Comp = plugin.Editable
 
             let index = 0
+            let isKit = type === 'Kit'
+            const pathStr = localPath.join('-')
 
-            if (type === 'Kit') {
-                const pathStr = pathToString(path)
+            if (isKit) {
                 const kitName = (props as any).__kitName
                 const kit = kits.find((k) => k.name === kitName)
                 if (!kit) {
                     return null
                 }
-                const fields = kit.dataMappingVector.map(
-                    ([propField]) => propField
-                )
                 const patch = __patches[pathStr] || {}
-                const Comp = Components.find((c) => c.type === kit.type)!
-                    .Editable
-
-                return (
-                    <Comp
-                        {...{ ...props, ...patch }}
-                        path={path}
-                        ref={isRoot ? ref : undefined}
-                        onDoubleClick={
-                            isRoot
-                                ? onDoubleClick
-                                : () => {
-                                      tick((tickData = []) => {
-                                          tickData.unshift(path)
-
-                                          return tickData
-                                      })
-                                  }
-                        }
-                        requestUpdateProps={(nextProps) => {
-                            const nextPatch = {
-                                __patches: {
-                                    ...__patches,
-                                    [pathStr]: nextProps,
-                                },
-                            }
-
-                            requestUpdateProps && requestUpdateProps(nextPatch)
-                        }}
-                        connectedFields={fields}
-                    >
-                        {children &&
-                            children.map((c) =>
-                                renderTree(c, [
-                                    path[0],
-                                    [
-                                        ...path[1],
-                                        c.type === 'Kit' ? index++ : 10000000,
-                                    ],
-                                ])
-                            )}
-                    </Comp>
-                )
+                props = { ...props, ...patch }
             }
+
+            const globalPath = [path![0], path![1].concat(localPath)] as Path
 
             return (
                 <Comp
                     {...props}
-                    path={path}
+                    path={globalPath}
                     ref={isRoot ? ref : undefined}
-                    onDoubleClick={isRoot ? onDoubleClick : undefined}
+                    onDoubleClick={
+                        isRoot
+                            ? onDoubleClick
+                            : isKit
+                            ? () => {
+                                  tick((tickData = []) => {
+                                      tickData.unshift(globalPath)
+
+                                      return tickData
+                                  })
+                              }
+                            : undefined
+                    }
+                    requestUpdateProps={
+                        isKit
+                            ? (nextProps) => {
+                                  const nextPatch = {
+                                      __patches: {
+                                          ...__patches,
+                                          [pathStr]: nextProps,
+                                      },
+                                  }
+
+                                  requestUpdateProps &&
+                                      requestUpdateProps(nextPatch)
+                              }
+                            : undefined
+                    }
                 >
                     {children &&
                         children.map((c) =>
-                            renderTree(c, [
-                                path[0],
-                                [
-                                    ...path[1],
+                            renderTree(
+                                c,
+                                localPath.concat([
                                     c.type === 'Kit' ? index++ : 10000000,
-                                ],
-                            ])
+                                ])
+                            )
                         )}
                 </Comp>
             )
@@ -210,7 +192,7 @@ const Mould = forwardRef(
                     </TitledBoard>
                 </ComponentInspector>
                 <Provider value={mould}>
-                    {tree && renderTree(tree, path, true)}
+                    {tree && renderTree(tree, [], true)}
                 </Provider>
             </Fragment>
         )
