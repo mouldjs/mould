@@ -77,7 +77,9 @@ export const runtime = (moulds: Mould[]) => {
                             props = kitProps.textProps
                                 ? {
                                       ...kitProps,
-                                      content: kitProps.textProps.content,
+                                      content:
+                                          scope['content'] ||
+                                          kitProps.textProps.content, // content key is unique because it determine the display when debugging
                                   }
                                 : kitProps
 
