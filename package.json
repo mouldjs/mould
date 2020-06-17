@@ -1,12 +1,17 @@
 {
-    "name": "mould",
+    "name": "@mouldjs/mould",
     "version": "0.1.0",
-    "private": true,
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
-        "build": "next build",
-        "start": "next start"
+        "clean": "rm -rf release/*",
+        "postbuild": "rm -rf release/.mould && rm -rf release/.components",
+        "build": "yarn clean && tsc -p tsconfig.package.json",
+        "start": "next start",
+        "preversion": "yarn build",
+        "postversion": "cp package.json release/ && cp *.md release/ && cp yarn.lock release/ && cd release && npm publish"
     },
+    "module": "index.js",
+    "types": "index.d.ts",
     "bin": {
         "mould": "bin/mould"
     },

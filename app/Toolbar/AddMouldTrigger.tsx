@@ -1,3 +1,4 @@
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import { Flex, Text } from '@modulz/radix'
 import { Plus, Maximize } from 'react-feather'

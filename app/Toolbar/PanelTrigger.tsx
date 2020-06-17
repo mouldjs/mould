@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { EditorState, Path } from '../../app/types'
 import { selectComponent, selectComponentFromTree } from '../../app/appShell'
