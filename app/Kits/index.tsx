@@ -1,5 +1,4 @@
 import React from 'react'
-import { Box } from '@modulz/radix'
 import { useCurrentMould } from '../utils'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
