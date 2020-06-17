@@ -3,13 +3,22 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import { MOULD_DIRECTORY, SYMLINK_MOULD_DIRECTORY } from './constants'
+import compile from './compile'
+import {
+    COMPONENTS,
+    COMPONENTS_DIRECTORY,
+    MOULD_DIRECTORY,
+    SCHEMA,
+    SYMLINK_MOULD_DIRECTORY,
+} from './constants'
 
 const originalDirectory = process.cwd()
 
 const appPath = path.join(__dirname, '..')
+const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY, COMPONENTS)
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const symlinkMouldPath = path.join(appPath, SYMLINK_MOULD_DIRECTORY)
+const schemaPath = path.join(mouldPath, SCHEMA)
 const nextPath = path.join(appPath, 'node_modules', '.bin', 'next')
 
 if (fs.existsSync(mouldPath)) {
@@ -43,10 +52,10 @@ if (fs.existsSync(mouldPath)) {
     fs.watch(
         mouldPath,
         debounce((event, filename) => {
-            if (filename) {
-                console.log(`${filename} file was changed`)
+            if (filename === SCHEMA) {
+                compile(schemaPath, componentsPath)
             }
-        }, 500)
+        }, 1000)
     )
 } else {
     console.warn(

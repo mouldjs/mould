@@ -1,19 +1,23 @@
 import fs from 'fs'
 import path from 'path'
 
-import { MOULD_DIRECTORY } from './constants'
+import compile from './compile'
+import {
+    COMPONENTS,
+    COMPONENTS_DIRECTORY,
+    MOULD_DIRECTORY,
+    SCHEMA,
+} from './constants'
 
-import { transform } from '../compile/transform'
+const originalDirectory = process.cwd()
 
-const originalDirectory: string = process.cwd()
-
+const appPath = path.join(__dirname, '..')
+const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY, COMPONENTS)
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
-const schemaPath = path.join(mouldPath, '.mould')
+const schemaPath = path.join(mouldPath, SCHEMA)
 
 if (fs.existsSync(schemaPath)) {
-    fs.readFile(schemaPath, 'utf8', (err, schema) => {
-        console.log(transform(JSON.parse(schema)))
-    })
+    compile(schemaPath, componentsPath)
 } else if (fs.existsSync(mouldPath)) {
     console.warn(
         `You don't have Mould Schema at ${mouldPath}\n\n` +
