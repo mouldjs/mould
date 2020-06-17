@@ -108,6 +108,10 @@ export const View = ({ viewId }: { viewId: string }) => {
         setReady(true)
     }, [viewRef.current])
 
+    useEffect(() => {
+        if (!selected) setPaused(true)
+    }, [selected])
+
     return (
         <>
             {!isDragging && selected && ready && (
@@ -369,6 +373,19 @@ export const View = ({ viewId }: { viewId: string }) => {
                             __mouldName={mould.name}
                             {...inputValue}
                         ></RuntimeMould>
+                    )}
+                    {!paused && (
+                        <div
+                            className="info"
+                            style={{
+                                position: 'absolute',
+                                bottom: -25,
+                                fontSize: 12,
+                                fontStyle: 'italic',
+                            }}
+                        >
+                            Debugging
+                        </div>
                     )}
                 </div>
             </ViewContextProvider>
