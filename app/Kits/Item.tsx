@@ -38,6 +38,9 @@ const MouldKitItem = ({
     const kitNames = kits.map((k) => (k.name === name ? '' : k.name))
     const ready = isList !== undefined
     const [draggingScope, setDraggingScope] = useState<string>('')
+    const [inputValue, setInputValue] = useState(name)
+
+    const [errorTip, setErrorTip] = useState('')
     const [, drop] = useDrop<{ type: 'SCOPE'; scope: string }, void, void>({
         accept: 'SCOPE',
         drop: (item) => {
@@ -109,9 +112,6 @@ const MouldKitItem = ({
                   moulds.find((m) => m.name === (param as any).mouldName)!.input
               )
             : Object.keys(plugin.Standard!._def.shape)
-    const [inputValue, setInputValue] = useState(name)
-
-    const [errorTip, setErrorTip] = useState('')
 
     const doDelete = ({
         kitName,

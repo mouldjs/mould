@@ -356,7 +356,7 @@ export const View = ({ viewId }: { viewId: string }) => {
                             size={1}
                             textColor="rgb(132,132,132)"
                         >
-                            {state}
+                            {mouldName} - {state}
                         </Text>
                     </div>
                     {paused ? (
