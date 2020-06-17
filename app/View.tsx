@@ -164,8 +164,8 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
-                        elementGuidelines={otherViews.map((v) =>
-                            document.getElementById(`view-${v}`)
+                        elementGuidelines={otherViews.map(
+                            (v) => document.getElementById(`view-${v}`)!
                         )}
                     ></Moveable>
                     <DebugPanel.Source>

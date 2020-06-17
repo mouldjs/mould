@@ -7,14 +7,14 @@ import {
     ControlGrid,
 } from '../inspector/FormComponents'
 import { ComponentInspector } from '../app/Inspectors'
-import { ComponentPropTypes, Component, EditorState } from '../app/types'
+import { ComponentPropTypes, Component, EditorState, Path } from '../app/types'
 import { MouldContext, ViewContext } from '../app/Contexts'
 import { pathToString } from '../app/utils'
-import { Tree } from '../app/Tree'
 import Components from '.'
 import Controls from '../controls'
 import { Error, Info } from '../app/Messager'
 import { renderRecursiveMould } from '../app/appShell'
+import { tick } from '../app/selectionTick'
 
 const { Provider } = MouldContext
 
@@ -87,7 +87,7 @@ const Mould = forwardRef(
 
         const renderTree = (
             { type, children, props }: Component,
-            path,
+            localPath,
             isRoot = false
         ) => {
             const plugin = Components.find((c) => c.type === type)
@@ -98,57 +98,64 @@ const Mould = forwardRef(
 
             const Comp = plugin.Editable
 
-            if (type === 'Kit') {
-                const pathStr = pathToString(path)
+            let index = 0
+            let isKit = type === 'Kit'
+            const pathStr = localPath.join('-')
+
+            if (isKit) {
                 const kitName = (props as any).__kitName
                 const kit = kits.find((k) => k.name === kitName)
                 if (!kit) {
                     return null
                 }
-                const fields = kit.dataMappingVector.map(
-                    ([propField]) => propField
-                )
                 const patch = __patches[pathStr] || {}
-
-                return (
-                    <Tree
-                        path={path}
-                        type={type}
-                        props={{ ...props, ...patch }}
-                        onChange={(tree) => {
-                            const patch = tree.props
-                            const nextPatch = {
-                                __patches: {
-                                    ...__patches,
-                                    [pathStr]: patch,
-                                },
-                            }
-                            requestUpdateProps && requestUpdateProps(nextPatch)
-                        }}
-                    >
-                        {children}
-                    </Tree>
-                )
+                props = { ...props, ...patch }
             }
 
-            let index = 0
+            const globalPath = [path![0], path![1].concat(localPath)] as Path
 
             return (
                 <Comp
                     {...props}
-                    path={path}
+                    path={globalPath}
                     ref={isRoot ? ref : undefined}
-                    onDoubleClick={isRoot ? onDoubleClick : undefined}
+                    onDoubleClick={
+                        isRoot
+                            ? onDoubleClick
+                            : isKit
+                            ? () => {
+                                  tick((tickData = []) => {
+                                      tickData.unshift(globalPath)
+
+                                      return tickData
+                                  })
+                              }
+                            : undefined
+                    }
+                    requestUpdateProps={
+                        isKit
+                            ? (nextProps) => {
+                                  const nextPatch = {
+                                      __patches: {
+                                          ...__patches,
+                                          [pathStr]: nextProps,
+                                      },
+                                  }
+
+                                  requestUpdateProps &&
+                                      requestUpdateProps(nextPatch)
+                              }
+                            : undefined
+                    }
                 >
                     {children &&
                         children.map((c) =>
-                            renderTree(c, [
-                                path[0],
-                                [
-                                    ...path[1],
+                            renderTree(
+                                c,
+                                localPath.concat([
                                     c.type === 'Kit' ? index++ : 10000000,
-                                ],
-                            ])
+                                ])
+                            )
                         )}
                 </Comp>
             )
@@ -185,7 +192,7 @@ const Mould = forwardRef(
                     </TitledBoard>
                 </ComponentInspector>
                 <Provider value={mould}>
-                    {tree && renderTree(tree, path, true)}
+                    {tree && renderTree(tree, [], true)}
                 </Provider>
             </Fragment>
         )
