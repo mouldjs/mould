@@ -4,9 +4,15 @@ import { Mould, useScopeFn, Component } from '../app/types'
 import Components from '../components'
 import List from '../components/List'
 import resolvers from '../.mould/resolvers'
-
+import { find } from 'lodash'
+import { Kit } from '../app/types'
 const returnEmptyObject = (defaultState) => (): [string, object] => {
     return [defaultState, {}]
+}
+
+const getKit = (component: { props }, kits: Kit[]) => {
+    const kitName = component.props.__kitName
+    return find(kits, (k) => k.name === kitName)
 }
 
 export const runtime = (moulds: Mould[]) => {
@@ -43,24 +49,38 @@ export const runtime = (moulds: Mould[]) => {
                     }
 
                     let Comp = Plugin.Raw
+
                     let transform = Plugin.Transform
 
                     let { props, children } = component
+
                     if (component.type === 'Kit') {
-                        const kitName = (component as any).props.__kitName
-                        const kit = kits.find((k) => k.name === kitName)
+                        const kit = getKit(component, kits)
+                        const kitName = kit?.name
+
                         if (!kit) {
                             throw Error(`Can not find kit: ${kitName}`)
                         }
                         const { isList } = kit
                         if (!isList) {
-                            const kitProps = { ...props }
-                            kit!.dataMappingVector.forEach(
-                                ([propField, scopeField]) => {
-                                    kitProps[propField] = scope[scopeField]
-                                }
-                            )
-                            props = kitProps
+                            const kitProps: any = {
+                                ...kit!.dataMappingVector.reduce(
+                                    (res, [propField, scopeField]) => {
+                                        res[propField] = scope[scopeField]
+                                        return res
+                                    },
+                                    {}
+                                ),
+                                ...props,
+                            }
+
+                            props = kitProps.textProps
+                                ? {
+                                      ...kitProps,
+                                      content: kitProps.textProps.content,
+                                  }
+                                : kitProps
+
                             if (kit?.type === 'Mould') {
                                 props = {
                                     ...props,
@@ -76,7 +96,6 @@ export const runtime = (moulds: Mould[]) => {
                                         `Can not find plugin in kit: plugin ${kit.type}, kit ${kit.name}`
                                     )
                                 }
-
                                 Comp = Plugin.Raw
                                 transform = Plugin.Transform
                             }
@@ -84,12 +103,16 @@ export const runtime = (moulds: Mould[]) => {
                             Comp = List
                             const scopeForThis = scope[kitName]
                             children = scopeForThis.map((scope) => {
-                                let kitProps = {}
-                                kit!.dataMappingVector.forEach(
-                                    ([propField, scopeField]) => {
-                                        kitProps[propField] = scope[scopeField]
-                                    }
-                                )
+                                let kitProps = {
+                                    ...kit!.dataMappingVector.reduce(
+                                        (res, [propField, scopeField]) => {
+                                            res[propField] = scope[scopeField]
+                                            return res
+                                        },
+                                        {}
+                                    ),
+                                }
+
                                 if (kit?.type === 'Mould') {
                                     kitProps = {
                                         ...kitProps,
@@ -112,7 +135,6 @@ export const runtime = (moulds: Mould[]) => {
                     }
 
                     const styledProps = transform ? transform(props) : {}
-                    // const styledProps = {}
 
                     return (
                         <Comp {...styledProps} {...props}>
@@ -123,19 +145,34 @@ export const runtime = (moulds: Mould[]) => {
             }
 
             const rootComponent = states[currentState]
+
             if (!rootComponent) {
                 return null
-            }
-            const RootComp = Components.find(
-                (c) => c.type === rootComponent.type
-            )!.Raw
+            } else {
+                if (rootComponent.type === 'Kit') {
+                    const RootComp = Components.find(
+                        (c) => c.type === getKit(rootComponent, kits)?.type
+                    )!.Raw
 
-            return (
-                <RootComp {...rootComponent.props} ref={ref}>
-                    {rootComponent.children &&
-                        renderChildren(rootComponent.children)}
-                </RootComp>
-            )
+                    return (
+                        <RootComp {...rootComponent.props} ref={ref}>
+                            {rootComponent.children &&
+                                renderChildren(rootComponent.children)}
+                        </RootComp>
+                    )
+                } else {
+                    const RootComp = Components.find(
+                        (c) => c.type === rootComponent.type
+                    )!.Raw
+
+                    return (
+                        <RootComp {...rootComponent.props} ref={ref}>
+                            {rootComponent.children &&
+                                renderChildren(rootComponent.children)}
+                        </RootComp>
+                    )
+                }
+            }
         }
     )
 
