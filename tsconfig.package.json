@@ -7,7 +7,14 @@
         "noEmit": false,
         "declaration": true
     },
-    "exclude": ["node_modules", ".mould", ".components"],
+    "exclude": [
+        "node_modules",
+        ".mould",
+        ".components",
+        ".next",
+        "release",
+        "pages"
+    ],
     "include": [
         "next-env.d.ts",
         "**/*.ts",
