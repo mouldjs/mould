@@ -4,8 +4,8 @@
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
         "clean": "rm -rf release/*",
-        "postbuild": "copyfiles -e \"./node_modules/**/*\" -s \"./**/*\" release && rm -rf release/.mould && rm -rf release/.components && rm -rf release/.next",
-        "prebuild": "yarn clean",
+        "postbuild": "copyfiles -e \"./node_modules/**/*\" -s \"./**/*\" release",
+        "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
         "start": "next start",
         "preversion": "yarn build",
@@ -27,7 +27,7 @@
         "mould.d.ts",
         "index.js",
         "index.d.ts",
-        "state",
+        "static",
         "standard",
         "scripts",
         "runtime",
@@ -41,7 +41,8 @@
         "cli",
         "bin",
         "app",
-        "apollo"
+        "apollo",
+        ".components"
     ],
     "bin": {
         "mould": "bin/mould"
