@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ZoomIn } from 'react-feather'
 import { useSelector, useDispatch } from 'react-redux'
 import { EditorState } from '../types'
