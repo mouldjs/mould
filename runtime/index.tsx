@@ -4,15 +4,9 @@ import { Mould, useScopeFn, Component } from '../app/types'
 import Components from '../components'
 import List from '../components/List'
 import resolvers from '../.mould/resolvers'
-import { find } from 'lodash'
-import { Kit } from '../app/types'
+
 const returnEmptyObject = (defaultState) => (): [string, object] => {
     return [defaultState, {}]
-}
-
-const getKit = (component: { props }, kits: Kit[]) => {
-    const kitName = component.props.__kitName
-    return find(kits, (k) => k.name === kitName)
 }
 
 export const runtime = (moulds: Mould[]) => {
@@ -38,143 +32,105 @@ export const runtime = (moulds: Mould[]) => {
                 pick(Object.keys(input), rest)
             )
 
-            const renderChildren = (components: Component[]) => {
-                return components.map((component) => {
-                    const Plugin = Components.find(
-                        (c) => c.type === component.type
-                    )
+            const renderComp = (component, isRoot) => {
+                const Plugin = Components.find((c) => c.type === component.type)
 
-                    if (!Plugin) {
-                        throw Error(`Can not find plugin: ${component.type}`)
+                if (!Plugin) {
+                    throw Error(`Can not find plugin: ${component.type}`)
+                }
+
+                let Comp = Plugin.Raw
+                let transform = Plugin.Transform
+
+                let { props, children } = component
+                if (component.type === 'Kit') {
+                    const kitName = (component as any).props.__kitName
+                    const kit = kits.find((k) => k.name === kitName)
+                    if (!kit) {
+                        throw Error(`Can not find kit: ${kitName}`)
                     }
-
-                    let Comp = Plugin.Raw
-
-                    let transform = Plugin.Transform
-
-                    let { props, children } = component
-
-                    if (component.type === 'Kit') {
-                        const kit = getKit(component, kits)
-                        const kitName = kit?.name
-
-                        if (!kit) {
-                            throw Error(`Can not find kit: ${kitName}`)
-                        }
-                        const { isList } = kit
-                        if (!isList) {
-                            const kitProps: any = {
-                                ...kit!.dataMappingVector.reduce(
-                                    (res, [propField, scopeField]) => {
-                                        res[propField] = scope[scopeField]
-                                        return res
-                                    },
-                                    {}
-                                ),
+                    const { isList } = kit
+                    if (!isList) {
+                        const kitProps = { ...props }
+                        kit!.dataMappingVector.forEach(
+                            ([propField, scopeField]) => {
+                                kitProps[propField] = scope[scopeField]
+                            }
+                        )
+                        props = kitProps
+                        if (kit?.type === 'Mould') {
+                            props = {
                                 ...props,
-                            }
-
-                            props = kitProps.textProps
-                                ? {
-                                      ...kitProps,
-                                      content:
-                                          scope['content'] ||
-                                          kitProps.textProps.content, // content key is unique because it determine the display when debugging
-                                  }
-                                : kitProps
-
-                            if (kit?.type === 'Mould') {
-                                props = {
-                                    ...props,
-                                    __mouldName: (kit!.param as any).mouldName,
-                                } as any
-                                Comp = RuntimeMould
-                            } else {
-                                const Plugin = Components.find(
-                                    (c) => c.type === kit.type
-                                )
-                                if (!Plugin) {
-                                    throw Error(
-                                        `Can not find plugin in kit: plugin ${kit.type}, kit ${kit.name}`
-                                    )
-                                }
-                                Comp = Plugin.Raw
-                                transform = Plugin.Transform
-                            }
+                                __mouldName: (kit!.param as any).mouldName,
+                            } as any
+                            Comp = RuntimeMould
                         } else {
-                            Comp = List
-                            const scopeForThis = scope[kitName]
-                            children = scopeForThis.map((scope) => {
-                                let kitProps = {
-                                    ...kit!.dataMappingVector.reduce(
-                                        (res, [propField, scopeField]) => {
-                                            res[propField] = scope[scopeField]
-                                            return res
-                                        },
-                                        {}
-                                    ),
-                                }
+                            const Plugin = Components.find(
+                                (c) => c.type === kit.type
+                            )
+                            if (!Plugin) {
+                                throw Error(
+                                    `Can not find plugin in kit: plugin ${kit.type}, kit ${kit.name}`
+                                )
+                            }
 
-                                if (kit?.type === 'Mould') {
-                                    kitProps = {
-                                        ...kitProps,
-                                        __mouldName: (kit.param as any)
-                                            .mouldName,
-                                    } as any
-                                }
-
-                                return { type: kit?.type, props: kitProps }
-                            })
+                            Comp = Plugin.Raw
+                            transform = Plugin.Transform
                         }
+                    } else {
+                        Comp = List
+                        const scopeForThis = scope[kitName]
+                        children = scopeForThis.map((scope) => {
+                            let kitProps = {}
+                            kit!.dataMappingVector.forEach(
+                                ([propField, scopeField]) => {
+                                    kitProps[propField] = scope[scopeField]
+                                }
+                            )
+                            if (kit?.type === 'Mould') {
+                                kitProps = {
+                                    ...kitProps,
+                                    __mouldName: (kit.param as any).mouldName,
+                                } as any
+                            }
+
+                            return { type: kit?.type, props: kitProps }
+                        })
                     }
+                }
 
-                    if (component.type === 'Mould') {
-                        Comp = RuntimeMould
-                    }
+                if (component.type === 'Mould') {
+                    Comp = RuntimeMould
+                }
 
-                    if (!Comp) {
-                        return null
-                    }
+                if (!Comp) {
+                    return null
+                }
 
-                    const styledProps = transform ? transform(props) : {}
+                const styledProps = transform ? transform(props) : {}
+                // const styledProps = {}
 
-                    return (
-                        <Comp {...styledProps} {...props}>
-                            {children && renderChildren(children)}
-                        </Comp>
-                    )
-                })
+                return (
+                    <Comp
+                        {...styledProps}
+                        {...props}
+                        ref={isRoot ? ref : undefined}
+                    >
+                        {children && renderChildren(children)}
+                    </Comp>
+                )
+            }
+
+            const renderChildren = (components: Component[]) => {
+                return components.map((c) => renderComp(c, false))
             }
 
             const rootComponent = states[currentState]
-
             if (!rootComponent) {
                 return null
-            } else {
-                if (rootComponent.type === 'Kit') {
-                    const RootComp = Components.find(
-                        (c) => c.type === getKit(rootComponent, kits)?.type
-                    )!.Raw
-
-                    return (
-                        <RootComp {...rootComponent.props} ref={ref}>
-                            {rootComponent.children &&
-                                renderChildren(rootComponent.children)}
-                        </RootComp>
-                    )
-                } else {
-                    const RootComp = Components.find(
-                        (c) => c.type === rootComponent.type
-                    )!.Raw
-
-                    return (
-                        <RootComp {...rootComponent.props} ref={ref}>
-                            {rootComponent.children &&
-                                renderChildren(rootComponent.children)}
-                        </RootComp>
-                    )
-                }
             }
+
+            return renderComp(rootComponent, true)
         }
     )
 
