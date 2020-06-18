@@ -21,6 +21,7 @@
         "tsconfig.json",
         "tsconfig.package.json",
         "next.config.js",
+        ".babelrc",
         "next-env.d.ts",
         "mould.js",
         "mould.d.ts",
