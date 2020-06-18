@@ -10,5 +10,5 @@ if (version[0] < 10 || version[0] === 11 || (version[0] === 10 && version[1] < 1
         'The Mould requires a minimum Node.js version of either v10.13 or v12.0.\n',
     )
 } else {
-    require('../cli')
+    require('esm')(module)('../cli')
 }
