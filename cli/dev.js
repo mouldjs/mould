@@ -3,7 +3,7 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import compile from './compile'
+import { compileSchema } from './compile'
 import {
     COMPONENTS,
     COMPONENTS_DIRECTORY,
@@ -53,7 +53,7 @@ if (fs.existsSync(mouldPath)) {
         mouldPath,
         debounce((event, filename) => {
             if (filename === SCHEMA) {
-                compile(schemaPath, componentsPath)
+                compileSchema(schemaPath, componentsPath)
             }
         }, 1000)
     )

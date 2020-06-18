@@ -2,7 +2,7 @@ import fs from 'fs'
 
 import { transform } from '../compile/transform'
 
-export default function compile(schemaPath, componentsPath) {
+export function compileSchema(schemaPath, componentsPath) {
     const time = process.hrtime()
 
     fs.readFile(schemaPath, 'utf8', (err, schema) => {

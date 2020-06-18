@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import compile from './compile'
+import { compileSchema } from './compile'
 import {
     COMPONENTS,
     COMPONENTS_DIRECTORY,
@@ -17,7 +17,7 @@ const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, SCHEMA)
 
 if (fs.existsSync(schemaPath)) {
-    compile(schemaPath, componentsPath)
+    compileSchema(schemaPath, componentsPath)
 } else if (fs.existsSync(mouldPath)) {
     console.warn(
         `You don't have Mould Schema at ${mouldPath}\n\n` +
