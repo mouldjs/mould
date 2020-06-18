@@ -1,15 +1,6 @@
-'use strict'
-
-const COMPONENTS = 'index.js'
-const COMPONENTS_DIRECTORY = '.components'
-const MOULD_DIRECTORY = 'mould'
-const RESOLVERS = 'resolvers.ts'
-const SCHEMA = '.mould'
-const SYMLINK_MOULD_DIRECTORY = '.mould'
-
-exports.COMPONENTS = COMPONENTS
-exports.COMPONENTS_DIRECTORY = COMPONENTS_DIRECTORY
-exports.MOULD_DIRECTORY = MOULD_DIRECTORY
-exports.RESOLVERS = RESOLVERS
-exports.SCHEMA = SCHEMA
-exports.SYMLINK_MOULD_DIRECTORY = SYMLINK_MOULD_DIRECTORY
+export const COMPONENTS = 'index.js'
+export const COMPONENTS_DIRECTORY = '.components'
+export const MOULD_DIRECTORY = 'mould'
+export const RESOLVERS = 'resolvers.ts'
+export const SCHEMA = '.mould'
+export const SYMLINK_MOULD_DIRECTORY = '.mould'

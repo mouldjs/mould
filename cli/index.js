@@ -1,10 +1,7 @@
-'use strict'
+import arg from 'arg'
+import spawn from 'cross-spawn'
 
-const arg = require('arg')
-const spawn = require('cross-spawn')
-const path = require('path')
-
-const packageJson = require('../package.json')
+import packageJson from '../package.json'
 
 const commands = ['build', 'dev', 'init']
 
@@ -48,20 +45,8 @@ const [command] = args._
 if (commands.includes(command)) {
     const result = spawn.sync(
         'node',
-        [
-            '-r',
-            'esm',
-            '-r',
-            'ts-node/register',
-            require.resolve(`./${command}.ts`),
-        ],
-        {
-            stdio: 'inherit',
-            env: {
-                ...process.env,
-                TS_NODE_PROJECT: path.join(__dirname, 'tsconfig.json'),
-            },
-        }
+        ['-r', 'esm', require.resolve(`./${command}`)],
+        { stdio: 'inherit' }
     )
 
     if (result.signal) {
