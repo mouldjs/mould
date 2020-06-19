@@ -3,7 +3,7 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import { compileSchema } from './compile'
+import { compileSchema, compileTs } from './compile'
 import {
     COMPONENTS,
     COMPONENTS_DIRECTORY,
@@ -52,8 +52,26 @@ if (fs.existsSync(mouldPath)) {
     fs.watch(
         mouldPath,
         debounce((event, filename) => {
+            if (!filename) {
+                return
+            }
+
             if (filename === SCHEMA) {
-                compileSchema(schemaPath, componentsPath)
+                compileSchema(schemaPath, componentsPath, ([s, ns]) =>
+                    console.log(
+                        `Compiled Mould Components successfully in ${s}s ${
+                            ns / 1e6
+                        }ms`
+                    )
+                )
+            } else if (path.extname(filename).startsWith('.ts')) {
+                compileTs(([s, ns]) =>
+                    console.log(
+                        `Compiled TypeScript successfully in ${s}s ${
+                            ns / 1e6
+                        }ms`
+                    )
+                )
             }
         }, 1000)
     )

@@ -1,13 +1,14 @@
 import fs from 'fs'
 import path from 'path'
 
-import { compileSchema } from './compile'
+import { compileSchema, compileTs } from './compile'
 import {
     COMPONENTS,
     COMPONENTS_DIRECTORY,
     MOULD_DIRECTORY,
     SCHEMA,
 } from './constants'
+import { existsSyncWithExtension } from './utils'
 
 const originalDirectory = process.cwd()
 
@@ -17,7 +18,19 @@ const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, SCHEMA)
 
 if (fs.existsSync(schemaPath)) {
-    compileSchema(schemaPath, componentsPath)
+    compileSchema(schemaPath, componentsPath, ([s, ns]) =>
+        console.log(
+            `Compiled Mould Components successfully in ${s}s ${ns / 1e6}ms`
+        )
+    )
+
+    if (existsSyncWithExtension(mouldPath, '.ts')) {
+        compileTs(([s, ns]) =>
+            console.log(
+                `Compiled TypeScript successfully in ${s}s ${ns / 1e6}ms`
+            )
+        )
+    }
 } else if (fs.existsSync(mouldPath)) {
     console.warn(
         `You don't have Mould Schema at ${mouldPath}\n\n` +
