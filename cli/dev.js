@@ -11,11 +11,13 @@ import {
     SCHEMA,
     SYMLINK_MOULD_DIRECTORY,
 } from './constants'
+import { copyJs } from './copy'
 
 const originalDirectory = process.cwd()
 
 const appPath = path.join(__dirname, '..')
-const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY, COMPONENTS)
+const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY)
+const componentsIndexPath = path.join(componentsPath, COMPONENTS)
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const symlinkMouldPath = path.join(appPath, SYMLINK_MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, SCHEMA)
@@ -57,7 +59,7 @@ if (fs.existsSync(mouldPath)) {
             }
 
             if (filename === SCHEMA) {
-                compileSchema(schemaPath, componentsPath, ([s, ns]) =>
+                compileSchema(schemaPath, componentsIndexPath, ([s, ns]) =>
                     console.log(
                         `Compiled Mould Components successfully in ${s}s ${
                             ns / 1e6
@@ -72,8 +74,14 @@ if (fs.existsSync(mouldPath)) {
                         }ms`
                     )
                 )
+            } else if (path.extname(filename).startsWith('.js')) {
+                copyJs(mouldPath, componentsPath, ([s, ns]) =>
+                    console.log(
+                        `Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`
+                    )
+                )
             }
-        }, 1000)
+        }, 500)
     )
 } else {
     console.warn(
