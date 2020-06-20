@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
         "clean": "rm -rf release/*",
-        "postbuild": "copyfiles -e \"./node_modules/**/*\" -s \"./**/*\" release",
+        "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -s \"./**/*\" release",
         "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
         "start": "next start",
