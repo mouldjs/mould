@@ -5,7 +5,7 @@ import path from 'path'
 import { transform } from '../compile/transform'
 
 const appPath = path.join(__dirname, '..')
-const tsconfigPath = path.join(__dirname, 'tsconfig.mould.json')
+const tsconfigPath = path.join(__dirname, 'tsconfig.components.json')
 const tscPath = path.join(appPath, 'node_modules', '.bin', 'tsc')
 
 export function compileSchema(schemaPath, componentsPath, callback) {

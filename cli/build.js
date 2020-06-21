@@ -8,7 +8,7 @@ import {
     MOULD_DIRECTORY,
     SCHEMA,
 } from './constants'
-import { copyJs } from './copy'
+import { copyByExtension } from './copy'
 import { existsSyncWithExtension } from './utils'
 
 const originalDirectory = process.cwd()
@@ -27,14 +27,17 @@ if (fs.existsSync(schemaPath)) {
     )
 
     if (existsSyncWithExtension(mouldPath, '.ts')) {
-        compileTs(([s, ns]) =>
-            console.log(
-                `Compiled TypeScript successfully in ${s}s ${ns / 1e6}ms`
-            )
+        copyByExtension(mouldPath, componentsPath, '.ts', ([cpS, cpNs]) =>
+            compileTs(([cS, cNs]) => {
+                let ms = (cpNs + cNs) / 1e6
+                const s = cpS + cS + Math.floor(ms / 1e3)
+                ms %= 1e3
+                console.log(`Compiled TypeScript successfully in ${s}s ${ms}ms`)
+            })
         )
     }
     if (existsSyncWithExtension(mouldPath, '.js')) {
-        copyJs(mouldPath, componentsPath, ([s, ns]) =>
+        copyByExtension(mouldPath, componentsPath, '.js', ([s, ns]) =>
             console.log(`Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`)
         )
     }

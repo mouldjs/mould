@@ -3,8 +3,8 @@
     "compilerOptions": {
         "target": "es5",
         "outDir": "../.components",
-        "rootDir": "../.mould",
+        "rootDir": "../.components",
         "noEmit": false
     },
-    "include": ["../.mould/*.ts"]
+    "include": ["../.components/*.ts"]
 }

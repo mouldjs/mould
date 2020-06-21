@@ -11,7 +11,7 @@ import {
     SCHEMA,
     SYMLINK_MOULD_DIRECTORY,
 } from './constants'
-import { copyJs } from './copy'
+import { copyByExtension } from './copy'
 
 const originalDirectory = process.cwd()
 
@@ -67,15 +67,22 @@ if (fs.existsSync(mouldPath)) {
                     )
                 )
             } else if (path.extname(filename).startsWith('.ts')) {
-                compileTs(([s, ns]) =>
-                    console.log(
-                        `Compiled TypeScript successfully in ${s}s ${
-                            ns / 1e6
-                        }ms`
-                    )
+                copyByExtension(
+                    mouldPath,
+                    componentsPath,
+                    '.ts',
+                    ([cpS, cpNs]) =>
+                        compileTs(([cS, cNs]) => {
+                            let ms = (cpNs + cNs) / 1e6
+                            const s = cpS + cS + Math.floor(ms / 1e3)
+                            ms %= 1e3
+                            console.log(
+                                `Compiled TypeScript successfully in ${s}s ${ms}ms`
+                            )
+                        })
                 )
             } else if (path.extname(filename).startsWith('.js')) {
-                copyJs(mouldPath, componentsPath, ([s, ns]) =>
+                copyByExtension(mouldPath, componentsPath, '.js', ([s, ns]) =>
                     console.log(
                         `Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`
                     )

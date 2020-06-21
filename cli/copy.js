@@ -1,7 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 
-export function copyJs(directoryPath, destinationPath, callback) {
+export function copyByExtension(
+    directoryPath,
+    destinationPath,
+    extension,
+    callback
+) {
     const time = process.hrtime()
 
     fs.readdir(directoryPath, function (err, files) {
@@ -11,7 +16,7 @@ export function copyJs(directoryPath, destinationPath, callback) {
         }
 
         files
-            .filter((file) => path.extname(file) === '.js')
+            .filter((file) => path.extname(file) === extension)
             .forEach((file) =>
                 fs.copyFileSync(
                     path.join(directoryPath, file),
