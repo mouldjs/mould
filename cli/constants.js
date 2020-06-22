@@ -1,6 +1,7 @@
 export const COMPONENTS = 'index.js'
 export const COMPONENTS_DIRECTORY = '.components'
 export const MOULD_DIRECTORY = 'mould'
-export const RESOLVERS = 'resolvers.ts'
+export const RESOLVERS_JS = 'resolvers.js'
+export const RESOLVERS_TS = 'resolvers.ts'
 export const SCHEMA = '.mould'
 export const SYMLINK_MOULD_DIRECTORY = '.mould'

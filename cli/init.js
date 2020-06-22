@@ -1,12 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 
-import { MOULD_DIRECTORY, RESOLVERS } from './constants'
+import { MOULD_DIRECTORY, RESOLVERS_JS, RESOLVERS_TS } from './constants'
 
 const originalDirectory = process.cwd()
 
+const tsconfigPath = path.join(originalDirectory, 'tsconfig.json')
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
-const resolversPath = path.join(mouldPath, RESOLVERS)
+
+const useTs = fs.existsSync(tsconfigPath)
+
+const resolversPath = path.join(mouldPath, useTs ? RESOLVERS_TS : RESOLVERS_JS)
 
 if (fs.existsSync(mouldPath)) {
     console.warn(
@@ -21,7 +25,9 @@ if (fs.existsSync(mouldPath)) {
 if (!fs.existsSync(resolversPath)) {
     fs.writeFileSync(resolversPath, 'export default {}')
 
-    console.log(`Created ${RESOLVERS} at ${mouldPath}`)
+    console.log(
+        `Created ${useTs ? RESOLVERS_TS : RESOLVERS_JS} at ${mouldPath}`
+    )
 }
 
 console.log('\nYou could begin by typing:\n\n' + '  mould dev\n')

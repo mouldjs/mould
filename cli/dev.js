@@ -3,7 +3,7 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import compile from './compile'
+import { compileSchema, compileTs } from './compile'
 import {
     COMPONENTS,
     COMPONENTS_DIRECTORY,
@@ -11,11 +11,13 @@ import {
     SCHEMA,
     SYMLINK_MOULD_DIRECTORY,
 } from './constants'
+import { copyByExtension } from './copy'
 
 const originalDirectory = process.cwd()
 
 const appPath = path.join(__dirname, '..')
-const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY, COMPONENTS)
+const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY)
+const componentsIndexPath = path.join(componentsPath, COMPONENTS)
 const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
 const symlinkMouldPath = path.join(appPath, SYMLINK_MOULD_DIRECTORY)
 const schemaPath = path.join(mouldPath, SCHEMA)
@@ -52,10 +54,41 @@ if (fs.existsSync(mouldPath)) {
     fs.watch(
         mouldPath,
         debounce((event, filename) => {
-            if (filename === SCHEMA) {
-                compile(schemaPath, componentsPath)
+            if (!filename) {
+                return
             }
-        }, 1000)
+
+            if (filename === SCHEMA) {
+                compileSchema(schemaPath, componentsIndexPath, ([s, ns]) =>
+                    console.log(
+                        `Compiled Mould Components successfully in ${s}s ${
+                            ns / 1e6
+                        }ms`
+                    )
+                )
+            } else if (path.extname(filename).startsWith('.ts')) {
+                copyByExtension(
+                    mouldPath,
+                    componentsPath,
+                    '.ts',
+                    ([cpS, cpNs]) =>
+                        compileTs(([cS, cNs]) => {
+                            let ms = (cpNs + cNs) / 1e6
+                            const s = cpS + cS + Math.floor(ms / 1e3)
+                            ms %= 1e3
+                            console.log(
+                                `Compiled TypeScript successfully in ${s}s ${ms}ms`
+                            )
+                        })
+                )
+            } else if (path.extname(filename).startsWith('.js')) {
+                copyByExtension(mouldPath, componentsPath, '.js', ([s, ns]) =>
+                    console.log(
+                        `Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`
+                    )
+                )
+            }
+        }, 500)
     )
 } else {
     console.warn(

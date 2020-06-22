@@ -1,0 +1,10 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "target": "es5",
+        "outDir": "../.components",
+        "rootDir": "../.components",
+        "noEmit": false
+    },
+    "include": ["../.components/*.ts"]
+}

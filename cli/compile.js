@@ -1,8 +1,14 @@
+import spawn from 'cross-spawn'
 import fs from 'fs'
+import path from 'path'
 
 import { transform } from '../compile/transform'
 
-export default function compile(schemaPath, componentsPath) {
+const appPath = path.join(__dirname, '..')
+const tsconfigPath = path.join(__dirname, 'tsconfig.components.json')
+const tscPath = path.join(appPath, 'node_modules', '.bin', 'tsc')
+
+export function compileSchema(schemaPath, componentsPath, callback) {
     const time = process.hrtime()
 
     fs.readFile(schemaPath, 'utf8', (err, schema) => {
@@ -21,13 +27,22 @@ export default function compile(schemaPath, componentsPath) {
                     process.exit(1)
                 }
 
-                const [s, ns] = process.hrtime(time)
-                console.log(
-                    `Compiled Mould Components successfully in ${s}s ${
-                        ns / 1e6
-                    }ms`
-                )
+                callback(process.hrtime(time))
             }
         )
+    })
+}
+
+export function compileTs(callback) {
+    const time = process.hrtime()
+
+    const child = spawn(tscPath, ['-p', tsconfigPath], { stdio: 'inherit' })
+
+    child.on('close', (code) => {
+        if (code === 0) {
+            callback(process.hrtime(time))
+        } else {
+            console.error('Failed to compile TypeScript files')
+        }
     })
 }
