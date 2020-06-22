@@ -2,11 +2,9 @@ import spawn from 'cross-spawn'
 import fs from 'fs'
 import path from 'path'
 
-import { transform } from '../compile/transform'
+import * as paths from './paths'
 
-const appPath = path.join(__dirname, '..')
-const tsconfigPath = path.join(__dirname, 'tsconfig.components.json')
-const tscPath = path.join(appPath, 'node_modules', '.bin', 'tsc')
+import { transform } from '../compile/transform'
 
 export function compileSchema(schemaPath, componentsPath, callback) {
     const time = process.hrtime()
@@ -34,9 +32,10 @@ export function compileSchema(schemaPath, componentsPath, callback) {
 }
 
 export function compileTs(callback) {
+    const tsconfig = path.join(__dirname, 'tsconfig.components.json')
     const time = process.hrtime()
 
-    const child = spawn(tscPath, ['-p', tsconfigPath], { stdio: 'inherit' })
+    const child = spawn(paths.bin.tsc, ['-p', tsconfig], { stdio: 'inherit' })
 
     child.on('close', (code) => {
         if (code === 0) {
