@@ -1,32 +1,28 @@
 import fs from 'fs'
 import path from 'path'
 
-import { MOULD_DIRECTORY, RESOLVERS_JS, RESOLVERS_TS } from './constants'
+import * as paths from './paths'
 
-const originalDirectory = process.cwd()
-
-const tsconfigPath = path.join(originalDirectory, 'tsconfig.json')
-const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
-
-const useTs = fs.existsSync(tsconfigPath)
-
-const resolversPath = path.join(mouldPath, useTs ? RESOLVERS_TS : RESOLVERS_JS)
-
-if (fs.existsSync(mouldPath)) {
+if (fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
-        `You already have ${MOULD_DIRECTORY} initialized at ${originalDirectory}`
+        `You already have ${path.basename(paths.app.mouldDirectory)} ` +
+            `initialized at ${paths.app.directory}`
     )
 } else {
-    fs.mkdirSync(mouldPath)
-
-    console.log(`Created ${MOULD_DIRECTORY} directory at ${originalDirectory}`)
-}
-
-if (!fs.existsSync(resolversPath)) {
-    fs.writeFileSync(resolversPath, 'export default {}')
+    fs.mkdirSync(paths.app.mouldDirectory)
 
     console.log(
-        `Created ${useTs ? RESOLVERS_TS : RESOLVERS_JS} at ${mouldPath}`
+        `Created ${path.basename(paths.app.mouldDirectory)} ` +
+            `directory at ${paths.app.directory}`
+    )
+}
+
+if (!fs.existsSync(paths.app.resolvers)) {
+    fs.writeFileSync(paths.app.resolvers, 'export default {}')
+
+    console.log(
+        `Created ${path.basename(paths.app.resolvers)} ` +
+            `at ${paths.app.mouldDirectory}`
     )
 }
 

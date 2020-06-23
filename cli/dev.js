@@ -4,34 +4,22 @@ import { debounce } from 'lodash'
 import path from 'path'
 
 import { compileSchema, compileTs } from './compile'
-import {
-    COMPONENTS,
-    COMPONENTS_DIRECTORY,
-    MOULD_DIRECTORY,
-    SCHEMA,
-    SYMLINK_MOULD_DIRECTORY,
-} from './constants'
 import { copyByExtension } from './copy'
+import * as paths from './paths'
 
-const originalDirectory = process.cwd()
-
-const appPath = path.join(__dirname, '..')
-const componentsPath = path.join(appPath, COMPONENTS_DIRECTORY)
-const componentsIndexPath = path.join(componentsPath, COMPONENTS)
-const mouldPath = path.join(originalDirectory, MOULD_DIRECTORY)
-const symlinkMouldPath = path.join(appPath, SYMLINK_MOULD_DIRECTORY)
-const schemaPath = path.join(mouldPath, SCHEMA)
-const nextPath = path.join(appPath, 'node_modules', '.bin', 'next')
-
-if (fs.existsSync(mouldPath)) {
-    if (fs.existsSync(symlinkMouldPath)) {
-        fs.unlinkSync(symlinkMouldPath)
+if (fs.existsSync(paths.app.mouldDirectory)) {
+    if (fs.existsSync(paths.mould.symlinkDirectory)) {
+        fs.unlinkSync(paths.mould.symlinkDirectory)
     }
-    fs.symlinkSync(mouldPath, symlinkMouldPath, 'dir')
+    fs.symlinkSync(
+        paths.app.mouldDirectory,
+        paths.mould.symlinkDirectory,
+        'dir'
+    )
 
-    const cdToAppDir = `cd ${appPath}`
-    const setWorkdirEnvVar = `WORKDIR=${mouldPath}`
-    const runNextDev = `${nextPath} dev`
+    const cdToAppDir = `cd ${paths.mould.directory}`
+    const setWorkdirEnvVar = `WORKDIR=${paths.app.mouldDirectory}`
+    const runNextDev = `${paths.bin.next} dev`
 
     if (
         process.platform === 'win32' ||
@@ -52,24 +40,26 @@ if (fs.existsSync(mouldPath)) {
     }
 
     fs.watch(
-        mouldPath,
+        paths.app.mouldDirectory,
         debounce((event, filename) => {
             if (!filename) {
                 return
             }
 
-            if (filename === SCHEMA) {
-                compileSchema(schemaPath, componentsIndexPath, ([s, ns]) =>
-                    console.log(
-                        `Compiled Mould Components successfully in ${s}s ${
-                            ns / 1e6
-                        }ms`
-                    )
+            if (filename === path.basename(paths.app.schema)) {
+                compileSchema(
+                    paths.app.schema,
+                    paths.mould.components,
+                    ([s, ns]) =>
+                        console.log(
+                            'Compiled Mould Components successfully ' +
+                                `in ${s}s ${ns / 1e6}ms`
+                        )
                 )
             } else if (path.extname(filename).startsWith('.ts')) {
                 copyByExtension(
-                    mouldPath,
-                    componentsPath,
+                    paths.app.mouldDirectory,
+                    paths.mould.componentsDirectory,
                     '.ts',
                     ([cpS, cpNs]) =>
                         compileTs(([cS, cNs]) => {
@@ -77,22 +67,29 @@ if (fs.existsSync(mouldPath)) {
                             const s = cpS + cS + Math.floor(ms / 1e3)
                             ms %= 1e3
                             console.log(
-                                `Compiled TypeScript successfully in ${s}s ${ms}ms`
+                                'Compiled TypeScript successfully ' +
+                                    `in ${s}s ${ms}ms`
                             )
                         })
                 )
             } else if (path.extname(filename).startsWith('.js')) {
-                copyByExtension(mouldPath, componentsPath, '.js', ([s, ns]) =>
-                    console.log(
-                        `Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`
-                    )
+                copyByExtension(
+                    paths.app.mouldDirectory,
+                    paths.mould.componentsDirectory,
+                    '.js',
+                    ([s, ns]) =>
+                        console.log(
+                            'Copied JavaScript successfully ' +
+                                `in ${s}s ${ns / 1e6}ms`
+                        )
                 )
             }
         }, 500)
     )
 } else {
     console.warn(
-        `You don't have ${MOULD_DIRECTORY} initialized at ${originalDirectory}\n\n` +
+        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
+            `initialized at ${paths.app.directory}\n\n` +
             'You could start by typing:\n\n' +
             '  mould init\n'
     )
