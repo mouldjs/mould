@@ -130,6 +130,8 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
     switch(stateName) {
         ${Object.keys(states).map(generateTreeCase).join('\n')}
+        default:
+            return null
     }
 }
 `
