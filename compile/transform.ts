@@ -1,5 +1,5 @@
 import { EditorState, Mould, Component } from '../app/types'
-import * as m from '../mould'
+import { transforms } from '../mould'
 
 const ensureComponentName = (mouldName: string) =>
     mouldName[0].toUpperCase() + mouldName.substring(1)
@@ -46,7 +46,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = m.transforms[type]
+                    const transform = transforms[type]!
                     rawProps = transform(propsClone)
                 }
 
@@ -75,7 +75,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = m.transforms[type]
+                    const transform = transforms[type]!
                     rawProps = transform(propsClone)
                 }
 
@@ -96,7 +96,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
         } else if (type === 'Mould') {
             compType = ensureComponentName(props['__mouldName'])
         } else {
-            const transform = m.transforms[type]
+            const transform = transforms[type]!
             const rawProps = transform(propsClone)
 
             propsStr = `${Object.keys(rawProps).reduce((prev, curr) => {

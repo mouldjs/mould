@@ -1,9 +1,24 @@
+import { AtomicComponent } from './app/types'
 import Components from './components'
 
-export const components = {}
-export const transforms = {}
+type ComponentsByType = {
+    [key: string]: AtomicComponent['Raw']
+}
+type TransformsByType = {
+    [key: string]: AtomicComponent['Transform']
+}
 
-Components.forEach((comp) => {
-    components[comp.type] = comp.Raw
-    transforms[comp.type] = comp.Transform
-})
+export const components: ComponentsByType = Components.reduce(
+    (componentsByType, { type, Raw }) => ({
+        ...componentsByType,
+        [type]: Raw,
+    }),
+    {} as ComponentsByType
+)
+export const transforms: TransformsByType = Components.reduce(
+    (transformsByType, { type, Transform }) => ({
+        ...transformsByType,
+        [type]: Transform,
+    }),
+    {} as TransformsByType
+)
