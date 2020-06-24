@@ -6,11 +6,19 @@ import * as paths from './paths'
 import { existsSyncWithExtension } from './utils'
 
 if (fs.existsSync(paths.app.schema)) {
-    compileSchema(paths.app.schema, paths.mould.components, ([s, ns]) =>
-        console.log(
-            `Compiled Mould Components successfully in ${s}s ${ns / 1e6}ms`
-        )
-    )
+    const compileSchemaTime = process.hrtime()
+
+    compileSchema(paths.app.schema, paths.mould.components)
+        .then(() => {
+            const [s, ns] = process.hrtime(compileSchemaTime)
+
+            console.log(
+                `Compiled Mould Schema successfully in ${s}s ${ns / 1e6}ms`
+            )
+        })
+        .catch((error) => {
+            console.error('Failed to compile Mould Schema\n' + error)
+        })
 
     if (existsSyncWithExtension(paths.app.mouldDirectory, '.ts')) {
         copyByExtension(

@@ -6,29 +6,10 @@ import * as paths from './paths'
 
 import { transform } from '../compile/transform'
 
-export function compileSchema(schemaPath, componentsPath, callback) {
-    const time = process.hrtime()
+export async function compileSchema(schemaPath, componentsPath) {
+    const schema = await fs.promises.readFile(schemaPath, 'utf8')
 
-    fs.readFile(schemaPath, 'utf8', (err, schema) => {
-        if (err) {
-            console.error('Failed to read Mould Schema\n' + err)
-            process.exit(1)
-        }
-
-        fs.writeFile(
-            componentsPath,
-            transform(JSON.parse(schema)),
-            'utf8',
-            (err) => {
-                if (err) {
-                    console.error('Failed to write Mould Components\n' + err)
-                    process.exit(1)
-                }
-
-                callback(process.hrtime(time))
-            }
-        )
-    })
+    await fs.promises.writeFile(componentsPath, transform(JSON.parse(schema)))
 }
 
 export function compileTs(callback) {

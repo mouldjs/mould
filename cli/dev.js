@@ -47,15 +47,22 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
             }
 
             if (filename === path.basename(paths.app.schema)) {
-                compileSchema(
-                    paths.app.schema,
-                    paths.mould.components,
-                    ([s, ns]) =>
+                const compileSchemaTime = process.hrtime()
+
+                compileSchema(paths.app.schema, paths.mould.components)
+                    .then(() => {
+                        const [s, ns] = process.hrtime(compileSchemaTime)
+
                         console.log(
-                            'Compiled Mould Components successfully ' +
+                            'Compiled Mould Schema successfully ' +
                                 `in ${s}s ${ns / 1e6}ms`
                         )
-                )
+                    })
+                    .catch((error) => {
+                        console.error(
+                            'Failed to compile Mould Schema\n' + error
+                        )
+                    })
             } else if (path.extname(filename).startsWith('.ts')) {
                 copyByExtension(
                     paths.app.mouldDirectory,
