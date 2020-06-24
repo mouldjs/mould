@@ -64,11 +64,16 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                         )
                     })
             } else if (path.extname(filename).startsWith('.ts')) {
+                const copyTsTime = process.hrtime()
+
                 copyByExtension(
                     paths.app.mouldDirectory,
                     paths.mould.componentsDirectory,
-                    '.ts',
-                    ([cpS, cpNs]) =>
+                    '.ts'
+                )
+                    .then(() => {
+                        const [cpS, cpNs] = process.hrtime(copyTsTime)
+
                         compileTs(([cS, cNs]) => {
                             let ms = (cpNs + cNs) / 1e6
                             const s = cpS + cS + Math.floor(ms / 1e3)
@@ -78,18 +83,29 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                                     `in ${s}s ${ms}ms`
                             )
                         })
-                )
+                    })
+                    .catch((error) => {
+                        console.error('Failed to copy TypeScript\n' + error)
+                    })
             } else if (path.extname(filename).startsWith('.js')) {
+                const copyJsTime = process.hrtime()
+
                 copyByExtension(
                     paths.app.mouldDirectory,
                     paths.mould.componentsDirectory,
-                    '.js',
-                    ([s, ns]) =>
+                    '.js'
+                )
+                    .then(() => {
+                        const [s, ns] = process.hrtime(copyJsTime)
+
                         console.log(
                             'Copied JavaScript successfully ' +
                                 `in ${s}s ${ns / 1e6}ms`
                         )
-                )
+                    })
+                    .catch((error) => {
+                        console.error('Failed to copy JavaScript\n' + error)
+                    })
             }
         }, 500)
     )
