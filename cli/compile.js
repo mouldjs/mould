@@ -20,7 +20,7 @@ export function compileTs() {
 
         tscProcess.on('close', code => code === 0
             ? resolve(code)
-            : reject(code),
+            : reject(code)
         )
         tscProcess.on('error', reject)
     })

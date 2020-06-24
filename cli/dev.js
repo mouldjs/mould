@@ -77,7 +77,7 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
 
                         console.log(
                             'Compiled TypeScript successfully ' +
-                            `in ${s}s ${ns / 1e6}ms`
+                                `in ${s}s ${ns / 1e6}ms`
                         )
                     })
                     .catch((error) => {
