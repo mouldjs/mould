@@ -64,28 +64,24 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                         )
                     })
             } else if (path.extname(filename).startsWith('.ts')) {
-                const copyTsTime = process.hrtime()
+                const compileTsTime = process.hrtime()
 
                 copyByExtension(
                     paths.app.mouldDirectory,
                     paths.mould.componentsDirectory,
                     '.ts'
                 )
+                    .then(compileTs)
                     .then(() => {
-                        const [cpS, cpNs] = process.hrtime(copyTsTime)
+                        const [s, ns] = process.hrtime(compileTsTime)
 
-                        compileTs(([cS, cNs]) => {
-                            let ms = (cpNs + cNs) / 1e6
-                            const s = cpS + cS + Math.floor(ms / 1e3)
-                            ms %= 1e3
-                            console.log(
-                                'Compiled TypeScript successfully ' +
-                                    `in ${s}s ${ms}ms`
-                            )
-                        })
+                        console.log(
+                            'Compiled TypeScript successfully ' +
+                            `in ${s}s ${ns / 1e6}ms`
+                        )
                     })
                     .catch((error) => {
-                        console.error('Failed to copy TypeScript\n' + error)
+                        console.error('Failed to compile TypeScript\n' + error)
                     })
             } else if (path.extname(filename).startsWith('.js')) {
                 const copyJsTime = process.hrtime()
