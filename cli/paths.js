@@ -20,7 +20,7 @@ export const app = {
 export const mould = {
     directory: mouldDirectory,
     componentsDirectory: resolveMould('.components'),
-    components: resolveMould('.components/index.js'),
+    components: resolveMould('.components/index.tsx'),
     symlinkDirectory: resolveMould('.mould'),
 }
 
