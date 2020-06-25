@@ -1,10 +1,12 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-        "target": "es5",
+        "allowJs": false,
+        "declaration": true,
+        "jsx": "react",
+        "noEmit": false,
         "outDir": "../.components",
-        "rootDir": "../.components",
-        "noEmit": false
+        "rootDir": "../.components"
     },
-    "include": ["../.components/*.ts"]
+    "include": ["../.components/**/*"]
 }
