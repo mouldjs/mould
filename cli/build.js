@@ -1,64 +1,43 @@
 import fs from 'fs'
 
 import { compileSchema, compileTs } from './compile'
-import { copyByExtension } from './copy'
+import {
+    copyByExtension,
+    copyByExtensionWithExtensionReplacement,
+} from './copy'
 import * as paths from './paths'
 import { existsSyncWithExtension } from './utils'
 
 if (fs.existsSync(paths.app.schema)) {
-    const compileSchemaTime = process.hrtime()
+    const time = process.hrtime()
 
-    compileSchema(paths.app.schema, paths.mould.components)
+    Promise.all([
+        compileSchema(paths.app.schema, paths.mould.components),
+        existsSyncWithExtension(paths.app.mouldDirectory, '.ts') &&
+            copyByExtension(
+                paths.app.mouldDirectory,
+                paths.mould.componentsDirectory,
+                '.ts'
+            ),
+        existsSyncWithExtension(paths.app.mouldDirectory, '.js') &&
+            copyByExtensionWithExtensionReplacement(
+                paths.app.mouldDirectory,
+                paths.mould.componentsDirectory,
+                '.js',
+                '.ts'
+            ),
+    ])
+        .then(compileTs)
         .then(() => {
-            const [s, ns] = process.hrtime(compileSchemaTime)
+            const [s, ns] = process.hrtime(time)
 
             console.log(
-                `Compiled Mould Schema successfully in ${s}s ${ns / 1e6}ms`
+                `Built Mould Components successfully in ${s}s ${ns / 1e6}ms`
             )
         })
         .catch((error) => {
-            console.error('Failed to compile Mould Schema\n' + error)
+            console.error('Failed to build Mould Components\n' + error)
         })
-
-    if (existsSyncWithExtension(paths.app.mouldDirectory, '.ts')) {
-        const compileTsTime = process.hrtime()
-
-        copyByExtension(
-            paths.app.mouldDirectory,
-            paths.mould.componentsDirectory,
-            '.ts'
-        )
-            .then(compileTs)
-            .then(() => {
-                const [s, ns] = process.hrtime(compileTsTime)
-
-                console.log(
-                    `Compiled TypeScript successfully in ${s}s ${ns / 1e6}ms`
-                )
-            })
-            .catch((error) => {
-                console.error('Failed to compile TypeScript\n' + error)
-            })
-    }
-    if (existsSyncWithExtension(paths.app.mouldDirectory, '.js')) {
-        const copyJsTime = process.hrtime()
-
-        copyByExtension(
-            paths.app.mouldDirectory,
-            paths.mould.componentsDirectory,
-            '.js'
-        )
-            .then(() => {
-                const [s, ns] = process.hrtime(copyJsTime)
-
-                console.log(
-                    `Copied JavaScript successfully in ${s}s ${ns / 1e6}ms`
-                )
-            })
-            .catch((error) => {
-                console.error('Failed to copy JavaScript\n' + error)
-            })
-    }
 } else if (fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
         `You don't have Mould Schema ` +
