@@ -26,4 +26,8 @@ if (!fs.existsSync(paths.app.resolvers)) {
     )
 }
 
-console.log('\nYou could begin by typing:\n\n' + '  mould dev\n')
+console.log(
+    '\nYou could begin by typing:\n\n' +
+        '  npx mould dev\n\n' +
+        'Or you could add mould dev to your package.json scripts\n'
+)

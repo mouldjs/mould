@@ -91,6 +91,6 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
         `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
             `initialized at ${paths.app.directory}\n\n` +
             'You could start by typing:\n\n' +
-            '  mould init\n'
+            '  npx mould init\n'
     )
 }
