@@ -16,11 +16,12 @@ export function compileTs() {
     return new Promise((resolve, reject) => {
         const tsconfig = path.join(__dirname, 'tsconfig.components.json')
 
-        const tscProcess = spawn(paths.bin.tsc, ['-p', tsconfig], { stdio: 'inherit' })
+        const tscProcess = spawn(paths.bin.tsc, ['-p', tsconfig], {
+            stdio: 'inherit',
+        })
 
-        tscProcess.on('close', code => code === 0
-            ? resolve(code)
-            : reject(code)
+        tscProcess.on('close', (code) =>
+            code === 0 ? resolve(code) : reject(code)
         )
         tscProcess.on('error', reject)
     })
