@@ -3,8 +3,11 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import { compileSchema, compileTs } from './compile'
-import { copyByExtension } from './copy'
+import { compileSchema } from './compile'
+import {
+    copyByExtension,
+    copyByExtensionWithExtensionReplacement,
+} from './copy'
 import * as paths from './paths'
 
 if (fs.existsSync(paths.app.mouldDirectory)) {
@@ -39,6 +42,12 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
         )
     }
 
+    spawn(
+        paths.bin.tsc,
+        ['-p', path.join(__dirname, 'tsconfig.components.json'), '--watch'],
+        { stdio: 'inherit' }
+    )
+
     fs.watch(
         paths.app.mouldDirectory,
         debounce((event, filename) => {
@@ -46,7 +55,7 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                 return
             }
 
-            if (filename === path.basename(paths.app.schema)) {
+            if (filename.startsWith(path.basename(paths.app.schema))) {
                 const compileSchemaTime = process.hrtime()
 
                 compileSchema(paths.app.schema, paths.mould.components)
@@ -64,32 +73,32 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                         )
                     })
             } else if (path.extname(filename).startsWith('.ts')) {
-                const compileTsTime = process.hrtime()
+                const copyTsTime = process.hrtime()
 
                 copyByExtension(
                     paths.app.mouldDirectory,
                     paths.mould.componentsDirectory,
                     '.ts'
                 )
-                    .then(compileTs)
                     .then(() => {
-                        const [s, ns] = process.hrtime(compileTsTime)
+                        const [s, ns] = process.hrtime(copyTsTime)
 
                         console.log(
-                            'Compiled TypeScript successfully ' +
+                            'Copied TypeScript successfully ' +
                                 `in ${s}s ${ns / 1e6}ms`
                         )
                     })
                     .catch((error) => {
-                        console.error('Failed to compile TypeScript\n' + error)
+                        console.error('Failed to copy TypeScript\n' + error)
                     })
             } else if (path.extname(filename).startsWith('.js')) {
                 const copyJsTime = process.hrtime()
 
-                copyByExtension(
+                copyByExtensionWithExtensionReplacement(
                     paths.app.mouldDirectory,
                     paths.mould.componentsDirectory,
-                    '.js'
+                    '.js',
+                    '.ts'
                 )
                     .then(() => {
                         const [s, ns] = process.hrtime(copyJsTime)
