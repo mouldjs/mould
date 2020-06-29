@@ -3,14 +3,56 @@ import fs from 'fs'
 import { debounce } from 'lodash'
 import path from 'path'
 
-import { compileSchema } from './compile'
+import { compileSchema, compileTs } from './compile'
 import {
     copyByExtension,
     copyByExtensionWithExtensionReplacement,
 } from './copy'
 import * as paths from './paths'
+import { existsSyncWithExtension } from './utils'
 
-if (fs.existsSync(paths.app.mouldDirectory)) {
+;(async function dev() {
+    if (fs.existsSync(paths.app.mouldDirectory)) {
+        try {
+            await build()
+            symlinkMould()
+            runEditor()
+            runTscWatch()
+            runMouldWatch()
+        } catch (error) {
+            console.error('Failed to run Mould in development\n' + error)
+        }
+    } else {
+        console.warn(
+            `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
+                `initialized at ${paths.app.directory}\n\n` +
+                'You could start by typing:\n\n' +
+                '  npx mould init\n'
+        )
+    }
+})()
+
+function build() {
+    return Promise.all([
+        fs.existsSync(paths.app.schema) &&
+            compileSchema(paths.app.schema, paths.mould.components),
+        existsSyncWithExtension(paths.app.mouldDirectory, '.ts') &&
+            copyByExtension(
+                paths.app.mouldDirectory,
+                paths.mould.componentsDirectory,
+                '.ts'
+            ),
+        existsSyncWithExtension(paths.app.mouldDirectory, '.js') &&
+            copyByExtensionWithExtensionReplacement(
+                paths.app.mouldDirectory,
+                paths.mould.componentsDirectory,
+                '.js',
+                '.ts'
+            ),
+    ]).then(compileTs)
+}
+
+function symlinkMould() {
     if (fs.existsSync(paths.mould.symlinkDirectory)) {
         fs.unlinkSync(paths.mould.symlinkDirectory)
     }
@@ -19,7 +61,9 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
         paths.mould.symlinkDirectory,
         'dir'
     )
+}
 
+function runEditor() {
     const cdToAppDir = `cd ${paths.mould.directory}`
     const setWorkdirEnvVar = `WORKDIR=${paths.app.mouldDirectory}`
     const runNextDev = `${paths.bin.next} dev`
@@ -41,13 +85,17 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
             { stdio: 'inherit' }
         )
     }
+}
 
+function runTscWatch() {
     spawn(
         paths.bin.tsc,
         ['-p', path.join(__dirname, 'tsconfig.components.json'), '--watch'],
         { stdio: 'inherit' }
     )
+}
 
+function runMouldWatch() {
     fs.watch(
         paths.app.mouldDirectory,
         debounce((event, filename) => {
@@ -113,12 +161,5 @@ if (fs.existsSync(paths.app.mouldDirectory)) {
                     })
             }
         }, 500)
-    )
-} else {
-    console.warn(
-        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
-            `initialized at ${paths.app.directory}\n\n` +
-            'You could start by typing:\n\n' +
-            '  npx mould init\n'
     )
 }
