@@ -1,4 +1,5 @@
 import React, { forwardRef, CSSProperties, useEffect } from 'react'
+import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
 import { ComponentPropTypes } from '../../app/types'
 import {
@@ -30,6 +31,7 @@ import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
+import { StackSpecific } from '../../standard/stack'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -123,12 +125,10 @@ const mapDistribution: {
     'Space Evenly': 'space-evenly',
 }
 
-const mapAlignment: {
-    [alignment in StackAlignment]: string
-} = {
-    Start: 'flex-start',
-    Center: 'center',
-    End: 'flex-end',
+enum mapAlignment {
+    Start = 'flex-start',
+    Center = 'center',
+    End = 'flex-end',
 }
 
 const transformStackContent = ({
@@ -138,7 +138,7 @@ const transformStackContent = ({
     gap,
     padding,
     active,
-}: StackPropTypes = initialData) => {
+}: StackPropTypes = initialData): z.infer<typeof StackSpecific> => {
     const paddingParam =
         typeof padding === 'object'
             ? {
@@ -156,7 +156,7 @@ const transformStackContent = ({
         flexDirection:
             direction === 'Vertical' ? 'column' : ('row' as 'column' | 'row'),
         justifyContent: mapDistribution[distribute],
-        alignItems: mapAlignment[alignment],
+        alignItem: mapAlignment[alignment],
         // gap,
     }
 }
