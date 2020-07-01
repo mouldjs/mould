@@ -3,6 +3,11 @@ import path from 'path'
 
 import * as paths from './paths'
 
+if (!fs.existsSync(path.join(paths.app.directory, 'package.json'))) {
+    console.error(`Please, run mould init within your project directory`)
+    process.exit(1)
+}
+
 if (fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
         `You already have ${path.basename(paths.app.mouldDirectory)} ` +
