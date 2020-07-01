@@ -26,4 +26,13 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     overflow: ${(props) => props.overflow};
     opacity: ${(props) => parseFloat(props.opacity || '1')};
     border-radius: ${(props) => props.radius};
+    ${(props) => (props.padding ? `padding: ${props.padding}px;` : '')}
+    ${(props) =>
+        props.paddingTop ? `padding-top: ${props.paddingTop}px;` : ''}
+    ${(props) =>
+        props.paddingBottom ? `padding-bottom: ${props.paddingBottom}px;` : ''}
+    ${(props) =>
+        props.paddingLeft ? `padding-left: ${props.paddingLeft}px;` : ''}
+    ${(props) =>
+        props.paddingRight ? `padding-right: ${props.paddingRight}px;` : ''}
 `
