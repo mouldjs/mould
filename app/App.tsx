@@ -91,9 +91,9 @@ const App = () => {
     useSimulateScroll(DebugPanelRef)
 
     const dispatch = useDispatch()
-    const { testWorkspace, creating, selection } = useSelector(
-        (state: EditorState) => state
-    )
+    const creating = useSelector((state: EditorState) => state.creating)
+    const hasSelection = useSelector((state: EditorState) => !!state.selection)
+    const zoom = useSelector((state: EditorState) => state.testWorkspace.zoom)
     const mould = useCurrentMould()
     const currentView = useCurrentView()
 
@@ -160,13 +160,13 @@ const App = () => {
             <KeyboardEventHandler
                 handleKeys={['ctrl+plus']}
                 onKeyEvent={() => {
-                    zoomIn(0.25, testWorkspace.zoom)
+                    zoomIn(0.25, zoom)
                 }}
             ></KeyboardEventHandler>
             <KeyboardEventHandler
                 handleKeys={['ctrl+minus']}
                 onKeyEvent={() => {
-                    zoomOut(0.25, testWorkspace.zoom)
+                    zoomOut(0.25, zoom)
                 }}
             ></KeyboardEventHandler>
             <KeyboardEventHandler
@@ -195,7 +195,7 @@ const App = () => {
                     style={{
                         transition: '0.3s',
                         position: 'absolute',
-                        left: selection ? 0 : -215,
+                        left: hasSelection ? 0 : -215,
                         top: '55px',
                         height: 'calc(100vh - 55px)',
                         width: '215px',
@@ -241,7 +241,7 @@ const App = () => {
                     style={{
                         transition: '0.3s',
                         position: 'absolute',
-                        right: selection ? 0 : -215,
+                        right: hasSelection ? 0 : -215,
                         top: '55px',
                         zIndex: 1,
                         height: 'calc(100vh - 55px)',
@@ -267,9 +267,7 @@ const App = () => {
                     </div>
                 </Box>
             </Flex>
-            <div style={{ overflow: 'visible' }}>
-                <Workspace {...testWorkspace}></Workspace>
-            </div>
+            <Workspace></Workspace>
         </Flex>
     )
 }

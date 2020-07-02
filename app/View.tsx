@@ -39,7 +39,9 @@ const ViewContextProvider = ViewContext.Provider
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
     const views = useSelector((state: EditorState) => state.views)
-    const workspace = useSelector((state: EditorState) => state.testWorkspace)
+    const workspaceViews = useSelector(
+        (state: EditorState) => state.testWorkspace.views
+    )
     const view = views[viewId]
     const { mouldName, state, x, y, width, height } = view
     const moulds = useSelector((state: EditorState) => state.moulds)
@@ -101,7 +103,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
-    const otherViews = without(workspace.views, viewId)
+    const otherViews = without(workspaceViews, viewId)
     const [ready, setReady] = useState(false)
 
     useEffect(() => {
