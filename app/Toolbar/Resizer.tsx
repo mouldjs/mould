@@ -7,8 +7,8 @@ import '../style/Toolbar.scss'
 
 const Resizer = ({}) => {
     const dispatch = useDispatch()
-    const testWorkspace = useSelector(
-        (state: EditorState) => state.testWorkspace
+    const workspaceZoom = useSelector(
+        (state: EditorState) => state.testWorkspace.zoom
     )
     const [showDropdown, setShowDropdown] = useState(false)
     const onHover = () => {
@@ -50,8 +50,7 @@ const Resizer = ({}) => {
         >
             <ZoomIn className="pure"></ZoomIn>
             <p className={`clickable m-t-sm m-b-0 pure`}>
-                {testWorkspace.zoom &&
-                    `${transferToPercent(testWorkspace.zoom)}%`}
+                {workspaceZoom && `${transferToPercent(workspaceZoom)}%`}
             </p>
             <div
                 style={{
@@ -70,7 +69,7 @@ const Resizer = ({}) => {
                     <li
                         className="flex clickable justify-space-between p-sm list-item"
                         onClick={() => {
-                            zoomIn(STEP, testWorkspace.zoom)
+                            zoomIn(STEP, workspaceZoom)
                         }}
                     >
                         <span>Zoom In</span>
@@ -86,7 +85,7 @@ const Resizer = ({}) => {
                     <li
                         className="flex clickable justify-space-between p-sm list-item"
                         onClick={(e) => {
-                            zoomOut(STEP, testWorkspace.zoom)
+                            zoomOut(STEP, workspaceZoom)
                         }}
                     >
                         <span>Zoom Out</span>

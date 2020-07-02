@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, memo } from 'react'
 import { Workspace as WorkspaceType, EditorState } from './types'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGesture } from 'react-use-gesture'
@@ -13,10 +13,38 @@ import { View } from './View'
 import { tick } from './selectionTick'
 import useClientRect from '../lib/useClientRect'
 
-export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
-    const dispatch = useDispatch()
+const Views = memo(() => {
+    const views = useSelector((state: EditorState) => state.testWorkspace.views)
+    const zoom = useSelector((state: EditorState) => state.testWorkspace.zoom)
     const creating = useSelector((state: EditorState) => state.creating)
     const creation = creating && creating.view
+
+    return (
+        <>
+            {Object.values(views).map((viewId) => {
+                return <View key={`${viewId}-${zoom}`} viewId={viewId}></View>
+            })}
+            {creation && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        background: '#fff',
+                        transform: `translateX(${creation.x}px) translateY(${creation.y}px)`,
+                        width: creation.width,
+                        height: creation.height,
+                    }}
+                ></div>
+            )}
+        </>
+    )
+})
+
+export const Workspace = () => {
+    const dispatch = useDispatch()
+    const { x, y, zoom = 1 } = useSelector(
+        (state: EditorState) => state.testWorkspace
+    )
+    const creating = useSelector((state: EditorState) => state.creating)
     const [zoomOffset, setZoomOffset] = useState([x, y])
 
     const [scaling, setScaling] = useState(zoom)
@@ -129,49 +157,32 @@ export const Workspace = ({ views, x, y, zoom = 1 }: WorkspaceType) => {
         },
     })
 
-    const VS = useMemo(
-        () =>
-            Object.values(views).map((viewId) => {
-                return <View key={`${viewId}-${zoom}`} viewId={viewId}></View>
-            }),
-        [views]
-    )
-
     return (
-        <div
-            ref={wrapperRef}
-            style={{
-                position: 'absolute',
-                height: '100vh',
-                width: '100vw',
-                background: '#f1f1f1',
-            }}
-            {...bind()}
-            onDoubleClick={() => {
-                tick((data = []) => data)
-            }}
-        >
+        <div style={{ overflow: 'visible' }}>
             <div
-                id="contentRefDOM"
+                ref={wrapperRef}
                 style={{
                     position: 'absolute',
-                    width: '100vw',
                     height: '100vh',
-                    transform: `translate(${zoomOffset[0]}px, ${zoomOffset[1]}px) scale(${scaling})`,
+                    width: '100vw',
+                    background: '#f1f1f1',
+                }}
+                {...bind()}
+                onDoubleClick={() => {
+                    tick((data = []) => data)
                 }}
             >
-                {VS}
-                {creation && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            background: '#fff',
-                            transform: `translateX(${creation.x}px) translateY(${creation.y}px)`,
-                            width: creation.width,
-                            height: creation.height,
-                        }}
-                    ></div>
-                )}
+                <div
+                    id="contentRefDOM"
+                    style={{
+                        position: 'absolute',
+                        width: '100vw',
+                        height: '100vh',
+                        transform: `translate(${zoomOffset[0]}px, ${zoomOffset[1]}px) scale(${scaling})`,
+                    }}
+                >
+                    <Views></Views>
+                </div>
             </div>
         </div>
     )
