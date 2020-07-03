@@ -12,6 +12,7 @@ import {
 import { View } from './View'
 import { tick } from './selectionTick'
 import useClientRect from '../lib/useClientRect'
+import { getPinchGestureEventSource } from '../lib/mouse-utils'
 
 const Views = memo(() => {
     const views = useSelector((state: EditorState) => state.testWorkspace.views)
@@ -73,14 +74,17 @@ export const Workspace = () => {
         : 0
 
     const bind = useGesture({
-        onWheel: ({ last, delta }) => {
+        onWheel: ({ last, delta, shiftKey }) => {
+            if (shiftKey) {
+                delta = [delta[1], delta[0]]
+            }
             const xy = [zoomOffset[0] - delta[0], zoomOffset[1] - delta[1]]
             setZoomOffset(xy)
             if (last) {
                 dispatch(moveWorkspace({ x: xy[0], y: xy[1] }))
             }
         },
-        onDrag: ({ xy, initial }) => {
+        onDrag: ({ xy, initial, buttons, delta }) => {
             const [px, py] = xy
             const [ix, iy] = initial
             if (creating?.status === 'waiting') {
@@ -98,9 +102,21 @@ export const Workspace = () => {
                     })
                 )
             }
+            if (buttons === 4) {
+                if (Math.abs(delta[0]) > 0 || Math.abs(delta[1]) > 0) {
+                    const xy = [
+                        zoomOffset[0] + delta[0],
+                        zoomOffset[1] + delta[1],
+                    ]
+                    setZoomOffset(xy)
+                }
+            }
         },
         onMouseDown: (event) => {
             event.stopPropagation()
+            if (event.buttons === 4) {
+                event.preventDefault()
+            }
         },
         onMouseUp: (event) => {
             if (creating?.status !== 'updating') {
@@ -110,12 +126,14 @@ export const Workspace = () => {
         },
         onPinch: (e) => {
             const origin = e.origin
-            const factor = e.delta[1]
+            const eventSource = getPinchGestureEventSource(e)
+            let factor =
+                eventSource === 'mousewheel' ? e.delta[1] / 10 : e.delta[1]
 
             if (
                 (scaling >= MAX_SCALE && factor < 0) ||
                 (scaling <= MIN_SCALE && factor > 0) ||
-                Math.abs(factor) > 10
+                (eventSource === 'touchpad' && Math.abs(factor) > 10)
             )
                 return
 
