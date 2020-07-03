@@ -8,7 +8,7 @@
         "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
         "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -s \"./**/*\" release",
-        "prepublishOnly": "node scripts/prepublish"
+        "prepublishOnly": "node scripts/prepublish-checks"
     },
     "module": "index.js",
     "types": "index.d.ts",
