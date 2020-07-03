@@ -74,14 +74,17 @@ export const Workspace = () => {
         : 0
 
     const bind = useGesture({
-        onWheel: ({ last, delta }) => {
+        onWheel: ({ last, delta, shiftKey }) => {
+            if (shiftKey) {
+                delta = [delta[1], delta[0]]
+            }
             const xy = [zoomOffset[0] - delta[0], zoomOffset[1] - delta[1]]
             setZoomOffset(xy)
             if (last) {
                 dispatch(moveWorkspace({ x: xy[0], y: xy[1] }))
             }
         },
-        onDrag: ({ xy, initial }) => {
+        onDrag: ({ xy, initial, buttons, delta }) => {
             const [px, py] = xy
             const [ix, iy] = initial
             if (creating?.status === 'waiting') {
@@ -99,9 +102,21 @@ export const Workspace = () => {
                     })
                 )
             }
+            if (buttons === 4) {
+                if (Math.abs(delta[0]) > 0 || Math.abs(delta[1]) > 0) {
+                    const xy = [
+                        zoomOffset[0] + delta[0],
+                        zoomOffset[1] + delta[1],
+                    ]
+                    setZoomOffset(xy)
+                }
+            }
         },
         onMouseDown: (event) => {
             event.stopPropagation()
+            if (event.buttons === 4) {
+                event.preventDefault()
+            }
         },
         onMouseUp: (event) => {
             if (creating?.status !== 'updating') {

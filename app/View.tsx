@@ -157,9 +157,11 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 })
                             )
                         }}
-                        onDrag={({ target, left, top }) => {
-                            target.style.left = left + 'px'
-                            target.style.top = top + 'px'
+                        onDrag={({ target, left, top, inputEvent }) => {
+                            if (inputEvent.buttons !== 4) {
+                                target.style.left = left + 'px'
+                                target.style.top = top + 'px'
+                            }
                         }}
                         onDragEnd={({ target }) => {
                             dispatch(
