@@ -12,6 +12,7 @@ import {
 import { View } from './View'
 import { tick } from './selectionTick'
 import useClientRect from '../lib/useClientRect'
+import { getPinchGestureEventSource } from '../lib/mouse-utils'
 
 const Views = memo(() => {
     const views = useSelector((state: EditorState) => state.testWorkspace.views)
@@ -110,12 +111,14 @@ export const Workspace = () => {
         },
         onPinch: (e) => {
             const origin = e.origin
-            const factor = e.delta[1]
+            const eventSource = getPinchGestureEventSource(e)
+            let factor =
+                eventSource === 'mousewheel' ? e.delta[1] / 10 : e.delta[1]
 
             if (
                 (scaling >= MAX_SCALE && factor < 0) ||
                 (scaling <= MIN_SCALE && factor > 0) ||
-                Math.abs(factor) > 10
+                (eventSource === 'touchpad' && Math.abs(factor) > 10)
             )
                 return
 
