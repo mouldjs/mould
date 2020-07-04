@@ -12,7 +12,7 @@ import {
 import { View } from './View'
 import { tick } from './selectionTick'
 import useClientRect from '../lib/useClientRect'
-import { getPinchGestureEventSource } from '../lib/mouse-utils'
+import { normalizeZoomFactor } from '../lib/mouse-utils'
 
 const Views = memo(() => {
     const views = useSelector((state: EditorState) => state.testWorkspace.views)
@@ -126,14 +126,11 @@ export const Workspace = () => {
         },
         onPinch: (e) => {
             const origin = e.origin
-            const eventSource = getPinchGestureEventSource(e)
-            let factor =
-                eventSource === 'mousewheel' ? e.delta[1] / 10 : e.delta[1]
+            let factor = normalizeZoomFactor(e)
 
             if (
                 (scaling >= MAX_SCALE && factor < 0) ||
-                (scaling <= MIN_SCALE && factor > 0) ||
-                (eventSource === 'touchpad' && Math.abs(factor) > 10)
+                (scaling <= MIN_SCALE && factor > 0)
             )
                 return
 
