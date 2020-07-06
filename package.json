@@ -5,12 +5,11 @@
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
         "clean": "rm -rf release/*",
-        "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -s \"./**/*\" release",
         "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
-        "start": "next start",
-        "preversion": "yarn build",
-        "postversion": "cp package.json release/ && cd release && npm publish"
+        "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -s \"./**/*\" release",
+        "prepublishOnly": "node scripts/prepublish-checks",
+        "publish-package": "yarn build && cd release && npm publish"
     },
     "module": "index.js",
     "types": "index.d.ts",
