@@ -23,7 +23,7 @@ import { Inspector } from '../app/types'
 import { intersection } from 'ramda'
 import { nameToParam } from '../app/utils'
 
-export type LayoutSizeUnit = 'px' | '%' | 'fr'
+export type LayoutSizeUnit = 'px' | '%' | 'auto'
 
 export type LayoutSize = {
     amount: number
@@ -49,6 +49,11 @@ export type LayoutPropTypes = {
     opacity: number
     rotation: number
     radius: LayoutRadius
+}
+
+export const layoutSizeToString = ({ amount, unit }: LayoutSize) => {
+    if (unit === 'auto') return 'auto'
+    return `${amount}${unit}`
 }
 
 export const transformLayout = (
@@ -82,8 +87,8 @@ export const transformLayout = (
             : `${radius}px`
 
     return {
-        width: `${width.amount}${width.unit}`,
-        height: `${height.amount}${height.unit}`,
+        width: layoutSizeToString(width),
+        height: layoutSizeToString(height),
         overflow: nameToParam(overflow) as 'visible' | 'hidden' | undefined,
         opacity: opacity / 100 + '',
         rotate: rotation,
@@ -112,7 +117,7 @@ export const unitMapDefaultAmount: {
 } = {
     px: 100,
     '%': 100,
-    fr: 1,
+    auto: 1,
 }
 
 export const LayoutInspector: Inspector<LayoutPropTypes> = ({
@@ -153,6 +158,7 @@ export const LayoutInspector: Inspector<LayoutPropTypes> = ({
                                 width: { ...data.width, amount: value },
                             })
                         }}
+                        disabled={data.width.unit === 'auto'}
                         fill
                         buttonPosition="none"
                         min={0}
@@ -172,7 +178,7 @@ export const LayoutInspector: Inspector<LayoutPropTypes> = ({
                                 },
                             })
                         }}
-                        options={['px', '%', 'fr'] as LayoutSizeUnit[]}
+                        options={['px', '%', 'auto'] as LayoutSizeUnit[]}
                         fill
                         iconProps={{
                             iconSize: 0,
@@ -188,6 +194,7 @@ export const LayoutInspector: Inspector<LayoutPropTypes> = ({
                 <ControlGridItem area="value">
                     <NumericInput
                         value={data.height.amount}
+                        disabled={data.height.unit === 'auto'}
                         onValueChange={(value) => {
                             onChange({
                                 ...data,
@@ -211,7 +218,7 @@ export const LayoutInspector: Inspector<LayoutPropTypes> = ({
                                 },
                             })
                         }}
-                        options={['px', '%', 'fr'] as LayoutSizeUnit[]}
+                        options={['px', '%', 'auto'] as LayoutSizeUnit[]}
                         fill
                         iconProps={{
                             iconSize: 0,

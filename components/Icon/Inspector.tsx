@@ -104,7 +104,7 @@ export const IconInspector: Inspector<IconPropTypes> = ({
                                         },
                                     })
                                 }}
-                                options={['px', '%', 'fr'] as LayoutSizeUnit[]}
+                                options={['px', '%'] as LayoutSizeUnit[]}
                                 fill
                                 iconProps={{
                                     iconSize: 0,
