@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { SFC } from 'react'
 import { TitledBoard, ControlGrid, ControlGridItem } from './FormComponents'
 import {
     Plus,
@@ -17,13 +17,14 @@ import {
     ButtonGroup,
     Button,
     HTMLSelect,
+    IOptionProps,
 } from '@blueprintjs/core'
 import { Text, Slider } from '@modulz/radix'
 import { Inspector } from '../app/types'
 import { intersection } from 'ramda'
 import { nameToParam } from '../app/utils'
 
-export type LayoutSizeUnit = 'px' | '%' | 'fr'
+export type LayoutSizeUnit = 'px' | '%' | 'auto'
 
 export type LayoutSize = {
     amount: number
@@ -49,6 +50,11 @@ export type LayoutPropTypes = {
     opacity: number
     rotation: number
     radius: LayoutRadius
+}
+
+export const layoutSizeToString = ({ amount, unit }: LayoutSize) => {
+    if (unit === 'auto') return 'auto'
+    return `${amount}${unit}`
 }
 
 export const transformLayout = (
@@ -82,8 +88,8 @@ export const transformLayout = (
             : `${radius}px`
 
     return {
-        width: `${width.amount}${width.unit}`,
-        height: `${height.amount}${height.unit}`,
+        width: layoutSizeToString(width),
+        height: layoutSizeToString(height),
         overflow: nameToParam(overflow) as 'visible' | 'hidden' | undefined,
         opacity: opacity / 100 + '',
         rotate: rotation,
@@ -107,12 +113,79 @@ const initialData: LayoutPropTypes = {
     radius: 0,
 }
 
+const layoutSizeUnitOptions: IOptionProps[] = [
+    {
+        value: 'px',
+        label: 'px',
+    },
+    {
+        value: '%',
+        label: '%',
+    },
+    {
+        value: 'auto',
+        label: 'fit-content',
+    },
+]
+
 export const unitMapDefaultAmount: {
     [unit in LayoutSizeUnit]: number
 } = {
     px: 100,
     '%': 100,
-    fr: 1,
+    auto: 1,
+}
+
+const LayoutSizeEditor: SFC<{
+    value: LayoutSize
+    onChange: (newValue: LayoutSize) => void
+    title: string
+}> = ({ value, title, onChange }) => {
+    return (
+        <>
+            <ControlGridItem area="active / active / visual / visual">
+                <Text size={1}>{title}</Text>
+            </ControlGridItem>
+            {value.unit !== 'auto' ? (
+                <ControlGridItem area="value">
+                    <NumericInput
+                        value={value.amount}
+                        onValueChange={(data) => {
+                            onChange({ ...value, amount: data })
+                        }}
+                        fill
+                        buttonPosition="none"
+                        min={0}
+                    ></NumericInput>
+                </ControlGridItem>
+            ) : null}
+            <ControlGridItem
+                area={
+                    value.unit !== 'auto'
+                        ? 'control'
+                        : 'value / value / control / control'
+                }
+            >
+                <HTMLSelect
+                    value={value.unit}
+                    onChange={(event) => {
+                        const unit = event.target.value as LayoutSizeUnit
+
+                        onChange({
+                            amount: unitMapDefaultAmount[unit],
+                            unit,
+                        })
+                    }}
+                    options={layoutSizeUnitOptions}
+                    fill
+                    iconProps={{
+                        iconSize: 0,
+                        icon: null,
+                    }}
+                ></HTMLSelect>
+            </ControlGridItem>
+        </>
+    )
 }
 
 export const LayoutInspector: Inspector<LayoutPropTypes> = ({
@@ -141,84 +214,22 @@ export const LayoutInspector: Inspector<LayoutPropTypes> = ({
     return (
         <TitledBoard title={title || 'Layout'}>
             <ControlGrid show={fields.includes('width')}>
-                <ControlGridItem area="active / active / visual / visual">
-                    <Text size={1}>Width</Text>
-                </ControlGridItem>
-                <ControlGridItem area="value">
-                    <NumericInput
-                        value={data.width.amount}
-                        onValueChange={(value) => {
-                            onChange({
-                                ...data,
-                                width: { ...data.width, amount: value },
-                            })
-                        }}
-                        fill
-                        buttonPosition="none"
-                        min={0}
-                    ></NumericInput>
-                </ControlGridItem>
-                <ControlGridItem area="control">
-                    <HTMLSelect
-                        value={data.width.unit}
-                        onChange={(event) => {
-                            const unit = event.target.value as LayoutSizeUnit
-
-                            onChange({
-                                ...data,
-                                width: {
-                                    amount: unitMapDefaultAmount[unit],
-                                    unit,
-                                },
-                            })
-                        }}
-                        options={['px', '%', 'fr'] as LayoutSizeUnit[]}
-                        fill
-                        iconProps={{
-                            iconSize: 0,
-                            icon: null,
-                        }}
-                    ></HTMLSelect>
-                </ControlGridItem>
+                <LayoutSizeEditor
+                    title="Width"
+                    value={data.width}
+                    onChange={(value) => {
+                        onChange({ ...data, width: value })
+                    }}
+                ></LayoutSizeEditor>
             </ControlGrid>
             <ControlGrid show={fields.includes('height')} marginTop={8}>
-                <ControlGridItem area="active / active / visual / visual">
-                    <Text size={1}>Height</Text>
-                </ControlGridItem>
-                <ControlGridItem area="value">
-                    <NumericInput
-                        value={data.height.amount}
-                        onValueChange={(value) => {
-                            onChange({
-                                ...data,
-                                height: { ...data.height, amount: value },
-                            })
-                        }}
-                        fill
-                        buttonPosition="none"
-                        min={0}
-                    ></NumericInput>
-                </ControlGridItem>
-                <ControlGridItem area="control">
-                    <HTMLSelect
-                        value={data.height.unit}
-                        onChange={(event) => {
-                            onChange({
-                                ...data,
-                                height: {
-                                    ...data.height,
-                                    unit: event.target.value as LayoutSizeUnit,
-                                },
-                            })
-                        }}
-                        options={['px', '%', 'fr'] as LayoutSizeUnit[]}
-                        fill
-                        iconProps={{
-                            iconSize: 0,
-                            icon: null,
-                        }}
-                    ></HTMLSelect>
-                </ControlGridItem>
+                <LayoutSizeEditor
+                    title="Height"
+                    value={data.height}
+                    onChange={(value) => {
+                        onChange({ ...data, height: value })
+                    }}
+                ></LayoutSizeEditor>
             </ControlGrid>
             <ControlGrid show={fields.includes('overflow')} marginTop={8}>
                 <ControlGridItem area="active / active / visual / visual">
