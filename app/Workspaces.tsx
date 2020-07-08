@@ -60,6 +60,12 @@ export const Workspace = () => {
         }
     }, [zoom])
 
+    useEffect(() => {
+        if (x !== zoomOffset[0] || y !== zoomOffset[1]) {
+            setZoomOffset([x, y])
+        }
+    }, [x, y])
+
     const [wrapperRect, wrapperRef] = useClientRect()
     const contentRefDOM =
         typeof window !== 'undefined'
