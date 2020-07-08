@@ -102,6 +102,8 @@ const defaultConfigs: Configs<any> = {
     fieldFilter: () => true,
 }
 
+const STACK_LIMIT_SIZE = 500
+
 export const createProcessReducers = <T>(
     configs: Configs<T> = defaultConfigs,
     cb?: (state: T) => void
@@ -150,6 +152,15 @@ export const createProcessReducers = <T>(
                     changes.unshift(patches)
                     inverseChanges.unshift(inversePatches)
                     draft._processingChanges = []
+                    const deltaChangeLimitSize =
+                        changes.length - STACK_LIMIT_SIZE
+                    if (deltaChangeLimitSize > 0) {
+                        changes.splice(STACK_LIMIT_SIZE, deltaChangeLimitSize)
+                        inverseChanges.splice(
+                            STACK_LIMIT_SIZE,
+                            deltaChangeLimitSize
+                        )
+                    }
                 } else {
                     changes[0] && (changes[0] = [...changes[0], ...patches])
                     inverseChanges[0] &&
