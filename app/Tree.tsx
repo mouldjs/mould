@@ -1,33 +1,22 @@
 import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
-import { Component, EditorState, Path } from './types'
+import { Component, Path } from './types'
 import { MouldContext, ViewContext } from './Contexts'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
-import { useSelector, useDispatch } from 'react-redux'
-import { useHover, useGesture } from 'react-use-gesture'
-import {
-    useIsSelectedPath,
-    useIsIncludePath,
-    pathToString,
-    useIsDraggingComponent,
-} from './utils'
+import { useDispatch } from 'react-redux'
+import { useIsSelectedPath, useIsDraggingComponent } from './utils'
 import { tick } from './selectionTick'
-import { insertComponentOnPath } from './appShell'
-
-const { Provider } = MouldContext
+import {
+    insertComponentOnPath,
+    modifyMouldTreePropsOnPath,
+    modifyMouldTreeChildrenOnPath,
+} from './appShell'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
     loading: () => null,
 })
-
-const GREEN = '#8ed80e'
-const BLUE = '#56a9f1'
-
-type Edit = {
-    onChange: (tree: Component) => void
-}
 
 type PathProps = {
     path: Path
@@ -37,10 +26,9 @@ export const Tree = ({
     type,
     props,
     children,
-    onChange,
     path,
     root = false,
-}: Component & Edit & PathProps & { root?: boolean }) => {
+}: Component & PathProps & { root?: boolean }) => {
     const dispatch = useDispatch()
     const mould = useContext(MouldContext)
     const view = useContext(ViewContext)
@@ -97,15 +85,6 @@ export const Tree = ({
                   return (
                       <Tree
                           path={[path[0], [...path[1], index]] as Path}
-                          onChange={(tree) => {
-                              const nextChildren = [...children]
-                              nextChildren[index] = tree
-                              onChange({
-                                  type,
-                                  props,
-                                  children: nextChildren,
-                              })
-                          }}
                           {...tree}
                       ></Tree>
                   )
@@ -149,18 +128,24 @@ export const Tree = ({
                     })
                 }}
                 requestUpdateProps={(nextProps) => {
-                    onChange({
-                        type,
-                        props: { ...props, ...nextProps },
-                        children,
-                    })
+                    dispatch(
+                        modifyMouldTreePropsOnPath({
+                            mouldName: path[0][0],
+                            state: path[0][1],
+                            props: nextProps,
+                            path: path[1],
+                        })
+                    )
                 }}
                 requestUpdateChildren={(updateChildren) => {
-                    onChange({
-                        type,
-                        props,
-                        children: updateChildren(children),
-                    })
+                    dispatch(
+                        modifyMouldTreeChildrenOnPath({
+                            mouldName: path[0][0],
+                            state: path[0][1],
+                            path: path[1],
+                            children: updateChildren(children),
+                        })
+                    )
                 }}
                 path={path}
                 {...props}
