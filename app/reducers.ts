@@ -9,7 +9,6 @@ import {
     handleAddState,
     handleRemoveState,
     handleResizeView,
-    handleModifyMouldTree,
     handleWaitingForCreating,
     handleStartCreating,
     handleUpdateCreating,
@@ -35,12 +34,13 @@ import {
     handleZoomWorkspace,
     handleMoveWorkspace,
     handleDuplicateView,
+    handleModifyMouldTreePropsOnPath,
+    handleModifyMouldTreeChildrenOnPath,
 } from './appShell'
 
 export default () => [
     handleMoveWorkspace,
     handleZoomWorkspace,
-    handleModifyMouldTree,
     handleSelectComponent,
     handleSelectComponentFromTree,
     handleAddInput,
@@ -76,4 +76,6 @@ export default () => [
     handleZoomWorkspace,
     handleMoveWorkspace,
     handleDuplicateView,
+    handleModifyMouldTreePropsOnPath,
+    handleModifyMouldTreeChildrenOnPath,
 ]

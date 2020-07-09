@@ -19,6 +19,7 @@ import {
     getDefaultMouldName,
     deleteMould,
     getDefaultStateName,
+    ensureTreeNodeByPath,
 } from './utils'
 import nanoid from 'nanoid'
 import { remove, find, cloneDeep } from 'lodash'
@@ -279,23 +280,56 @@ export const handleResizeView = handleAction<EditorState, ResizeViewAction>(
     initialData
 )
 
-type ModifyMouldTreeAction = {
+type ModifyMouldTreePropsOnPathAction = {
     mouldName: string
-    tree: Component
     state: string
+    path: number[]
+    props: string
 }
-const MODIFY_MOULD_TREE = 'MODIFY_MOULD_TREE'
-export const modifyMouldTree = createAction<ModifyMouldTreeAction>(
-    MODIFY_MOULD_TREE
-)
-export const handleModifyMouldTree = handleAction<
+const MODIFY_MOULD_TREE_PROPS_ON_PATH = 'MODIFY_MOULD_TREE_PROPS_ON_PATH'
+export const modifyMouldTreePropsOnPath = createAction<
+    ModifyMouldTreePropsOnPathAction
+>(MODIFY_MOULD_TREE_PROPS_ON_PATH)
+export const handleModifyMouldTreePropsOnPath = handleAction<
     EditorState,
-    ModifyMouldTreeAction
+    ModifyMouldTreePropsOnPathAction
 >(
-    MODIFY_MOULD_TREE,
+    MODIFY_MOULD_TREE_PROPS_ON_PATH,
     (state, action) => {
         const mould = ensureMould(state, action.payload.mouldName)
-        mould.states[action.payload.state] = action.payload.tree
+        const node = ensureTreeNodeByPath(
+            mould.states[action.payload.state]!,
+            action.payload.path
+        )
+        Object.assign(node.props, action.payload.props)
+
+        return state
+    },
+    initialData
+)
+
+type ModifyMouldTreeChildrenOnPathAction = {
+    mouldName: string
+    state: string
+    path: number[]
+    children: Component[] | undefined
+}
+const MODIFY_MOULD_TREE_CHILDREN_ON_PATH = 'MODIFY_MOULD_TREE_CHILDREN_ON_PATH'
+export const modifyMouldTreeChildrenOnPath = createAction<
+    ModifyMouldTreeChildrenOnPathAction
+>(MODIFY_MOULD_TREE_CHILDREN_ON_PATH)
+export const handleModifyMouldTreeChildrenOnPath = handleAction<
+    EditorState,
+    ModifyMouldTreeChildrenOnPathAction
+>(
+    MODIFY_MOULD_TREE_CHILDREN_ON_PATH,
+    (state, action) => {
+        const mould = ensureMould(state, action.payload.mouldName)
+        const node = ensureTreeNodeByPath(
+            mould.states[action.payload.state]!,
+            action.payload.path
+        )
+        node.children = action.payload.children
 
         return state
     },

@@ -45,10 +45,13 @@ const flatArray = (target: Patch[][]): Patch[] => {
     return result
 }
 
+let lastTimeOpenedPatch = 0
+
 const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
     switch (action.type) {
         case 'UNDO_ACTION':
             if (undoable(state)) {
+                lastTimeOpenedPatch = 0
                 let { _inverseChanges = [], _processingChanges = [] } = state
                 let [patches, ...rest] = _inverseChanges
                 _processingChanges = [patches, ..._processingChanges]
@@ -61,13 +64,13 @@ const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
             return false
         case 'REDO_ACTION':
             if (redoable(state)) {
+                lastTimeOpenedPatch = 0
                 let {
                     _changes = [],
                     _inverseChanges = [],
                     _processingChanges = [],
                 } = state
                 const patches = _changes[_processingChanges.length - 1]
-                // _inverseChanges =
 
                 return produce(applyPatches(state, patches), (draft) => {
                     const [inverseChange, ...rest] = draft._processingChanges
@@ -78,6 +81,7 @@ const undoReducer = (state: UndoCompatibleState, action: UndoAction) => {
             return false
         case 'RESET_ACTION':
             if (undoable(state)) {
+                lastTimeOpenedPatch = 0
                 let { _inverseChanges = [] } = state
                 const patches = flatArray(_inverseChanges)
 
@@ -102,6 +106,9 @@ const defaultConfigs: Configs<any> = {
     fieldFilter: () => true,
 }
 
+const STACK_LIMIT_SIZE = 500
+const WAIT = 500
+
 export const createProcessReducers = <T>(
     configs: Configs<T> = defaultConfigs,
     cb?: (state: T) => void
@@ -121,8 +128,6 @@ export const createProcessReducers = <T>(
         if (res === undefined) {
             //非 undo | redo
 
-            const isUndoPoint = actionFilter(action)
-
             const [nextState, patches, inversePatches] = produceWithPatches(
                 state,
                 (draft) => {
@@ -132,35 +137,57 @@ export const createProcessReducers = <T>(
                 }
             )
 
-            if (!fieldFilter(state, nextState) || !patches.length) {
+            if (!patches.length) {
                 return nextState
             }
 
-            const applyPatchData = produce(nextState, (draft) => {
-                const changes = [
-                    ...(draft._changes || []).slice(
-                        (draft._processingChanges || []).length
-                    ),
-                ]
-                const inverseChanges = [
-                    ...((draft._inverseChanges || []) as Change[]),
-                ]
+            const isUndoPoint =
+                actionFilter(action) &&
+                fieldFilter(state, nextState) &&
+                Date.now() - lastTimeOpenedPatch > WAIT
 
+            const applyPatchData = produce(nextState, (draft) => {
                 if (isUndoPoint) {
+                    const changes = [
+                        ...(draft._changes || []).slice(
+                            (draft._processingChanges || []).length
+                        ),
+                    ]
+                    const inverseChanges = [
+                        ...((draft._inverseChanges || []) as Change[]),
+                    ]
                     changes.unshift(patches)
                     inverseChanges.unshift(inversePatches)
                     draft._processingChanges = []
-                } else {
-                    changes[0] && (changes[0] = [...changes[0], ...patches])
-                    inverseChanges[0] &&
+                    const deltaChangeLimitSize =
+                        changes.length - STACK_LIMIT_SIZE
+                    if (deltaChangeLimitSize > 0) {
+                        changes.splice(STACK_LIMIT_SIZE, deltaChangeLimitSize)
+                        inverseChanges.splice(
+                            STACK_LIMIT_SIZE,
+                            deltaChangeLimitSize
+                        )
+                    }
+                    lastTimeOpenedPatch = Date.now()
+
+                    draft._changes = changes
+                    draft._inverseChanges = inverseChanges
+                } else if (!draft._processingChanges?.length) {
+                    const changes = draft._changes
+                    const inverseChanges = draft._inverseChanges
+                    changes &&
+                        changes[0] &&
+                        (changes[0] = [...changes[0], ...patches])
+                    inverseChanges &&
+                        inverseChanges[0] &&
                         (inverseChanges[0] = [
                             ...inversePatches,
                             ...inverseChanges[0],
                         ])
-                }
 
-                draft._changes = changes
-                draft._inverseChanges = inverseChanges
+                    draft._changes = changes
+                    draft._inverseChanges = inverseChanges
+                }
             })
 
             res = applyPatchData as any

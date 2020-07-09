@@ -182,3 +182,18 @@ export const useSimulateScroll = (ref) => {
         bind()
     }, [bind])
 }
+
+export const ensureTreeNodeByPath = (tree: Component, path: number[]) => {
+    let ref = tree
+    path.forEach((p) => {
+        if (!ref.children) {
+            throw Error(`Path:${path} is not exist in tree: ${tree}`)
+        }
+        ref = ref.children[p]
+        if (!ref) {
+            throw Error(`Path:${path} is not exist in tree: ${tree}`)
+        }
+    })
+
+    return ref
+}
