@@ -35,4 +35,6 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
         props.paddingLeft ? `padding-left: ${props.paddingLeft}px;` : ''}
     ${(props) =>
         props.paddingRight ? `padding-right: ${props.paddingRight}px;` : ''}
+    flex-grow: ${(props) => props.flexGrow};
+    flex-shrink: ${(props) => props.flexShrink};
 `

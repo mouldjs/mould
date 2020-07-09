@@ -1,4 +1,9 @@
-import React, { forwardRef, CSSProperties, useEffect } from 'react'
+import React, {
+    forwardRef,
+    CSSProperties,
+    useEffect,
+    createContext,
+} from 'react'
 import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
 import { ComponentPropTypes } from '../../app/types'
@@ -20,6 +25,7 @@ import {
     StackInspector,
     StackDistribution,
     StackAlignment,
+    StackChildrenInspectorRenderer,
 } from './Inspector'
 import {
     LayoutPropTypes,
@@ -32,6 +38,12 @@ import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
 import { StackSpecific } from '../../standard/stack'
+import {
+    ChildrenLayoutInspectorProvider,
+    ContainerLayoutProps,
+    ContainerRelatedInspectors,
+    useLayoutProps,
+} from '../ContainerRelatedInspector/InspectorProvider'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -45,6 +57,7 @@ type StyleProperties = {
 type StackProps = {
     stackProps?: StackPropTypes
     layoutProps?: LayoutPropTypes
+    containerLayoutProps?: ContainerLayoutProps
 }
 
 const transformStyles = ({
@@ -161,6 +174,19 @@ const transformStackContent = ({
     }
 }
 
+const transformChildrenStyle = ({
+    flex,
+}: ContainerLayoutProps): CSSProperties => {
+    if (flex) {
+        return {
+            flexGrow: flex.grow,
+            flexShrink: flex.shrink,
+        }
+    } else {
+        return {}
+    }
+}
+
 export const transform = ({
     fillProps,
     borderProps,
@@ -170,7 +196,9 @@ export const transform = ({
     innerShadowsProps,
     stackProps,
     layoutProps,
+    containerLayoutProps = {},
 }: StyleProperties & StackProps = {}) => {
+    const styleFromContainer = useLayoutProps(containerLayoutProps)
     return {
         ...transformStyles({
             fillProps,
@@ -182,6 +210,7 @@ export const transform = ({
         }),
         ...transformStackContent(stackProps),
         ...transformLayout(layoutProps),
+        ...styleFromContainer,
     }
 }
 
@@ -200,6 +229,7 @@ export default forwardRef(
             innerShadowsProps,
             stackProps,
             layoutProps,
+            containerLayoutProps = {},
             ...rest
         }: ComponentPropTypes & StyleProperties & StackProps,
         ref
@@ -213,12 +243,22 @@ export default forwardRef(
             innerShadowsProps,
             stackProps,
             layoutProps,
+            containerLayoutProps,
         })
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
+                        <ContainerRelatedInspectors
+                            data={containerLayoutProps || {}}
+                            onChange={(data) => {
+                                console.log(data)
+                                requestUpdateProps({
+                                    containerLayoutProps: data,
+                                })
+                            }}
+                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
@@ -285,9 +325,14 @@ export default forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawStack ref={ref as any} {...style} {...rest}>
-                    {children}
-                </RawStack>
+                <ChildrenLayoutInspectorProvider
+                    transform={transformChildrenStyle}
+                    renderer={StackChildrenInspectorRenderer}
+                >
+                    <RawStack ref={ref as any} {...style} {...rest}>
+                        {children}
+                    </RawStack>
+                </ChildrenLayoutInspectorProvider>
             </>
         )
     }

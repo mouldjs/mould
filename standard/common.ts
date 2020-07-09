@@ -34,6 +34,8 @@ export const Layout = z.object({
     overflow: z.union([z.literal('visible'), z.literal('hidden')]).optional(),
     opacity: z.string().optional(),
     radius: z.string().optional(),
+    flexGrow: z.string().optional(),
+    flexShrink: z.string().optional(),
 })
 
 export const CommonMouseEvent = z.object({
