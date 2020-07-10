@@ -26,6 +26,7 @@ import {
     StackDistribution,
     StackAlignment,
     StackChildrenInspectorRenderer,
+    StackDirection,
 } from './Inspector'
 import {
     LayoutPropTypes,
@@ -144,6 +145,21 @@ enum mapAlignment {
     End = 'flex-end',
 }
 
+const transformDirection = (
+    direction: StackDirection
+): z.infer<typeof StackSpecific>['flexDirection'] => {
+    switch (direction) {
+        case 'Horizontal':
+            return 'row'
+        case 'HorizontalReverse':
+            return 'row-reverse'
+        case 'Vertical':
+            return 'column'
+        case 'VerticalReverse':
+            return 'column-reverse'
+    }
+}
+
 const transformStackContent = ({
     direction,
     distribute,
@@ -166,8 +182,7 @@ const transformStackContent = ({
 
     return {
         ...paddingParam,
-        flexDirection:
-            direction === 'Vertical' ? 'column' : ('row' as 'column' | 'row'),
+        flexDirection: transformDirection(direction),
         justifyContent: mapDistribution[distribute],
         alignItem: mapAlignment[alignment],
         // gap,

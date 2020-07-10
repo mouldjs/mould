@@ -14,6 +14,8 @@ import {
     AlignRight,
     Square,
     Maximize,
+    ArrowUp,
+    ArrowLeft,
 } from 'react-feather'
 import {
     NumericInput,
@@ -27,7 +29,11 @@ import { Inspector } from '../../app/types'
 import { intersection } from 'ramda'
 import { ChildrenInspectorRenderer } from '../ContainerRelatedInspector/InspectorProvider'
 
-type StackDirection = 'Horizontal' | 'Vertical'
+export type StackDirection =
+    | 'Horizontal'
+    | 'Vertical'
+    | 'HorizontalReverse'
+    | 'VerticalReverse'
 
 export type StackDistribution =
     | 'Start'
@@ -209,6 +215,38 @@ export const StackInspector: Inspector<StackPropTypes> = ({
                                         size={16}
                                         color="#959595"
                                     ></ArrowDown>
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        onChange({
+                                            ...data,
+                                            direction: 'HorizontalReverse',
+                                        })
+                                    }
+                                    active={
+                                        data.direction === 'HorizontalReverse'
+                                    }
+                                >
+                                    <ArrowLeft
+                                        size={16}
+                                        color="#959595"
+                                    ></ArrowLeft>
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        onChange({
+                                            ...data,
+                                            direction: 'VerticalReverse',
+                                        })
+                                    }
+                                    active={
+                                        data?.direction === 'VerticalReverse'
+                                    }
+                                >
+                                    <ArrowUp
+                                        size={16}
+                                        color="#959595"
+                                    ></ArrowUp>
                                 </Button>
                             </ButtonGroup>
                         </ControlGridItem>
