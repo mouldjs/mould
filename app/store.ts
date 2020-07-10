@@ -26,11 +26,10 @@ function logger({ getState }) {
     return (next) => (action) => {
         // Call the next dispatch method in the middleware chain.
         const returnValue = next(action)
-
         client?.mutate({
             mutation: saveSchemas,
             variables: {
-                schemas: JSON.stringify(getState()),
+                schemas: JSON.stringify(getState(), null, 2),
             },
         })
 
