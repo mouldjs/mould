@@ -88,6 +88,7 @@ export type EditorState = {
     creating?: Creating
     recursiveRendered?: string[]
     isDragging?: boolean
+    debugging?: Debugging
 }
 
 export type AtomicComponent = {
@@ -110,3 +111,5 @@ export type InspectorProps<T, Option = {}> = {
 } & Option
 
 export type Inspector<T, Option = {}> = SFC<InspectorProps<T, Option>>
+
+export type Debugging = [ComponentPath, any]

@@ -1088,3 +1088,39 @@ export const handleDuplicateView = handleAction<EditorState, DuplicateView>(
     },
     initialData
 )
+
+type UpdateDebuggingActionType = { mouldName; stateName; info? }
+export const UPDATE_DEBUGGING = 'UPDATE_DEBUGGING'
+export const updateDebugging = createAction<UpdateDebuggingActionType>(
+    UPDATE_DEBUGGING
+)
+export const handleUpdateDebugging = handleAction<
+    EditorState,
+    UpdateDebuggingActionType
+>(
+    UPDATE_DEBUGGING,
+    (state, { payload: { mouldName, stateName, info } }) => {
+        state.debugging = [[mouldName, stateName], info]
+
+        return state
+    },
+    initialData
+)
+
+type PauseDebuggingActionType = void
+export const PAUSE_DEBUGGING = 'PAUSE_DEBUGGING'
+export const pauseDebugging = createAction<PauseDebuggingActionType>(
+    PAUSE_DEBUGGING
+)
+export const handlePauseDebugging = handleAction<
+    EditorState,
+    PauseDebuggingActionType
+>(
+    PAUSE_DEBUGGING,
+    (state, action) => {
+        state.debugging = undefined
+
+        return state
+    },
+    initialData
+)
