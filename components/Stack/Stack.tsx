@@ -38,7 +38,7 @@ import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
-import { StackSpecific } from '../../standard/stack'
+import { StackSpecific, FlexDirection } from '../../standard/stack'
 import {
     ChildrenLayoutInspectorProvider,
     ContainerLayoutProps,
@@ -147,7 +147,7 @@ enum mapAlignment {
 
 const transformDirection = (
     direction: StackDirection
-): z.infer<typeof StackSpecific>['flexDirection'] => {
+): z.infer<typeof FlexDirection> => {
     switch (direction) {
         case 'Horizontal':
             return 'row'
@@ -185,7 +185,7 @@ const transformStackContent = ({
         flexDirection: transformDirection(direction),
         justifyContent: mapDistribution[distribute],
         alignItem: mapAlignment[alignment],
-        // gap,
+        gap: gap + 'px',
     }
 }
 

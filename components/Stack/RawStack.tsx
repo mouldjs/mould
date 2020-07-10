@@ -1,9 +1,26 @@
 import React, { SFC, RefForwardingComponent } from 'react'
 import styled from 'styled-components'
 import { StackProps } from '../../standard'
+import * as z from 'zod'
+import { FlexDirection } from '../../standard/stack'
 
 const mouseEventWrapper = (fn) => (event) =>
     fn ? fn(event.stopPropagation) : fn
+
+const flexDirectionToMarginSide = (
+    direction: z.infer<typeof FlexDirection>
+) => {
+    switch (direction) {
+        case 'column':
+            return 'margin-bottom'
+        case 'column-reverse':
+            return 'margin-top'
+        case 'row':
+            return 'margin-right'
+        case 'row-reverse':
+            return 'margin-left'
+    }
+}
 
 export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     StackProps
@@ -11,6 +28,7 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     onClick: mouseEventWrapper(props.onClick),
     onClickCapture: mouseEventWrapper(props.onClickCapture),
 }))<StackProps>`
+    position: relative;
     display: flex;
     flex-direction: ${(props) => props.flexDirection};
     justify-content: ${(props) => props.justifyContent};
@@ -37,4 +55,17 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
         props.paddingRight ? `padding-right: ${props.paddingRight}px;` : ''}
     flex-grow: ${(props) => props.flexGrow};
     flex-shrink: ${(props) => props.flexShrink};
+    > * {
+        ${(props) => {
+            const key = flexDirectionToMarginSide(props.flexDirection || 'row')
+            const value = props.gap
+            return `${key}: ${value};`
+        }}
+    }
+    > *:last-child {
+        ${(props) => {
+            const key = flexDirectionToMarginSide(props.flexDirection || 'row')
+            return `${key}: 0;`
+        }}
+    }
 `

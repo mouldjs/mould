@@ -73,6 +73,7 @@ export const initialData: StackPropTypes = {
 }
 
 const mutedFields = [
+    'gap',
     'flexDirection',
     'justifyContent',
     'alignItems',
