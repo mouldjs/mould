@@ -53,18 +53,18 @@ function build() {
 }
 
 function symlinkMould() {
-    if (fs.existsSync(paths.mould.symlinkDirectory)) {
-        fs.unlinkSync(paths.mould.symlinkDirectory)
+    if (fs.existsSync(paths.editor.symlinkDirectory)) {
+        fs.unlinkSync(paths.editor.symlinkDirectory)
     }
     fs.symlinkSync(
         paths.app.mouldDirectory,
-        paths.mould.symlinkDirectory,
+        paths.editor.symlinkDirectory,
         'dir'
     )
 }
 
 function runEditor() {
-    const cdToAppDir = `cd ${paths.mould.directory}`
+    const cdToAppDir = `cd ${paths.editor.byVersionDirectory}`
     const setWorkdirEnvVar = `WORKDIR=${paths.app.mouldDirectory}`
     const runNextDev = `${paths.bin.next} dev`
 
