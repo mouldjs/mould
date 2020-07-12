@@ -3,7 +3,7 @@ import spawn from 'cross-spawn'
 
 import packageJson from '../package.json'
 
-const commands = ['build', 'dev', 'init']
+const commands = ['build', 'dev', 'init', 'install', 'uninstall']
 
 const args = arg(
     {
