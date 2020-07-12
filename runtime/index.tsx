@@ -7,7 +7,7 @@ import {
     AtomicComponent,
     ParentContext,
 } from '../app/types'
-import Components from '../components'
+import MouldApp from '../mould'
 import List from '../components/List'
 import resolvers from '../.mould/resolvers'
 
@@ -43,7 +43,7 @@ export const runtime = (moulds: Mould[]) => {
                 isRoot: boolean,
                 parent?: ParentContext
             ) => {
-                const Plugin = Components.find((c) => c.type === component.type)
+                const Plugin = MouldApp.getComponent(component.type)
 
                 if (!Plugin) {
                     throw Error(`Can not find plugin: ${component.type}`)
@@ -75,9 +75,7 @@ export const runtime = (moulds: Mould[]) => {
                             } as any
                             Comp = RuntimeMould
                         } else {
-                            const Plugin = Components.find(
-                                (c) => c.type === kit.type
-                            )
+                            const Plugin = MouldApp.getComponent(kit.type)
                             if (!Plugin) {
                                 throw Error(
                                     `Can not find plugin in kit: plugin ${kit.type}, kit ${kit.name}`

@@ -12,11 +12,11 @@ import {
     ControlGrid,
     ControlGridItem,
 } from '../inspector/FormComponents'
-import Controls from '../controls'
+import MouldApp from '../mould'
 import { useCurrentMould } from './utils'
 import { omit } from 'ramda'
 
-const InputTypes = Object.keys(Controls)
+const InputTypes = Object.keys(MouldApp.Controls)
 
 const NameField = ({ origin }) => {
     const mould = useCurrentMould()
@@ -81,7 +81,7 @@ export const MouldInput = ({
         type || mould!.input[name].type
     )
     const ControlEditPanel = addingControlType
-        ? Controls[addingControlType].Editor
+        ? MouldApp.getControl(addingControlType).Editor
         : null
     const {
         Form,

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Flex, Text, Card } from '@modulz/radix'
-import Components from '../../components'
+import MouldApp from '../../mould'
 
 const KitItem = ({ type, name, isList }) => {
-    const plugin = Components.find((c) => c.type === type)
+    const plugin = MouldApp.getComponent(type)
     const Icon = plugin!.Icon
 
     return (

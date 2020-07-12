@@ -1,5 +1,5 @@
 import { EditorState, Mould, Component, ParentContext } from '../app/types'
-import { transforms, definitions } from '../mould'
+import MouldApp from '../mould'
 
 const ensureComponentName = (mouldName: string) =>
     mouldName[0].toUpperCase() + mouldName.substring(1)
@@ -14,7 +14,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
     const generateComponent = (comp: Component, context?: ParentContext) => {
         const { type, props, children = [] } = comp
         let compType = `${MOULD}.components.${type}`
-        const plugin = definitions[type]
+        const plugin = MouldApp.definitions[type]
         const propsClone = { ...props }
         delete propsClone['__mouldName']
         delete propsClone['__kitName']
@@ -46,7 +46,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = transforms[type]!
+                    const transform = MouldApp.transforms[type]!
                     rawProps = transform(propsClone, context)
                 }
 
@@ -77,7 +77,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = transforms[type]!
+                    const transform = MouldApp.transforms[type]!
                     rawProps = transform(propsClone, context)
                 }
 
@@ -98,7 +98,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
         } else if (type === 'Mould') {
             compType = ensureComponentName(props['__mouldName'])
         } else {
-            const transform = transforms[type]!
+            const transform = MouldApp.transforms[type]!
             const rawProps = transform(propsClone, context)
 
             propsStr = `${Object.keys(rawProps).reduce((prev, curr) => {

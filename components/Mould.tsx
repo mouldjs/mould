@@ -10,8 +10,7 @@ import { ComponentInspector } from '../app/Inspectors'
 import { ComponentPropTypes, Component, EditorState, Path } from '../app/types'
 import { MouldContext, ViewContext } from '../app/Contexts'
 import { pathToString } from '../app/utils'
-import Components from '.'
-import Controls from '../controls'
+import MouldApp from '../mould'
 import { Error, Info } from '../app/Messager'
 import { renderRecursiveMould } from '../app/appShell'
 import { tick } from '../app/selectionTick'
@@ -90,7 +89,7 @@ const Mould = forwardRef(
             localPath,
             isRoot = false
         ) => {
-            const plugin = Components.find((c) => c.type === type)
+            const plugin = MouldApp.getComponent(type)
 
             if (!plugin) {
                 return null
@@ -168,7 +167,8 @@ const Mould = forwardRef(
                         {Object.keys(input).map((name, index) => {
                             const isFirst = index === 0
                             const config = input[name]
-                            const Control = Controls[config.type].Renderer
+                            const Control = MouldApp.getControl(config.type)
+                                .Renderer
 
                             return (
                                 <ControlGrid marginTop={isFirst ? 0 : 8}>

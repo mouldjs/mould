@@ -30,7 +30,7 @@ import {
 } from '../inspector/FormComponents'
 import { runtime } from '../runtime'
 import { tick } from './selectionTick'
-import Controls from '../controls'
+import MouldApp from '../mould'
 import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { MouldInput } from './MouldInput'
 import { without, isObject, update } from 'lodash'
@@ -234,8 +234,9 @@ export const View = ({ viewId }: { viewId: string }) => {
                                         (input, index) => {
                                             const isFirst = index === 0
                                             const config = mould.input[input]
-                                            const Control =
-                                                Controls[config.type].Renderer
+                                            const Control = MouldApp.getControl(
+                                                config.type
+                                            ).Renderer
 
                                             return (
                                                 <div

@@ -8,8 +8,8 @@ import { Layers, Move, Type, Edit, Star } from 'react-feather'
 import { useDrag } from 'react-dnd'
 import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
+import MouldApp from '../../mould'
 
-const icons = ['Stack', 'Frame', 'Text', 'Input', 'Icon']
 const getIcon = (name, isActive) => {
     const baseComponents = {
         Text: {
@@ -235,6 +235,9 @@ const Icons: any = () => {
         if (timer) window.clearTimeout(timer)
         timer = delay(() => setOpening(null), 1500)
     }
+
+    console.log(MouldApp.components)
+    const icons = Object.keys(MouldApp.components)
 
     return icons.map((icon) => (
         <Icon

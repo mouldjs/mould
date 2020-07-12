@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Components from '../../components'
+import mould from '../../mould'
 import { Flex, Text, Card, Grid, Hover } from '@modulz/radix'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { X, ChevronDown } from 'react-feather'
@@ -97,7 +97,7 @@ const MouldKitItem = ({
         preview(getEmptyImage(), { captureDraggingState: true })
     }, [])
 
-    const plugin = Components.find((c) => c.type === type)
+    const plugin = mould.getComponent(type)
     if (!plugin) {
         return null
     }
