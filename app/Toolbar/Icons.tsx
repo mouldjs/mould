@@ -236,7 +236,6 @@ const Icons: any = () => {
         timer = delay(() => setOpening(null), 1500)
     }
 
-    console.log(MouldApp.components)
     const icons = Object.keys(MouldApp.components)
 
     return icons.map((icon) => (

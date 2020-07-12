@@ -1,4 +1,7 @@
+import { Cpu, Code } from 'react-feather'
 import Components from './components'
+import Mould from './components/Mould'
+import Kit from './components/Kit'
 import Controls from './controls'
 import setup from './.mould/setup'
 import { AtomicComponent } from './app/types'
@@ -19,7 +22,21 @@ const Base = {
     Controls,
 }
 
-const Mould = {
+const MouldComp = {
+    type: 'Mould',
+    Editable: Mould,
+    Raw: Mould,
+    Icon: Cpu,
+}
+
+const KitComp = {
+    type: 'Kit',
+    Editable: Kit,
+    Raw: Kit,
+    Icon: Code,
+}
+
+const MouldInstance = {
     ...Base,
     ...setup(Base),
     get transforms() {
@@ -50,11 +67,18 @@ const Mould = {
         )
     },
     getComponent(type) {
-        return this.Components.find((c) => c.type === type)
+        switch (type) {
+            case 'Mould':
+                return MouldComp
+            case 'Kit':
+                return KitComp
+            default:
+                return this.Components.find((c) => c.type === type)
+        }
     },
     getControl(type) {
         return this.Controls[type]
     },
 }
 
-export default Mould
+export default MouldInstance
