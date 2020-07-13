@@ -22,7 +22,7 @@ import {
     ContainerLayoutProps,
     ContainerRelatedInspectors,
     useLayoutProps,
-} from '../ContainerRelatedInspector/InspectorProvider'
+} from '../../inspector/InspectorProvider'
 
 type TextProps = {
     layoutProps?: LayoutPropTypes

@@ -30,7 +30,7 @@ import { intersection } from 'ramda'
 import {
     ChildrenInspectorRenderer,
     FlexProps,
-} from '../ContainerRelatedInspector/InspectorProvider'
+} from '../../inspector/InspectorProvider'
 
 export type StackDirection =
     | 'Horizontal'

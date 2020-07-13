@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { CSSProperties } from 'styled-components'
 import * as z from 'zod'
-import { Layout } from '../../standard/common'
+import { Layout } from '../standard/common'
 
 export type FlexProps = {
     grow: number

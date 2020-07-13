@@ -28,7 +28,7 @@ import {
     ContainerLayoutProps,
     ContainerRelatedInspectors,
     useLayoutProps,
-} from '../ContainerRelatedInspector/InspectorProvider'
+} from '../../inspector/InspectorProvider'
 
 type InputProps = {
     layoutProps?: LayoutPropTypes

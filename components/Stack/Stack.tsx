@@ -44,7 +44,7 @@ import {
     ContainerLayoutProps,
     ContainerRelatedInspectors,
     useLayoutProps,
-} from '../ContainerRelatedInspector/InspectorProvider'
+} from '../../inspector/InspectorProvider'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
