@@ -106,7 +106,7 @@ const defaultConfigs: Configs<any> = {
     fieldFilter: () => true,
 }
 
-const STACK_LIMIT_SIZE = 500
+const STACK_LIMIT_SIZE = 100
 const WAIT = 500
 
 export const createProcessReducers = <T>(
