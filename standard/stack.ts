@@ -1,8 +1,13 @@
 import * as z from 'zod'
 import { Common } from './common'
-
+export const FlexDirection = z.union([
+    z.literal('column'),
+    z.literal('row'),
+    z.literal('column-reverse'),
+    z.literal('row-reverse'),
+])
 export const StackSpecific = z.object({
-    flexDirection: z.union([z.literal('column'), z.literal('row')]).optional(),
+    flexDirection: FlexDirection.optional(),
     justifyContent: z
         .union([
             z.literal('flex-start'),

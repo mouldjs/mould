@@ -24,6 +24,11 @@ import {
 } from '../../inspector/Filters'
 import { transformColorToStr } from '../../inspector/Color'
 import { Filter } from '../../standard/common'
+import {
+    ContainerLayoutProps,
+    ContainerRelatedInspectors,
+    useLayoutProps,
+} from '../../inspector/InspectorProvider'
 
 type InputProps = {
     layoutProps?: LayoutPropTypes
@@ -33,6 +38,7 @@ type InputProps = {
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
+    containerLayoutProps?: ContainerLayoutProps
 }
 
 const initialInputProps: InputPropTypes = {
@@ -111,6 +117,7 @@ export const transform = ({
     borderProps,
     blurProps,
     filtersProps,
+    containerLayoutProps = {},
 }: InputProps = {}) => {
     let res = {}
     if (fillProps && fillProps.active) {
@@ -119,12 +126,14 @@ export const transform = ({
     if (borderProps) {
         res = { ...res, ...transformBorderProps(borderProps) }
     }
+    const styleFromContainer = useLayoutProps(containerLayoutProps)
     return {
         ...res,
         ...transformLayout(layoutProps),
         ...transformInputProps(InputProps!),
         ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
         ...transformFilterProps(blurProps, filtersProps),
+        ...styleFromContainer,
     }
 }
 
@@ -141,6 +150,7 @@ export const Input = forwardRef(
             blurProps,
             fillProps,
             borderProps,
+            containerLayoutProps = {},
             ...rest
         }: ComponentPropTypes & InputProps,
         ref
@@ -153,12 +163,22 @@ export const Input = forwardRef(
             filtersProps,
             fillProps,
             borderProps,
+            containerLayoutProps,
         })
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
+                        <ContainerRelatedInspectors
+                            data={containerLayoutProps || {}}
+                            onChange={(data) => {
+                                console.log(data)
+                                requestUpdateProps({
+                                    containerLayoutProps: data,
+                                })
+                            }}
+                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
