@@ -27,7 +27,10 @@ import {
 import { Text, Slider } from '@modulz/radix'
 import { Inspector } from '../../app/types'
 import { intersection } from 'ramda'
-import { ChildrenInspectorRenderer } from '../ContainerRelatedInspector/InspectorProvider'
+import {
+    ChildrenInspectorRenderer,
+    FlexProps,
+} from '../ContainerRelatedInspector/InspectorProvider'
 
 export type StackDirection =
     | 'Horizontal'
@@ -72,6 +75,11 @@ export const initialData: StackPropTypes = {
     active: true,
 }
 
+export const initialFlexData: FlexProps = {
+    grow: 0,
+    shrink: 1,
+}
+
 const mutedFields = [
     'gap',
     'flexDirection',
@@ -88,47 +96,77 @@ export const StackChildrenInspectorRenderer: ChildrenInspectorRenderer = (
     data,
     onChange
 ) => {
-    const flex = data.flex || { grow: 0, shrink: 0 }
+    const flex = data.flex
     return (
-        <TitledBoard title="Stack Flex">
-            <ControlGrid>
-                <ControlGridItem area="active / active / value / value">
-                    <Text size={1}>Expand ratio</Text>
-                </ControlGridItem>
-                <ControlGridItem area="control">
-                    <NumericInput
-                        value={flex.grow}
-                        onValueChange={(value) => {
-                            onChange({
-                                ...data,
-                                flex: { ...flex, grow: value },
-                            })
+        <TitledBoard
+            title="Stack Flex"
+            collspaed={!data || !data.flex}
+            renderTitle={() => {
+                return !data || !data.flex ? (
+                    <Plus
+                        onClick={() => {
+                            onChange(
+                                data
+                                    ? { ...data, flex: { ...initialFlexData } }
+                                    : { flex: { ...initialFlexData } }
+                            )
                         }}
-                        fill
-                        buttonPosition="none"
-                        min={0}
-                    ></NumericInput>
-                </ControlGridItem>
-            </ControlGrid>
-            <ControlGrid marginTop={8}>
-                <ControlGridItem area="active / active / value / value">
-                    <Text size={1}>Shrink ratio</Text>
-                </ControlGridItem>
-                <ControlGridItem area="control">
-                    <NumericInput
-                        value={flex.shrink}
-                        onValueChange={(value) => {
-                            onChange({
-                                ...data,
-                                flex: { ...flex, shrink: value },
-                            })
+                        size={16}
+                        color="#959595"
+                    ></Plus>
+                ) : (
+                    <Minus
+                        onClick={() => {
+                            onChange({ ...data, flex: undefined })
                         }}
-                        fill
-                        buttonPosition="none"
-                        min={0}
-                    ></NumericInput>
-                </ControlGridItem>
-            </ControlGrid>
+                        size={16}
+                        color="#959595"
+                    ></Minus>
+                )
+            }}
+        >
+            {flex && (
+                <>
+                    <ControlGrid>
+                        <ControlGridItem area="active / active / value / value">
+                            <Text size={1}>Expand ratio</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="control">
+                            <NumericInput
+                                value={flex.grow}
+                                onValueChange={(value) => {
+                                    onChange({
+                                        ...data,
+                                        flex: { ...flex, grow: value },
+                                    })
+                                }}
+                                fill
+                                buttonPosition="none"
+                                min={0}
+                            ></NumericInput>
+                        </ControlGridItem>
+                    </ControlGrid>
+                    <ControlGrid marginTop={8}>
+                        <ControlGridItem area="active / active / value / value">
+                            <Text size={1}>Shrink ratio</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="control">
+                            <NumericInput
+                                value={flex.shrink}
+                                onValueChange={(value) => {
+                                    onChange({
+                                        ...data,
+                                        flex: { ...flex, shrink: value },
+                                    })
+                                }}
+                                fill
+                                buttonPosition="none"
+                                min={0}
+                            ></NumericInput>
+                        </ControlGridItem>
+                    </ControlGrid>
+                </>
+            )}
         </TitledBoard>
     )
 }
