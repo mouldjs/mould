@@ -7,6 +7,7 @@ import {
     Shadow,
     MouseEventHandlers,
     FormEventHandlers,
+    KeyEventHandlers,
 } from '../../standard/common'
 
 export const InputSpecific = z.object({
@@ -21,6 +22,7 @@ export const Input = InputSpecific.merge(Layout)
     .merge(Shadow)
     .merge(Filter)
     .merge(MouseEventHandlers)
+    .merge(KeyEventHandlers)
     .merge(FormEventHandlers)
 
 export type InputProps = z.infer<typeof Input>

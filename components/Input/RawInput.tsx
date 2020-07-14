@@ -1,6 +1,11 @@
 import { SFC } from 'react'
 import styled from 'styled-components'
 import { InputProps } from './InputProps'
+import {
+    pickEventHandlers,
+    KeyEventHandlers,
+    FormEventHandlers,
+} from '../../standard/common'
 
 const mouseEventWrapper = (fn) => (event) =>
     fn ? fn(event.stopPropagation) : fn
@@ -21,10 +26,8 @@ export const RawInput: SFC<InputProps & { ref: any }> = styled.input.attrs<
     placeholder: props.placeholder || '',
     onClick: mouseEventWrapper(props.onClick),
     onClickCapture: mouseEventWrapper(props.onClickCapture),
-    onChange: props.onChange,
-    onChangeCapture: props.onChangeCapture,
-    onFocus: props.onFocus,
-    onBlur: props.onBlur,
+    ...pickEventHandlers(FormEventHandlers, props),
+    ...pickEventHandlers(KeyEventHandlers, props),
 }))<InputProps>`
     display: flex;
     border: none;
