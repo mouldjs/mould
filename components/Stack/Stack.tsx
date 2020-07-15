@@ -1,9 +1,4 @@
-import React, {
-    forwardRef,
-    CSSProperties,
-    useEffect,
-    createContext,
-} from 'react'
+import React, { forwardRef, CSSProperties, useEffect } from 'react'
 import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
 import { ComponentPropTypes } from '../../app/types'
@@ -25,8 +20,6 @@ import {
     StackInspector,
     StackDistribution,
     StackAlignment,
-    StackChildrenInspectorRenderer,
-    StackDirection,
 } from './Inspector'
 import {
     LayoutPropTypes,
@@ -38,13 +31,7 @@ import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
-import { StackSpecific, FlexDirection } from '../../standard/stack'
-import {
-    ChildrenLayoutInspectorProvider,
-    ContainerLayoutProps,
-    ContainerRelatedInspectors,
-    useLayoutProps,
-} from '../../inspector/InspectorProvider'
+import { StackSpecific } from '../../standard/stack'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -58,7 +45,6 @@ type StyleProperties = {
 type StackProps = {
     stackProps?: StackPropTypes
     layoutProps?: LayoutPropTypes
-    containerLayoutProps?: ContainerLayoutProps
 }
 
 const transformStyles = ({
@@ -145,21 +131,6 @@ enum mapAlignment {
     End = 'flex-end',
 }
 
-const transformDirection = (
-    direction: StackDirection
-): z.infer<typeof FlexDirection> => {
-    switch (direction) {
-        case 'Horizontal':
-            return 'row'
-        case 'HorizontalReverse':
-            return 'row-reverse'
-        case 'Vertical':
-            return 'column'
-        case 'VerticalReverse':
-            return 'column-reverse'
-    }
-}
-
 const transformStackContent = ({
     direction,
     distribute,
@@ -182,23 +153,11 @@ const transformStackContent = ({
 
     return {
         ...paddingParam,
-        flexDirection: transformDirection(direction),
+        flexDirection:
+            direction === 'Vertical' ? 'column' : ('row' as 'column' | 'row'),
         justifyContent: mapDistribution[distribute],
         alignItem: mapAlignment[alignment],
-        gap: gap + 'px',
-    }
-}
-
-const transformChildrenStyle = ({
-    flex,
-}: ContainerLayoutProps): CSSProperties => {
-    if (flex) {
-        return {
-            flexGrow: flex.grow,
-            flexShrink: flex.shrink,
-        }
-    } else {
-        return {}
+        // gap,
     }
 }
 
@@ -211,9 +170,7 @@ export const transform = ({
     innerShadowsProps,
     stackProps,
     layoutProps,
-    containerLayoutProps = {},
 }: StyleProperties & StackProps = {}) => {
-    const styleFromContainer = useLayoutProps(containerLayoutProps)
     return {
         ...transformStyles({
             fillProps,
@@ -225,7 +182,6 @@ export const transform = ({
         }),
         ...transformStackContent(stackProps),
         ...transformLayout(layoutProps),
-        ...styleFromContainer,
     }
 }
 
@@ -244,7 +200,6 @@ export default forwardRef(
             innerShadowsProps,
             stackProps,
             layoutProps,
-            containerLayoutProps = {},
             ...rest
         }: ComponentPropTypes & StyleProperties & StackProps,
         ref
@@ -258,22 +213,12 @@ export default forwardRef(
             innerShadowsProps,
             stackProps,
             layoutProps,
-            containerLayoutProps,
         })
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <ContainerRelatedInspectors
-                            data={containerLayoutProps || {}}
-                            onChange={(data) => {
-                                console.log(data)
-                                requestUpdateProps({
-                                    containerLayoutProps: data,
-                                })
-                            }}
-                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
@@ -340,14 +285,9 @@ export default forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <ChildrenLayoutInspectorProvider
-                    transform={transformChildrenStyle}
-                    renderer={StackChildrenInspectorRenderer}
-                >
-                    <RawStack ref={ref as any} {...style} {...rest}>
-                        {children}
-                    </RawStack>
-                </ChildrenLayoutInspectorProvider>
+                <RawStack ref={ref as any} {...style} {...rest}>
+                    {children}
+                </RawStack>
             </>
         )
     }
