@@ -45,6 +45,7 @@ const ViewContextProvider = ViewContext.Provider
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
     const views = useSelector((state: EditorState) => state.views)
+    const debugging = useSelector((state: EditorState) => state.debugging)
     const workspaceViews = useSelector(
         (state: EditorState) => state.testWorkspace.views
     )
@@ -105,7 +106,11 @@ export const View = ({ viewId }: { viewId: string }) => {
     const path: Path = [[mouldName, state], []]
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
-    const [inputValue, setInputValue] = useState({})
+    const inputValue =
+        (debugging[1] &&
+            debugging[1][mouldName] &&
+            debugging[1][mouldName][state]) ||
+        {}
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
@@ -285,20 +290,26 @@ export const View = ({ viewId }: { viewId: string }) => {
                                                                 onChange={(
                                                                     value
                                                                 ) => {
-                                                                    setInputValue(
-                                                                        {
-                                                                            ...inputValue,
-                                                                            [input]: isObject(
-                                                                                value
-                                                                            )
-                                                                                ? {
-                                                                                      ...inputValue[
-                                                                                          input
-                                                                                      ],
-                                                                                      ...value,
-                                                                                  }
-                                                                                : value,
-                                                                        }
+                                                                    dispatch(
+                                                                        updateDebugging(
+                                                                            {
+                                                                                mouldName,
+                                                                                stateName: state,
+                                                                                inputValue: {
+                                                                                    ...inputValue,
+                                                                                    [input]: isObject(
+                                                                                        value
+                                                                                    )
+                                                                                        ? {
+                                                                                              ...inputValue[
+                                                                                                  input
+                                                                                              ],
+                                                                                              ...value,
+                                                                                          }
+                                                                                        : value,
+                                                                                },
+                                                                            }
+                                                                        )
                                                                     )
                                                                 }}
                                                             ></Control>

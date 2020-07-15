@@ -129,7 +129,7 @@ const App = () => {
             <KeyboardEventHandler
                 handleKeys={['ctrl+e']}
                 onKeyEvent={() => {
-                    if (debugging) {
+                    if (debugging[0]) {
                         dispatch(pauseDebugging())
                     } else {
                         if (currentView) {
@@ -277,6 +277,7 @@ const App = () => {
                     <div
                         ref={InspectorsBlockRef}
                         style={{
+                            width: '100%',
                             position: 'absolute',
                             height: `calc(100% - ${hierarchyBlockHeight}px)`,
                             overflowY: 'auto',

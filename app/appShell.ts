@@ -1089,7 +1089,7 @@ export const handleDuplicateView = handleAction<EditorState, DuplicateView>(
     initialData
 )
 
-type UpdateDebuggingActionType = { mouldName; stateName; info? }
+type UpdateDebuggingActionType = { mouldName; stateName; inputValue? }
 export const UPDATE_DEBUGGING = 'UPDATE_DEBUGGING'
 export const updateDebugging = createAction<UpdateDebuggingActionType>(
     UPDATE_DEBUGGING
@@ -1099,9 +1099,17 @@ export const handleUpdateDebugging = handleAction<
     UpdateDebuggingActionType
 >(
     UPDATE_DEBUGGING,
-    (state, { payload: { mouldName, stateName, info } }) => {
-        state.debugging = [[mouldName, stateName], info]
-
+    (state, { payload: { mouldName, stateName, inputValue } }) => {
+        if (inputValue) {
+            if (!state.debugging[1]) {
+                state.debugging[1] = {}
+            }
+            state.debugging[1][mouldName] = {
+                [stateName]: inputValue,
+            }
+        } else {
+            state.debugging[0] = [mouldName, stateName]
+        }
         return state
     },
     initialData
@@ -1118,7 +1126,7 @@ export const handlePauseDebugging = handleAction<
 >(
     PAUSE_DEBUGGING,
     (state, action) => {
-        state.debugging = undefined
+        state.debugging = [undefined, state.debugging && state.debugging[1]]
 
         return state
     },

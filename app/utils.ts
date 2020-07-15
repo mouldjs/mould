@@ -82,15 +82,14 @@ export const useCurrentState = () => {
 
 export const useCurrentDebuggingView = () => {
     return useSelector((state: EditorState) => {
-        if (!state.debugging) {
-            return
-        }
+        if (state.debugging && state.debugging[0]) {
+            const [mouldName, stateName] = state.debugging[0]
 
-        const [[mouldName, stateName]] = state.debugging
-        return find(
-            state.views,
-            (v) => v.mouldName === mouldName && v.state === stateName
-        )
+            return find(
+                state.views,
+                (v) => v.mouldName === mouldName && v.state === stateName
+            )
+        }
     })
 }
 
