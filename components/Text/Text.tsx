@@ -18,11 +18,6 @@ import {
 } from '../../inspector/Filters'
 import { transformColorToStr } from '../../inspector/Color'
 import { Filter } from '../../standard/common'
-import {
-    ContainerLayoutProps,
-    ContainerRelatedInspectors,
-    useLayoutProps,
-} from '../../inspector/InspectorProvider'
 
 type TextProps = {
     layoutProps?: LayoutPropTypes
@@ -30,7 +25,6 @@ type TextProps = {
     textProps?: TextPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
-    containerLayoutProps?: ContainerLayoutProps
 }
 
 const initialTextProps: TextPropTypes = {
@@ -115,15 +109,12 @@ export const transform = ({
     textProps,
     blurProps,
     filtersProps,
-    containerLayoutProps = {},
 }: TextProps = {}) => {
-    const styleFromContainer = useLayoutProps(containerLayoutProps)
     return {
         ...transformLayout(layoutProps),
         ...transformTextProps(textProps!),
         ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
         ...transformFilterProps(blurProps, filtersProps),
-        ...styleFromContainer,
     }
 }
 
@@ -138,7 +129,6 @@ export const Text = forwardRef(
             textProps = initialTextProps,
             filtersProps,
             blurProps,
-            containerLayoutProps = {},
             ...rest
         }: ComponentPropTypes & TextProps,
         ref
@@ -149,22 +139,12 @@ export const Text = forwardRef(
             textProps,
             blurProps,
             filtersProps,
-            containerLayoutProps,
         })
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
-                        <ContainerRelatedInspectors
-                            data={containerLayoutProps || {}}
-                            onChange={(data) => {
-                                console.log(data)
-                                requestUpdateProps({
-                                    containerLayoutProps: data,
-                                })
-                            }}
-                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
