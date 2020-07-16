@@ -4,10 +4,10 @@
     "license": "Apache-2.0",
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
-        "clean": "rm -rf release/*",
+        "clean": "rm -rf release",
         "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
-        "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -s \"./**/*\" release",
+        "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -e \"./**/*.ts*\" -s \"./**/*\" release",
         "prepublishOnly": "node scripts/prepublish-checks",
         "publish-package": "yarn build && cd release && npm publish --access public"
     },
