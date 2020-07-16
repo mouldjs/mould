@@ -140,7 +140,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 export const transform = (schema: EditorState): string => {
     return `// Generated from Mould (github.com/mouldjs/mould)
 import React from 'react'
-import * as ${RESOLVERS} from './resolvers'
+import ${RESOLVERS} from './resolvers'
 import * as ${MOULD} from '../mould'
 
 ${Object.values(schema.moulds).map(transformMouldToReactComponent).join('\n')}
