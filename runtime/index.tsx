@@ -28,7 +28,7 @@ export const runtime = (moulds: Mould[]) => {
                 useScope = returnEmptyObject(Object.keys(states)[0])
             }
 
-            const [currentState, scope] = useScope(
+            const [scope, currentState] = useScope(
                 pick(Object.keys(input), rest)
             )
 
