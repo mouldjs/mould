@@ -3,7 +3,11 @@ import { EditorState, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import dynamic from 'next/dynamic'
 import { Play, Pause } from 'react-feather'
-import { useIsSelectedPath, useIsDraggingComponent } from './utils'
+import {
+    useIsSelectedPath,
+    useIsDraggingComponent,
+    useCurrentDebuggingView,
+} from './utils'
 import {
     resizeView,
     dragView,
@@ -11,6 +15,8 @@ import {
     modifyInput,
     removeInput,
     updateDraggingStatus,
+    pauseDebugging,
+    updateDebugging,
 } from './appShell'
 import { Text } from '@modulz/radix'
 import EditingMould from './EditingMould'
@@ -27,7 +33,7 @@ import { tick } from './selectionTick'
 import Controls from '../controls'
 import { ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { MouldInput } from './MouldInput'
-import { without, isObject } from 'lodash'
+import { without, isObject, update } from 'lodash'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -39,9 +45,11 @@ const ViewContextProvider = ViewContext.Provider
 export const View = ({ viewId }: { viewId: string }) => {
     const dispatch = useDispatch()
     const views = useSelector((state: EditorState) => state.views)
+    const debugging = useSelector((state: EditorState) => state.debugging)
     const workspaceViews = useSelector(
         (state: EditorState) => state.testWorkspace.views
     )
+    const isDebugging = useCurrentDebuggingView()?.id === viewId
     const view = views[viewId]
     const { mouldName, state, x, y, width, height } = view
     const moulds = useSelector((state: EditorState) => state.moulds)
@@ -98,8 +106,11 @@ export const View = ({ viewId }: { viewId: string }) => {
     const path: Path = [[mouldName, state], []]
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
-    const [paused, setPaused] = useState(true)
-    const [inputValue, setInputValue] = useState({})
+    const inputValue =
+        (debugging[1] &&
+            debugging[1][mouldName] &&
+            debugging[1][mouldName][state]) ||
+        {}
     const [editControlName, setEditControlName] = useState<string | null>(null)
     const RuntimeMould = useMemo(() => runtime(moulds), [moulds])
 
@@ -111,7 +122,7 @@ export const View = ({ viewId }: { viewId: string }) => {
     }, [viewRef.current])
 
     useEffect(() => {
-        if (!selected) setPaused(true)
+        if (!selected) dispatch(pauseDebugging())
     }, [selected])
 
     return (
@@ -186,8 +197,19 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 title="Debug"
                                 renderTitle={() => {
                                     return (
-                                        <div onClick={() => setPaused(!paused)}>
-                                            {paused ? (
+                                        <div
+                                            onClick={() => {
+                                                isDebugging
+                                                    ? dispatch(pauseDebugging())
+                                                    : dispatch(
+                                                          updateDebugging({
+                                                              mouldName,
+                                                              stateName: state,
+                                                          })
+                                                      )
+                                            }}
+                                        >
+                                            {!isDebugging ? (
                                                 <Play
                                                     size={14}
                                                     color="#959595"
@@ -268,20 +290,26 @@ export const View = ({ viewId }: { viewId: string }) => {
                                                                 onChange={(
                                                                     value
                                                                 ) => {
-                                                                    setInputValue(
-                                                                        {
-                                                                            ...inputValue,
-                                                                            [input]: isObject(
-                                                                                value
-                                                                            )
-                                                                                ? {
-                                                                                      ...inputValue[
-                                                                                          input
-                                                                                      ],
-                                                                                      ...value,
-                                                                                  }
-                                                                                : value,
-                                                                        }
+                                                                    dispatch(
+                                                                        updateDebugging(
+                                                                            {
+                                                                                mouldName,
+                                                                                stateName: state,
+                                                                                inputValue: {
+                                                                                    ...inputValue,
+                                                                                    [input]: isObject(
+                                                                                        value
+                                                                                    )
+                                                                                        ? {
+                                                                                              ...inputValue[
+                                                                                                  input
+                                                                                              ],
+                                                                                              ...value,
+                                                                                          }
+                                                                                        : value,
+                                                                                },
+                                                                            }
+                                                                        )
                                                                     )
                                                                 }}
                                                             ></Control>
@@ -367,29 +395,29 @@ export const View = ({ viewId }: { viewId: string }) => {
                             {mouldName} - {state}
                         </Text>
                     </div>
-                    {paused ? (
+                    {!isDebugging ? (
                         <EditingMould
                             {...mould}
                             currentState={state}
                         ></EditingMould>
                     ) : (
-                        <RuntimeMould
-                            __mouldName={mould.name}
-                            {...inputValue}
-                        ></RuntimeMould>
-                    )}
-                    {!paused && (
-                        <div
-                            className="info"
-                            style={{
-                                position: 'absolute',
-                                bottom: -25,
-                                fontSize: 12,
-                                fontStyle: 'italic',
-                            }}
-                        >
-                            Debugging
-                        </div>
+                        <>
+                            <RuntimeMould
+                                __mouldName={mould.name}
+                                {...inputValue}
+                            ></RuntimeMould>
+                            <div
+                                className="info"
+                                style={{
+                                    position: 'absolute',
+                                    bottom: -25,
+                                    fontSize: 12,
+                                    fontStyle: 'italic',
+                                }}
+                            >
+                                Debugging
+                            </div>
+                        </>
                     )}
                 </div>
             </ViewContextProvider>

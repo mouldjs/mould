@@ -36,4 +36,5 @@ export default {
         },
     ],
     selection: [['mould0', 'state0'], []],
+    debugging: [['mould0', 'state0']],
 } as EditorState

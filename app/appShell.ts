@@ -1088,3 +1088,47 @@ export const handleDuplicateView = handleAction<EditorState, DuplicateView>(
     },
     initialData
 )
+
+type UpdateDebuggingActionType = { mouldName; stateName; inputValue? }
+export const UPDATE_DEBUGGING = 'UPDATE_DEBUGGING'
+export const updateDebugging = createAction<UpdateDebuggingActionType>(
+    UPDATE_DEBUGGING
+)
+export const handleUpdateDebugging = handleAction<
+    EditorState,
+    UpdateDebuggingActionType
+>(
+    UPDATE_DEBUGGING,
+    (state, { payload: { mouldName, stateName, inputValue } }) => {
+        if (inputValue) {
+            if (!state.debugging[1]) {
+                state.debugging[1] = {}
+            }
+            state.debugging[1][mouldName] = {
+                [stateName]: inputValue,
+            }
+        } else {
+            state.debugging[0] = [mouldName, stateName]
+        }
+        return state
+    },
+    initialData
+)
+
+type PauseDebuggingActionType = void
+export const PAUSE_DEBUGGING = 'PAUSE_DEBUGGING'
+export const pauseDebugging = createAction<PauseDebuggingActionType>(
+    PAUSE_DEBUGGING
+)
+export const handlePauseDebugging = handleAction<
+    EditorState,
+    PauseDebuggingActionType
+>(
+    PAUSE_DEBUGGING,
+    (state, action) => {
+        state.debugging = [undefined, state.debugging && state.debugging[1]]
+
+        return state
+    },
+    initialData
+)

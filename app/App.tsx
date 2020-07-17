@@ -24,6 +24,8 @@ import {
     waitingForCreating,
     zoomWorkspace,
     duplicateView,
+    pauseDebugging,
+    updateDebugging,
 } from './appShell'
 import { TitledBoard } from '../inspector/FormComponents'
 import { MouldMetas } from './MouldMetas'
@@ -93,10 +95,10 @@ const App = () => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const hasSelection = useSelector((state: EditorState) => !!state.selection)
+    const debugging = useSelector((state: EditorState) => state.debugging)
     const zoom = useSelector((state: EditorState) => state.testWorkspace.zoom)
     const mould = useCurrentMould()
     const currentView = useCurrentView()
-
     const creatingStep = creating && creating.status
 
     const zoomOut = (step, zoom) => {
@@ -124,6 +126,23 @@ const App = () => {
                 }
             }}
         >
+            <KeyboardEventHandler
+                handleKeys={['ctrl+e']}
+                onKeyEvent={() => {
+                    if (debugging[0]) {
+                        dispatch(pauseDebugging())
+                    } else {
+                        if (currentView) {
+                            dispatch(
+                                updateDebugging({
+                                    mouldName: currentView.mouldName,
+                                    stateName: currentView.state,
+                                })
+                            )
+                        }
+                    }
+                }}
+            />
             <KeyboardEventHandler
                 handleKeys={['backspace', 'del']}
                 onKeyEvent={() => {
@@ -258,6 +277,7 @@ const App = () => {
                     <div
                         ref={InspectorsBlockRef}
                         style={{
+                            width: '100%',
                             position: 'absolute',
                             height: `calc(100% - ${hierarchyBlockHeight}px)`,
                             overflowY: 'auto',

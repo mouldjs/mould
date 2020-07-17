@@ -36,6 +36,8 @@ import {
     handleDuplicateView,
     handleModifyMouldTreePropsOnPath,
     handleModifyMouldTreeChildrenOnPath,
+    handlePauseDebugging,
+    handleUpdateDebugging,
 } from './appShell'
 
 export default () => [
@@ -78,4 +80,6 @@ export default () => [
     handleDuplicateView,
     handleModifyMouldTreePropsOnPath,
     handleModifyMouldTreeChildrenOnPath,
+    handlePauseDebugging,
+    handleUpdateDebugging,
 ]

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import nanoid from 'nanoid'
 import data from './initialData'
 import { useWheel } from 'react-use-gesture'
+import { find } from 'lodash'
 
 export const initialData = (data as any) as EditorState
 
@@ -77,6 +78,19 @@ export const useCurrentState = () => {
     }
 
     return selection[0][1]
+}
+
+export const useCurrentDebuggingView = () => {
+    return useSelector((state: EditorState) => {
+        if (state.debugging && state.debugging[0]) {
+            const [mouldName, stateName] = state.debugging[0]
+
+            return find(
+                state.views,
+                (v) => v.mouldName === mouldName && v.state === stateName
+            )
+        }
+    })
 }
 
 export const useCurrentView = () => {
