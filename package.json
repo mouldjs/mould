@@ -15,8 +15,6 @@
     "types": "index.d.ts",
     "files": [
         "yarn.lock",
-        "README.md",
-        "README.en-US.md",
         "tsconfig.json",
         "tsconfig.package.json",
         "mould.js",
