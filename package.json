@@ -16,7 +16,7 @@
     "files": [
         "yarn.lock",
         "README.md",
-        "README-en_US.md",
+        "README.en-US.md",
         "tsconfig.json",
         "tsconfig.package.json",
         "mould.js",

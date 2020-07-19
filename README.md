@@ -1,6 +1,6 @@
 # Mould
 
-简体中文 | [English](./README-en_US.md)
+简体中文 | [English](./README.en-US.md)
 
 Mould 是一个试验性项目，它通过在 GUI 和 Code 间建立接口，帮设计师和工程师在各自的侧达成自治。
 预想中，Mould 可以解决以下在现有条件下较难解决的问题：
