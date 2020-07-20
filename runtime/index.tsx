@@ -5,8 +5,8 @@ import Components from '../components'
 import List from '../components/List'
 import resolvers from '../.mould/resolvers'
 
-const returnEmptyObject = (defaultState) => (): [string, object] => {
-    return [defaultState, {}]
+const returnEmptyObject = (defaultState) => (): [object, string] => {
+    return [{}, defaultState]
 }
 
 export const runtime = (moulds: Mould[]) => {
