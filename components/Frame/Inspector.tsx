@@ -126,7 +126,7 @@ export const FrameChildrenInspectorRenderer: ChildrenInspectorRenderer = (
                     ) : (
                         <Minus
                             onClick={() => {
-                                onChange({ ...data, flex: undefined })
+                                onChange({ ...data, relative: undefined })
                             }}
                             size={16}
                             color="#959595"
@@ -148,7 +148,7 @@ export const FrameChildrenInspectorRenderer: ChildrenInspectorRenderer = (
                                 }}
                             ></LayoutSizeEditor>
                         </ControlGrid>
-                        <ControlGrid>
+                        <ControlGrid marginTop={8}>
                             <LayoutSizeEditor
                                 title="Top"
                                 value={relative.top}
@@ -160,7 +160,7 @@ export const FrameChildrenInspectorRenderer: ChildrenInspectorRenderer = (
                                 }}
                             ></LayoutSizeEditor>
                         </ControlGrid>
-                        <ControlGrid>
+                        <ControlGrid marginTop={8}>
                             <LayoutSizeEditor
                                 title="Right"
                                 value={relative.right}
@@ -172,7 +172,7 @@ export const FrameChildrenInspectorRenderer: ChildrenInspectorRenderer = (
                                 }}
                             ></LayoutSizeEditor>
                         </ControlGrid>
-                        <ControlGrid>
+                        <ControlGrid marginTop={8}>
                             <LayoutSizeEditor
                                 title="Bottom"
                                 value={relative.bottom}
