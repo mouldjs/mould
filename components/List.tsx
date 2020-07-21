@@ -5,12 +5,15 @@ import { Cell, TitledBoard } from '../inspector/FormComponents'
 import { ComponentPropTypes } from '../app/types'
 
 export default forwardRef(
-    ({
-        requestUpdateProps,
-        requestUpdateChildren,
-        path,
-        children,
-    }: ComponentPropTypes) => {
+    (
+        {
+            requestUpdateProps,
+            requestUpdateChildren,
+            path,
+            children,
+        }: ComponentPropTypes,
+        ref
+    ) => {
         return (
             <>
                 {children}
