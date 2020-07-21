@@ -174,6 +174,11 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 target.style.top = top + 'px'
                             }
                         }}
+                        onDragStart={({ inputEvent }) => {
+                            if (inputEvent.target.tagName === 'INPUT') {
+                                return false
+                            }
+                        }}
                         onDragEnd={({ target }) => {
                             dispatch(
                                 dragView({
