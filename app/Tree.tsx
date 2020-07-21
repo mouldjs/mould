@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, Path } from './types'
 import { MouldContext, ViewContext } from './Contexts'
@@ -6,6 +6,7 @@ import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
+import { Server } from 'react-feather'
 import { tick } from './selectionTick'
 import {
     insertComponentOnPath,
@@ -68,6 +69,9 @@ export const Tree = ({
     })
     const isDragging = useIsDraggingComponent()
 
+    const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
+    const [toolbarOffsetLeft, setToolbarOffsetLeft] = useState<number>(0)
+
     const compRef = useRef()
 
     if (!mould) {
@@ -94,7 +98,53 @@ export const Tree = ({
     return (
         <>
             {!isDragging && selected && !root && compRef.current && (
-                <Moveable target={compRef.current} origin={false}></Moveable>
+                <>
+                    <Moveable
+                        target={compRef.current}
+                        origin={false}
+                    ></Moveable>
+                    <div
+                        ref={(dom) => {
+                            if (
+                                dom?.nextElementSibling instanceof HTMLElement
+                            ) {
+                                const targetDOM = dom?.nextElementSibling
+                                const [offsetTop, offsetLeft] = [
+                                    targetDOM.offsetTop +
+                                        targetDOM.clientHeight +
+                                        10,
+                                    targetDOM.offsetLeft + 20,
+                                ]
+                                setToolbarOffsetTop(offsetTop)
+                                setToolbarOffsetLeft(offsetLeft)
+                            }
+                        }}
+                        style={{
+                            position: 'absolute',
+                            transform: `translate(${toolbarOffsetLeft}px,${toolbarOffsetTop}px)`,
+                            minWidth: '160px',
+                            border: '1px solid #aaa',
+                            borderRadius: '3px',
+                            padding: '10px',
+                            backgroundColor: '#f0f0f0',
+                            fontSize: '20px',
+                            color: '#aaa',
+                            boxShadow: '1px 1px 5px #ddd',
+                        }}
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                width: 5,
+                                height: '100%',
+                                backgroundColor: '#aaa',
+                            }}
+                        ></div>
+                        <Server size={28} color="#aaa"></Server>
+                    </div>
+                </>
             )}
             {canDrop && (
                 <Moveable target={compRef.current} origin={false}></Moveable>
