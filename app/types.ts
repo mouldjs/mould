@@ -1,5 +1,9 @@
 import { ComponentType, ForwardRefExoticComponent, SFC } from 'react'
 import * as z from 'zod'
+import {
+    ChildrenInspectorRenderer,
+    ContainerLayoutProps,
+} from '../inspector/InspectorProvider'
 
 export type ID = string
 export type MouldName = string
@@ -91,13 +95,28 @@ export type EditorState = {
     debugging: Debugging
 }
 
+export type ParentContextProps = {
+    parent?: ParentContext
+}
+export type ParentContext = {
+    props: object
+    component: AtomicComponent
+    childrenIndex: number
+}
+
 export type AtomicComponent = {
     type: string
     Standard?: z.ZodObject<{ [key: string]: any }>
     Icon: ComponentType
     Editable: ForwardRefExoticComponent<any>
     Raw: ForwardRefExoticComponent<any>
-    Transform?: (args: object) => object
+    Transform?: (args: object, context?: ParentContext) => object
+    ChildrenTransform?: (
+        data: ContainerLayoutProps | undefined,
+        parentProps: object,
+        index: number
+    ) => object
+    ChildrenInspectorRenderer?: ChildrenInspectorRenderer
     acceptChildren?: boolean
 }
 

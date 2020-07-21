@@ -22,7 +22,7 @@ const flexDirectionToMarginSide = (
     }
 }
 
-export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
+export const RawFrame: SFC<StackProps & { ref: any }> = styled.div.attrs<
     StackProps
 >((props) => ({
     onClick: mouseEventWrapper(props.onClick),
@@ -59,17 +59,4 @@ export const RawStack: SFC<StackProps & { ref: any }> = styled.div.attrs<
     top: ${(props) => props.top};
     right: ${(props) => props.right};
     bottom: ${(props) => props.bottom};
-    > * {
-        ${(props) => {
-            const key = flexDirectionToMarginSide(props.flexDirection || 'row')
-            const value = props.gap
-            return `${key}: ${value};`
-        }}
-    }
-    > *:last-child {
-        ${(props) => {
-            const key = flexDirectionToMarginSide(props.flexDirection || 'row')
-            return `${key}: 0;`
-        }}
-    }
 `

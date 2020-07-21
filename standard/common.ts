@@ -66,6 +66,21 @@ export const Layout = z.object({
     overflow: z.union([z.literal('visible'), z.literal('hidden')]).optional(),
     opacity: z.string().optional(),
     radius: z.string().optional(),
+    flexGrow: z.string().optional(),
+    flexShrink: z.string().optional(),
+    left: z.string().optional(),
+    top: z.string().optional(),
+    right: z.string().optional(),
+    bottom: z.string().optional(),
+    position: z
+        .union([
+            z.literal('absolute'),
+            z.literal('fixed'),
+            z.literal('relative'),
+            z.literal('static'),
+            z.literal('sticky'),
+        ])
+        .optional(),
 })
 
 export const BaseEvent = z.object({

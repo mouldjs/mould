@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
-import { Component, Path } from './types'
+import { Component, Path, ParentContext, ParentContextProps } from './types'
 import { MouldContext, ViewContext } from './Contexts'
 import Components from '../components'
 import { useDrop } from 'react-dnd'
@@ -28,7 +28,8 @@ export const Tree = ({
     children,
     path,
     root = false,
-}: Component & PathProps & { root?: boolean }) => {
+    parent,
+}: Component & PathProps & { root?: boolean } & ParentContextProps) => {
     const dispatch = useDispatch()
     const mould = useContext(MouldContext)
     const view = useContext(ViewContext)
@@ -82,10 +83,16 @@ export const Tree = ({
     let inside =
         Array.isArray(children) && children.length
             ? children.map((tree, index) => {
+                  const context: ParentContext = {
+                      props,
+                      component: plugin,
+                      childrenIndex: index,
+                  }
                   return (
                       <Tree
                           path={[path[0], [...path[1], index]] as Path}
                           {...tree}
+                          parent={context}
                       ></Tree>
                   )
               })
@@ -149,6 +156,7 @@ export const Tree = ({
                 }}
                 path={path}
                 {...props}
+                parent={parent}
             >
                 {inside}
             </Comp>

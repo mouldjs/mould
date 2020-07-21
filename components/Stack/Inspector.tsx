@@ -14,6 +14,8 @@ import {
     AlignRight,
     Square,
     Maximize,
+    ArrowUp,
+    ArrowLeft,
 } from 'react-feather'
 import {
     NumericInput,
@@ -25,8 +27,16 @@ import {
 import { Text, Slider } from '@modulz/radix'
 import { Inspector } from '../../app/types'
 import { intersection } from 'ramda'
+import {
+    ChildrenInspectorRenderer,
+    FlexProps,
+} from '../../inspector/InspectorProvider'
 
-type StackDirection = 'Horizontal' | 'Vertical'
+export type StackDirection =
+    | 'Horizontal'
+    | 'Vertical'
+    | 'HorizontalReverse'
+    | 'VerticalReverse'
 
 export type StackDistribution =
     | 'Start'
@@ -65,7 +75,13 @@ export const initialData: StackPropTypes = {
     active: true,
 }
 
+export const initialFlexData: FlexProps = {
+    grow: 0,
+    shrink: 1,
+}
+
 const mutedFields = [
+    'gap',
     'flexDirection',
     'justifyContent',
     'alignItems',
@@ -75,6 +91,85 @@ const mutedFields = [
     'paddingTop',
     'paddingBottom',
 ]
+
+export const StackChildrenInspectorRenderer: ChildrenInspectorRenderer = (
+    data,
+    onChange
+) => {
+    const flex = data?.flex
+    return (
+        <TitledBoard
+            title="Stack Flex"
+            collspaed={!data || !data.flex}
+            renderTitle={() => {
+                return !data || !data.flex ? (
+                    <Plus
+                        onClick={() => {
+                            onChange(
+                                data
+                                    ? { ...data, flex: { ...initialFlexData } }
+                                    : { flex: { ...initialFlexData } }
+                            )
+                        }}
+                        size={16}
+                        color="#959595"
+                    ></Plus>
+                ) : (
+                    <Minus
+                        onClick={() => {
+                            onChange({ ...data, flex: undefined })
+                        }}
+                        size={16}
+                        color="#959595"
+                    ></Minus>
+                )
+            }}
+        >
+            {flex && (
+                <>
+                    <ControlGrid>
+                        <ControlGridItem area="active / active / value / value">
+                            <Text size={1}>Expand ratio</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="control">
+                            <NumericInput
+                                value={flex.grow}
+                                onValueChange={(value) => {
+                                    onChange({
+                                        ...data,
+                                        flex: { ...flex, grow: value },
+                                    })
+                                }}
+                                fill
+                                buttonPosition="none"
+                                min={0}
+                            ></NumericInput>
+                        </ControlGridItem>
+                    </ControlGrid>
+                    <ControlGrid marginTop={8}>
+                        <ControlGridItem area="active / active / value / value">
+                            <Text size={1}>Shrink ratio</Text>
+                        </ControlGridItem>
+                        <ControlGridItem area="control">
+                            <NumericInput
+                                value={flex.shrink}
+                                onValueChange={(value) => {
+                                    onChange({
+                                        ...data,
+                                        flex: { ...flex, shrink: value },
+                                    })
+                                }}
+                                fill
+                                buttonPosition="none"
+                                min={0}
+                            ></NumericInput>
+                        </ControlGridItem>
+                    </ControlGrid>
+                </>
+            )}
+        </TitledBoard>
+    )
+}
 
 export const StackInspector: Inspector<StackPropTypes> = ({
     title,
@@ -159,6 +254,38 @@ export const StackInspector: Inspector<StackPropTypes> = ({
                                         size={16}
                                         color="#959595"
                                     ></ArrowDown>
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        onChange({
+                                            ...data,
+                                            direction: 'HorizontalReverse',
+                                        })
+                                    }
+                                    active={
+                                        data.direction === 'HorizontalReverse'
+                                    }
+                                >
+                                    <ArrowLeft
+                                        size={16}
+                                        color="#959595"
+                                    ></ArrowLeft>
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        onChange({
+                                            ...data,
+                                            direction: 'VerticalReverse',
+                                        })
+                                    }
+                                    active={
+                                        data?.direction === 'VerticalReverse'
+                                    }
+                                >
+                                    <ArrowUp
+                                        size={16}
+                                        color="#959595"
+                                    ></ArrowUp>
                                 </Button>
                             </ButtonGroup>
                         </ControlGridItem>

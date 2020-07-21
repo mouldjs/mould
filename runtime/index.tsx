@@ -1,6 +1,12 @@
 import React, { forwardRef } from 'react'
 import { pick } from 'ramda'
-import { Mould, useScopeFn, Component } from '../app/types'
+import {
+    Mould,
+    useScopeFn,
+    Component,
+    AtomicComponent,
+    ParentContext,
+} from '../app/types'
 import Components from '../components'
 import List from '../components/List'
 import resolvers from '../.mould/resolvers'
@@ -32,7 +38,11 @@ export const runtime = (moulds: Mould[]) => {
                 pick(Object.keys(input), rest)
             )
 
-            const renderComp = (component, isRoot) => {
+            const renderComp = (
+                component: Component,
+                isRoot: boolean,
+                parent?: ParentContext
+            ) => {
                 const Plugin = Components.find((c) => c.type === component.type)
 
                 if (!Plugin) {
@@ -107,7 +117,7 @@ export const runtime = (moulds: Mould[]) => {
                     return null
                 }
 
-                const styledProps = transform ? transform(props) : {}
+                const styledProps = transform ? transform(props, parent) : {}
                 // const styledProps = {}
 
                 return (
@@ -116,13 +126,24 @@ export const runtime = (moulds: Mould[]) => {
                         {...props}
                         ref={isRoot ? ref : undefined}
                     >
-                        {children && renderChildren(children)}
+                        {children && renderChildren(children, props, Plugin)}
                     </Comp>
                 )
             }
 
-            const renderChildren = (components: Component[]) => {
-                return components.map((c) => renderComp(c, false))
+            const renderChildren = (
+                components: Component[],
+                props: object,
+                plugin: AtomicComponent
+            ) => {
+                return components.map((c, index) => {
+                    const context: ParentContext = {
+                        props,
+                        component: plugin,
+                        childrenIndex: index,
+                    }
+                    return renderComp(c, false, context)
+                })
             }
 
             const rootComponent = states[currentState]

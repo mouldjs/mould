@@ -45,4 +45,11 @@ export const RawInput: SFC<InputProps & { ref: any }> = styled.input.attrs<
     overflow: ${(props) => props.overflow};
     opacity: ${(props) => parseFloat(props.opacity || '1')};
     border-radius: ${(props) => props.radius};
+    position: ${(props) => props.position};
+    flex-grow: ${(props) => props.flexGrow};
+    flex-shrink: ${(props) => props.flexShrink};
+    left: ${(props) => props.left};
+    top: ${(props) => props.top};
+    right: ${(props) => props.right};
+    bottom: ${(props) => props.bottom};
 `

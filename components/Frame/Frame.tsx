@@ -1,47 +1,39 @@
 import React, { forwardRef } from 'react'
-import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
 import {
     ComponentPropTypes,
     ParentContext,
     ParentContextProps,
 } from '../../app/types'
+import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
 import {
     BorderInspector,
     BorderPropTypes,
     transformBorderProps,
 } from '../../inspector/Border'
-import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
+import { transformColorToStr } from '../../inspector/Color'
+import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import {
-    FiltersInspector,
     FilterPropTypes,
+    FiltersInspector,
     FilterType,
 } from '../../inspector/Filters'
-import { ShadowsPropTypes, ShadowsInspector } from '../../inspector/Shadows'
-import { transformColorToStr } from '../../inspector/Color'
-import {
-    StackPropTypes,
-    StackInspector,
-    StackDistribution,
-    StackDirection,
-} from './Inspector'
-import {
-    LayoutPropTypes,
-    LayoutInspector,
-    transformLayout,
-} from '../../inspector/Layout'
-import { nameToParam } from '../../app/utils'
-import { initialData } from './Inspector'
-import { RawStack } from './RawStack'
-import { FillInspector, FillPropTypes } from '../../inspector/Fill'
-import { StackProps as StandardStackProp } from '../../standard'
-import { StackSpecific, FlexDirection } from '../../standard/stack'
 import {
     ContainerLayoutProps,
     ContainerRelatedInspectors,
     getPropsFromParent,
 } from '../../inspector/InspectorProvider'
+import {
+    LayoutInspector,
+    LayoutPropTypes,
+    layoutSizeToString,
+    transformLayout,
+} from '../../inspector/Layout'
+import { ShadowsInspector, ShadowsPropTypes } from '../../inspector/Shadows'
+import { StackProps as StandardStackProp } from '../../standard'
+import { RawFrame } from './RawFrame'
 import { Layout } from '../../standard/common'
+import * as z from 'zod'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -52,8 +44,7 @@ type StyleProperties = {
     innerShadowsProps?: ShadowsPropTypes
 }
 
-type StackProps = {
-    stackProps?: StackPropTypes
+type FrameProps = {
     layoutProps?: LayoutPropTypes
     containerLayoutProps?: ContainerLayoutProps
 }
@@ -119,85 +110,20 @@ const transformStyles = ({
     return res
 }
 
-const mapDistribution: {
-    [distribution in StackDistribution]:
-        | 'flex-start'
-        | 'flex-end'
-        | 'center'
-        | 'space-between'
-        | 'space-around'
-        | 'space-evenly'
-} = {
-    Start: 'flex-start',
-    Center: 'center',
-    End: 'flex-end',
-    'Space Between': 'space-between',
-    'Space Around': 'space-around',
-    'Space Evenly': 'space-evenly',
-}
-
-enum mapAlignment {
-    Start = 'flex-start',
-    Center = 'center',
-    End = 'flex-end',
-}
-
-const transformDirection = (
-    direction: StackDirection
-): z.infer<typeof FlexDirection> => {
-    switch (direction) {
-        case 'Horizontal':
-            return 'row'
-        case 'HorizontalReverse':
-            return 'row-reverse'
-        case 'Vertical':
-            return 'column'
-        case 'VerticalReverse':
-            return 'column-reverse'
-    }
-}
-
-const transformStackContent = ({
-    direction,
-    distribute,
-    alignment,
-    gap,
-    padding,
-    active,
-}: StackPropTypes = initialData): z.infer<typeof StackSpecific> => {
-    const paddingParam =
-        typeof padding === 'object'
-            ? {
-                  paddingTop: padding.t + '',
-                  paddingRight: padding.r + '',
-                  paddingBottom: padding.b + '',
-                  paddingLeft: padding.l + '',
-              }
-            : {
-                  padding: padding + '',
-              }
-
-    return {
-        ...paddingParam,
-        flexDirection: transformDirection(direction),
-        justifyContent: mapDistribution[distribute],
-        alignItem: mapAlignment[alignment],
-        gap: gap + 'px',
-    }
-}
-
-export const transformChildrenStyle = ({
-    flex,
+export const transformChildrenProps = ({
+    relative,
 }: ContainerLayoutProps): z.infer<typeof Layout> => {
-    if (flex) {
+    if (relative) {
         return {
-            position: 'relative',
-            flexGrow: flex.grow.toString(),
-            flexShrink: flex.shrink.toString(),
+            left: layoutSizeToString(relative.left),
+            top: layoutSizeToString(relative.top),
+            right: layoutSizeToString(relative.right),
+            bottom: layoutSizeToString(relative.bottom),
+            position: 'absolute',
         }
     } else {
         return {
-            position: 'relative',
+            position: 'absolute',
         }
     }
 }
@@ -210,10 +136,9 @@ export const transform = (
         filtersProps,
         shadowsProps,
         innerShadowsProps,
-        stackProps,
         layoutProps,
         containerLayoutProps = {},
-    }: StyleProperties & StackProps = {},
+    }: StyleProperties & FrameProps = {},
     context?: ParentContext
 ) => {
     return {
@@ -225,7 +150,6 @@ export const transform = (
             shadowsProps,
             innerShadowsProps,
         }),
-        ...transformStackContent(stackProps),
         ...transformLayout(layoutProps),
         ...getPropsFromParent(context, containerLayoutProps),
     }
@@ -244,14 +168,13 @@ export default forwardRef(
             filtersProps,
             shadowsProps,
             innerShadowsProps,
-            stackProps,
             layoutProps,
             containerLayoutProps,
             parent,
             ...rest
         }: ComponentPropTypes &
             StyleProperties &
-            StackProps &
+            FrameProps &
             ParentContextProps,
         ref
     ) => {
@@ -263,7 +186,6 @@ export default forwardRef(
                 filtersProps,
                 shadowsProps,
                 innerShadowsProps,
-                stackProps,
                 layoutProps,
                 containerLayoutProps,
             },
@@ -291,14 +213,6 @@ export default forwardRef(
                             }}
                             connectedFields={connectedFields}
                         ></LayoutInspector>
-                        <StackInspector
-                            title="Stack"
-                            data={stackProps}
-                            onChange={(data) => {
-                                requestUpdateProps({ stackProps: data })
-                            }}
-                            connectedFields={connectedFields}
-                        ></StackInspector>
                         <FillInspector
                             title="Fill"
                             data={fillProps}
@@ -349,9 +263,10 @@ export default forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawStack ref={ref as any} {...style} {...rest}>
+
+                <RawFrame ref={ref as any} {...style} {...rest}>
                     {children}
-                </RawStack>
+                </RawFrame>
             </>
         )
     }

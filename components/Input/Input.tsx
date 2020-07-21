@@ -1,6 +1,10 @@
 import React, { forwardRef } from 'react'
 import * as z from 'zod'
-import { ComponentPropTypes } from '../../app/types'
+import {
+    ComponentPropTypes,
+    ParentContextProps,
+    ParentContext,
+} from '../../app/types'
 import { RawInput } from './RawInput'
 import { ComponentInspector } from '../../app/Inspectors'
 import {
@@ -24,6 +28,11 @@ import {
 } from '../../inspector/Filters'
 import { transformColorToStr } from '../../inspector/Color'
 import { Filter } from '../../standard/common'
+import {
+    ContainerLayoutProps,
+    ContainerRelatedInspectors,
+    getPropsFromParent,
+} from '../../inspector/InspectorProvider'
 
 type InputProps = {
     layoutProps?: LayoutPropTypes
@@ -33,6 +42,7 @@ type InputProps = {
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
+    containerLayoutProps?: ContainerLayoutProps
 }
 
 const initialInputProps: InputPropTypes = {
@@ -103,15 +113,19 @@ const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
     }
 }
 
-export const transform = ({
-    layoutProps,
-    shadowsProps,
-    InputProps,
-    fillProps,
-    borderProps,
-    blurProps,
-    filtersProps,
-}: InputProps = {}) => {
+export const transform = (
+    {
+        layoutProps,
+        shadowsProps,
+        InputProps,
+        fillProps,
+        borderProps,
+        blurProps,
+        filtersProps,
+        containerLayoutProps = {},
+    }: InputProps = {},
+    context?: ParentContext
+) => {
     let res = {}
     if (fillProps && fillProps.active) {
         res = { ...res, fill: transformColorToStr(fillProps.color) }
@@ -125,6 +139,7 @@ export const transform = ({
         ...transformInputProps(InputProps!),
         ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
         ...transformFilterProps(blurProps, filtersProps),
+        ...getPropsFromParent(context, containerLayoutProps),
     }
 }
 
@@ -141,8 +156,10 @@ export const Input = forwardRef(
             blurProps,
             fillProps,
             borderProps,
+            containerLayoutProps = {},
+            parent,
             ...rest
-        }: ComponentPropTypes & InputProps,
+        }: ComponentPropTypes & InputProps & ParentContextProps,
         ref
     ) => {
         const props = transform({
@@ -153,12 +170,23 @@ export const Input = forwardRef(
             filtersProps,
             fillProps,
             borderProps,
+            containerLayoutProps,
         })
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
+                        <ContainerRelatedInspectors
+                            parent={parent}
+                            data={containerLayoutProps || {}}
+                            onChange={(data) => {
+                                console.log(data)
+                                requestUpdateProps({
+                                    containerLayoutProps: data,
+                                })
+                            }}
+                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
