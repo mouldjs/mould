@@ -4,6 +4,7 @@ import {
     ChildrenInspectorRenderer,
     ContainerLayoutProps,
 } from '../inspector/InspectorProvider'
+import { LayoutPropTypes } from '../inspector/Layout'
 
 export type ID = string
 export type MouldName = string
@@ -104,6 +105,18 @@ export type ParentContext = {
     childrenIndex: number
 }
 
+export type ChildrenMoveable = SFC<{
+    target: HTMLElement
+    requestUpdateProps: (prop: {
+        containerLayoutProps?: ContainerLayoutProps
+        layoutProps?: LayoutPropTypes
+    }) => void
+    props: {
+        containerLayoutProps?: ContainerLayoutProps
+        layoutProps?: LayoutPropTypes
+    }
+}>
+
 export type AtomicComponent = {
     type: string
     Standard?: z.ZodObject<{ [key: string]: any }>
@@ -117,6 +130,7 @@ export type AtomicComponent = {
         index: number
     ) => object
     ChildrenInspectorRenderer?: ChildrenInspectorRenderer
+    ChildrenMoveable?: ChildrenMoveable
     acceptChildren?: boolean
 }
 

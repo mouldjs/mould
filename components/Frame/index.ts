@@ -3,6 +3,7 @@ import Stack, { transform, transformChildrenProps } from './Frame'
 import { RawFrame } from './RawFrame'
 import { Stack as StackStandard } from '../../standard'
 import { FrameChildrenInspectorRenderer } from './Inspector'
+import { FrameChildrenMoveable } from './ChildrenMoveable'
 
 export const Editable = Stack
 
@@ -19,3 +20,5 @@ export const acceptChildren = true
 export const ChildrenTransform = transformChildrenProps
 
 export const ChildrenInspectorRenderer = FrameChildrenInspectorRenderer
+
+export const ChildrenMoveable = FrameChildrenMoveable

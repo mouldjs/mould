@@ -69,7 +69,7 @@ export const Tree = ({
     })
     const isDragging = useIsDraggingComponent()
 
-    const compRef = useRef()
+    const compRef = useRef<HTMLElement>()
 
     if (!mould) {
         return null
@@ -79,6 +79,7 @@ export const Tree = ({
         return null
     }
     const Comp = plugin.Editable
+    const ChildrenMoveable = parent?.component.ChildrenMoveable
 
     let inside =
         Array.isArray(children) && children.length
@@ -100,9 +101,31 @@ export const Tree = ({
 
     return (
         <>
-            {!isDragging && selected && !root && compRef.current && (
-                <Moveable target={compRef.current} origin={false}></Moveable>
-            )}
+            {!isDragging &&
+                selected &&
+                !root &&
+                compRef.current &&
+                (ChildrenMoveable ? (
+                    <ChildrenMoveable
+                        props={props}
+                        target={compRef.current}
+                        requestUpdateProps={(nextProps) => {
+                            dispatch(
+                                modifyMouldTreePropsOnPath({
+                                    mouldName: path[0][0],
+                                    state: path[0][1],
+                                    props: (nextProps as any) as string,
+                                    path: path[1],
+                                })
+                            )
+                        }}
+                    ></ChildrenMoveable>
+                ) : (
+                    <Moveable
+                        target={compRef.current}
+                        origin={false}
+                    ></Moveable>
+                ))}
             {canDrop && (
                 <Moveable target={compRef.current} origin={false}></Moveable>
             )}
