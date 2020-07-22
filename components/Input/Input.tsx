@@ -162,16 +162,19 @@ export const Input = forwardRef(
         }: ComponentPropTypes & InputProps & ParentContextProps,
         ref
     ) => {
-        const props = transform({
-            layoutProps,
-            shadowsProps,
-            InputProps,
-            blurProps,
-            filtersProps,
-            fillProps,
-            borderProps,
-            containerLayoutProps,
-        })
+        const props = transform(
+            {
+                layoutProps,
+                shadowsProps,
+                InputProps,
+                blurProps,
+                filtersProps,
+                fillProps,
+                borderProps,
+                containerLayoutProps,
+            },
+            parent
+        )
 
         return (
             <>
