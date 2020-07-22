@@ -38,6 +38,7 @@ import {
     handleModifyMouldTreeChildrenOnPath,
     handlePauseDebugging,
     handleUpdateDebugging,
+    handleWrapChild,
 } from './appShell'
 
 export default () => [
@@ -82,4 +83,5 @@ export default () => [
     handleModifyMouldTreeChildrenOnPath,
     handlePauseDebugging,
     handleUpdateDebugging,
+    handleWrapChild,
 ]

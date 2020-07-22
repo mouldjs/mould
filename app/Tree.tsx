@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, Path } from './types'
 import { MouldContext, ViewContext } from './Contexts'
@@ -6,12 +6,14 @@ import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
+import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Server } from 'react-feather'
 import { tick } from './selectionTick'
 import {
     insertComponentOnPath,
     modifyMouldTreePropsOnPath,
     modifyMouldTreeChildrenOnPath,
+    wrapChild,
 } from './appShell'
 
 const Moveable = dynamic(() => import('react-moveable'), {
@@ -21,6 +23,18 @@ const Moveable = dynamic(() => import('react-moveable'), {
 
 type PathProps = {
     path: Path
+}
+
+const PopoverContent = ({ content }: { content: string }) => {
+    return (
+        <div
+            style={{
+                padding: 5,
+            }}
+        >
+            {content}
+        </div>
+    )
 }
 
 export const Tree = ({
@@ -70,7 +84,6 @@ export const Tree = ({
     const isDragging = useIsDraggingComponent()
 
     const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
-    const [toolbarOffsetLeft, setToolbarOffsetLeft] = useState<number>(0)
 
     const compRef = useRef()
 
@@ -116,12 +129,11 @@ export const Tree = ({
                                     targetDOM.offsetLeft + 20,
                                 ]
                                 setToolbarOffsetTop(offsetTop)
-                                setToolbarOffsetLeft(offsetLeft)
                             }
                         }}
                         style={{
                             position: 'absolute',
-                            transform: `translate(${toolbarOffsetLeft}px,${toolbarOffsetTop}px)`,
+                            transform: `translate(20px,${toolbarOffsetTop}px)`,
                             minWidth: '160px',
                             border: '1px solid #aaa',
                             borderRadius: '3px',
@@ -142,7 +154,25 @@ export const Tree = ({
                                 backgroundColor: '#aaa',
                             }}
                         ></div>
-                        <Server size={28} color="#aaa"></Server>
+                        <Popover
+                            interactionKind={PopoverInteractionKind.HOVER}
+                            autoFocus={false}
+                            content={
+                                <PopoverContent content="Wrap in a Stack"></PopoverContent>
+                            }
+                        >
+                            <Server
+                                onClick={() => {
+                                    dispatch(
+                                        wrapChild({
+                                            container: 'Stack',
+                                        })
+                                    )
+                                }}
+                                size={28}
+                                color="#aaa"
+                            />
+                        </Popover>
                     </div>
                 </>
             )}

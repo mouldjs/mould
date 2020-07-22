@@ -22,8 +22,7 @@ import {
     ensureTreeNodeByPath,
 } from './utils'
 import nanoid from 'nanoid'
-import { remove, find, cloneDeep } from 'lodash'
-
+import { remove, find, cloneDeep, reduce, values, take, last } from 'lodash'
 type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
 export const selectComponent = createAction<SelectComponentAction>(
@@ -1128,6 +1127,70 @@ export const handlePauseDebugging = handleAction<
     (state, action) => {
         state.debugging = [undefined, state.debugging && state.debugging[1]]
 
+        return state
+    },
+    initialData
+)
+
+type WrapChildActionType = { container: string }
+export const WRAP_CHILD = 'WRAP_CHILD'
+export const wrapChild = createAction<WrapChildActionType>(WRAP_CHILD)
+export const handleWrapChild = handleAction<EditorState, WrapChildActionType>(
+    WRAP_CHILD,
+    (state, { payload: { container } }) => {
+        console.log(container, 'wrapChild')
+        const currentStatePath = state.selection && state.selection[0]
+        const currentState =
+            currentStatePath &&
+            ensureMould(state, currentStatePath[0]).states[currentStatePath[1]]
+
+        if (currentState && currentStatePath) {
+            const currentNodePath = state.selection![1]
+
+            if (currentNodePath && currentNodePath.length) {
+                const target = reduce(
+                    currentNodePath,
+                    (res, cur) => {
+                        if (!values(res).length) {
+                            res = currentState
+                        }
+
+                        res = res.children![cur]
+                        return res
+                    },
+                    {}
+                )
+
+                const wrapped = {
+                    type: container,
+                    props: {},
+                    children: [target],
+                }
+
+                const parentPath = take(
+                    currentNodePath,
+                    currentNodePath.length - 1
+                )
+                let targetIndex = last(currentNodePath)
+
+                let parent: Component | null = null
+                if (!parentPath.length) {
+                    currentState.children![targetIndex] = wrapped
+                } else {
+                    for (let i = 0; i < parentPath.length; i++) {
+                        const step = parentPath[i]
+                        if (!parent) {
+                            parent = currentState.children![step]
+                            console.log(parent, 'parent')
+                        } else {
+                            parent = parent.children![step]
+                        }
+                    }
+
+                    parent!.children![targetIndex] = wrapped
+                }
+            }
+        }
         return state
     },
     initialData
