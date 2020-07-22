@@ -55,7 +55,6 @@ export const View = ({ viewId }: { viewId: string }) => {
     const moulds = useSelector((state: EditorState) => state.moulds)
     const mould = moulds.find((m) => m.name === mouldName)!
     const isDragging = useIsDraggingComponent()
-
     const [, drag] = useDrag({
         item: {
             type: 'TREE',
@@ -107,7 +106,8 @@ export const View = ({ viewId }: { viewId: string }) => {
     const selected = useIsSelectedPath(path)
     const viewRef = useRef()
     const inputValue =
-        (debugging[1] &&
+        (debugging &&
+            debugging[1] &&
             debugging[1][mouldName] &&
             debugging[1][mouldName][state]) ||
         {}

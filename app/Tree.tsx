@@ -6,11 +6,14 @@ import Components from '../components'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
+import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
+import { Server } from 'react-feather'
 import { tick } from './selectionTick'
 import {
     insertComponentOnPath,
     modifyMouldTreePropsOnPath,
     modifyMouldTreeChildrenOnPath,
+    wrapChild,
 } from './appShell'
 
 const Moveable = dynamic(() => import('react-moveable'), {
@@ -20,6 +23,18 @@ const Moveable = dynamic(() => import('react-moveable'), {
 
 type PathProps = {
     path: Path
+}
+
+const PopoverContent = ({ content }: { content: string }) => {
+    return (
+        <div
+            style={{
+                padding: 5,
+            }}
+        >
+            {content}
+        </div>
+    )
 }
 
 export const Tree = ({
@@ -68,6 +83,8 @@ export const Tree = ({
     })
     const isDragging = useIsDraggingComponent()
 
+    const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
+
     const compRef = useRef()
 
     if (!mould) {
@@ -94,7 +111,70 @@ export const Tree = ({
     return (
         <>
             {!isDragging && selected && !root && compRef.current && (
-                <Moveable target={compRef.current} origin={false}></Moveable>
+                <>
+                    <Moveable
+                        target={compRef.current}
+                        origin={false}
+                    ></Moveable>
+                    <div
+                        ref={(dom) => {
+                            if (
+                                dom?.nextElementSibling instanceof HTMLElement
+                            ) {
+                                const targetDOM = dom?.nextElementSibling
+                                const [offsetTop, offsetLeft] = [
+                                    targetDOM.offsetTop +
+                                        targetDOM.clientHeight +
+                                        10,
+                                    targetDOM.offsetLeft + 20,
+                                ]
+                                setToolbarOffsetTop(offsetTop)
+                            }
+                        }}
+                        style={{
+                            position: 'absolute',
+                            transform: `translate(20px,${toolbarOffsetTop}px)`,
+                            minWidth: '160px',
+                            border: '1px solid #aaa',
+                            borderRadius: '3px',
+                            padding: '10px',
+                            backgroundColor: '#f0f0f0',
+                            fontSize: '20px',
+                            color: '#aaa',
+                            boxShadow: '1px 1px 5px #ddd',
+                        }}
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                width: 5,
+                                height: '100%',
+                                backgroundColor: '#aaa',
+                            }}
+                        ></div>
+                        <Popover
+                            interactionKind={PopoverInteractionKind.HOVER}
+                            autoFocus={false}
+                            content={
+                                <PopoverContent content="Wrap in a Stack"></PopoverContent>
+                            }
+                        >
+                            <Server
+                                onClick={() => {
+                                    dispatch(
+                                        wrapChild({
+                                            container: 'Stack',
+                                        })
+                                    )
+                                }}
+                                size={28}
+                                color="#aaa"
+                            />
+                        </Popover>
+                    </div>
+                </>
             )}
             {canDrop && (
                 <Moveable target={compRef.current} origin={false}></Moveable>
