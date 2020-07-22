@@ -11,24 +11,33 @@ import {
 import * as paths from './paths'
 import { existsSyncWithExtension } from './utils'
 
+if (!fs.existsSync(paths.editor.byVersionDirectory)) {
+    console.warn(
+        `You don't have Mould installed.\n\n` +
+            'To install Mould just type:\n\n' +
+            '  npx mould install\n'
+    )
+    process.exit(1)
+}
+if (!fs.existsSync(paths.app.mouldDirectory)) {
+    console.warn(
+        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
+            `initialized at ${paths.app.directory}\n\n` +
+            'You could start by typing:\n\n' +
+            '  npx mould init\n'
+    )
+    process.exit(1)
+}
+
 ;(async function dev() {
-    if (fs.existsSync(paths.app.mouldDirectory)) {
-        try {
-            await build()
-            symlinkMould()
-            runEditor()
-            runTscWatch()
-            runMouldWatch()
-        } catch (error) {
-            console.error('Failed to run Mould in development\n' + error)
-        }
-    } else {
-        console.warn(
-            `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
-                `initialized at ${paths.app.directory}\n\n` +
-                'You could start by typing:\n\n' +
-                '  npx mould init\n'
-        )
+    try {
+        await build()
+        symlinkMould()
+        runEditor()
+        runTscWatch()
+        runMouldWatch()
+    } catch (error) {
+        console.error('Failed to run Mould in development\n' + error)
     }
 })()
 
