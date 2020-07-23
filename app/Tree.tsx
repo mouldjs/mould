@@ -7,13 +7,14 @@ import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
-import { Server } from 'react-feather'
+import { Server, Anchor } from 'react-feather'
 import { tick } from './selectionTick'
 import {
     insertComponentOnPath,
     modifyMouldTreePropsOnPath,
     modifyMouldTreeChildrenOnPath,
     wrapChild,
+    transfromNodeToKit,
 } from './appShell'
 
 const Moveable = dynamic(() => import('react-moveable'), {
@@ -107,7 +108,6 @@ export const Tree = ({
                   )
               })
             : null
-
     return (
         <>
             {!isDragging && selected && !root && compRef.current && (
@@ -173,6 +173,28 @@ export const Tree = ({
                                 color="#aaa"
                             />
                         </Popover>
+                        {plugin.type !== 'Kit' && (
+                            <Popover
+                                interactionKind={PopoverInteractionKind.HOVER}
+                                autoFocus={false}
+                                content={
+                                    <PopoverContent content="Transform to a Kit"></PopoverContent>
+                                }
+                            >
+                                <Anchor
+                                    className="m-l"
+                                    onClick={() => {
+                                        dispatch(
+                                            transfromNodeToKit({
+                                                type: plugin.type,
+                                            })
+                                        )
+                                    }}
+                                    size={28}
+                                    color="#aaa"
+                                />
+                            </Popover>
+                        )}
                     </div>
                 </>
             )}
