@@ -39,6 +39,7 @@ import {
     handlePauseDebugging,
     handleUpdateDebugging,
     handleWrapChild,
+    handleTransfromNodeToKit,
 } from './appShell'
 
 export default () => [
@@ -84,4 +85,5 @@ export default () => [
     handlePauseDebugging,
     handleUpdateDebugging,
     handleWrapChild,
+    handleTransfromNodeToKit,
 ]
