@@ -34,8 +34,8 @@ if (!fs.existsSync(paths.app.mouldDirectory)) {
         await build()
         symlinkMould()
         runEditor()
-        runTscWatch()
-        runMouldWatch()
+        watchTs()
+        watchMould()
     } catch (error) {
         console.error('Failed to run Mould in development\n' + error)
     }
@@ -96,7 +96,7 @@ function runEditor() {
     }
 }
 
-function runTscWatch() {
+function watchTs() {
     spawn(
         paths.bin.tsc,
         ['-p', path.join(__dirname, 'tsconfig.components.json'), '--watch'],
@@ -104,7 +104,7 @@ function runTscWatch() {
     )
 }
 
-function runMouldWatch() {
+function watchMould() {
     fs.watch(
         paths.app.mouldDirectory,
         debounce((event, filename) => {
