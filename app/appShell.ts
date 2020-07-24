@@ -1149,7 +1149,7 @@ export const handleWrapChild = handleAction<EditorState, WrapChildActionType>(
             if (currentNodePath && currentNodePath.length) {
                 const target = reduce(
                     currentNodePath,
-                    (res, cur) => {
+                    (res: any, cur) => {
                         if (!values(res).length) {
                             res = currentState
                         }
@@ -1170,7 +1170,7 @@ export const handleWrapChild = handleAction<EditorState, WrapChildActionType>(
                     currentNodePath,
                     currentNodePath.length - 1
                 )
-                let targetIndex = last(currentNodePath)
+                let targetIndex: any = last(currentNodePath)
 
                 let parent: Component | null = null
                 if (!parentPath.length) {
@@ -1223,7 +1223,7 @@ export const handleTransfromNodeToKit = handleAction<
             if (currentNodePath && currentNodePath.length) {
                 const target = reduce(
                     currentNodePath,
-                    (res, cur) => {
+                    (res: any, cur) => {
                         if (!values(res).length) {
                             res = currentState
                         }
@@ -1259,7 +1259,7 @@ export const handleTransfromNodeToKit = handleAction<
                     currentNodePath,
                     currentNodePath.length - 1
                 )
-                let targetIndex = last(currentNodePath)
+                let targetIndex: any = last(currentNodePath)
 
                 let parent: Component | null = null
                 if (!parentPath.length) {
