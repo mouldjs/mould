@@ -134,7 +134,7 @@ export type AtomicComponent = {
     acceptChildren?: boolean
 }
 
-export type useScopeFn = (input: object) => [StateName, object]
+export type useScopeFn = (input: object) => [object, StateName]
 
 export type InspectorProps<T, Option = {}> = {
     data: T | undefined
