@@ -75,7 +75,7 @@ function symlinkMould() {
 function runEditor() {
     const cdToAppDir = `cd ${paths.editor.byVersionDirectory}`
     const setWorkdirEnvVar = `WORKDIR=${paths.app.mouldDirectory}`
-    const runNextDev = `${paths.bin.next} dev`
+    const runNextDev = `${paths.bin.next} dev -p 5005`
 
     if (
         process.platform === 'win32' ||
