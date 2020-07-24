@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { ChildrenMoveable } from '../../app/types'
+import { ChildrenMoveable, EditorState } from '../../app/types'
 import {
     LayoutSize,
     layoutSizeToString,
@@ -9,7 +9,8 @@ import {
 } from '../../inspector/Layout'
 import { initialRelativeData } from './Inspector'
 import { RelativeProps } from '../../inspector/InspectorProvider'
-import { MoveableProps } from 'react-moveable'
+import { MoveableProps } from 'react-moveable/declaration/types'
+import { useSelector } from 'react-redux'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -17,8 +18,8 @@ const Moveable = dynamic(() => import('react-moveable'), {
 }) as React.ComponentType<MoveableProps & { ref: any }>
 
 const defaultLayoutValue = {
-    width: { amount: 0, unit: 'auto' } as LayoutSize,
-    height: { amount: 0, unit: 'auto' } as LayoutSize,
+    width: { amount: 100, unit: '%' } as LayoutSize,
+    height: { amount: 100, unit: '%' } as LayoutSize,
 }
 
 function addPxToLayoutSize(
@@ -31,7 +32,7 @@ function addPxToLayoutSize(
             return size
         case 'px':
             return {
-                amount: size.amount + px,
+                amount: Math.round(size.amount + px),
                 unit: 'px',
             }
         case '%':
@@ -108,6 +109,8 @@ export const FrameChildrenMoveable: ChildrenMoveable = ({
 }) => {
     const relative = props.containerLayoutProps?.relative
     const layout = props.layoutProps
+    const workspaceZoom =
+        useSelector((state: EditorState) => state.testWorkspace.zoom) || 1
     let lastRelative: RelativeProps | undefined
     let lastLayout: { width: LayoutSize; height: LayoutSize } | undefined
     const ref = useRef<any>()
@@ -115,6 +118,7 @@ export const FrameChildrenMoveable: ChildrenMoveable = ({
     return (
         <Moveable
             ref={ref}
+            zoom={1 / workspaceZoom}
             resizable
             draggable
             snappable
@@ -198,7 +202,7 @@ export const FrameChildrenMoveable: ChildrenMoveable = ({
                     })
                 }
             }}
-            onDrag={({ target, dist: [mx, my] }) => {
+            onDrag={({ target, dist: [mx, my], inputEvent }) => {
                 const {
                     left,
                     top,
@@ -209,6 +213,9 @@ export const FrameChildrenMoveable: ChildrenMoveable = ({
                     containerWidth,
                     containerHeight,
                 } = prepareDimension(target, layout, relative)
+                if (inputEvent.buttons == 4) {
+                    return 0
+                }
                 const {
                     start: nextLeft,
                     end: nextRight,

@@ -112,7 +112,7 @@ const transformStyles = ({
 
 export const transformChildrenProps = ({
     relative,
-}: ContainerLayoutProps): z.infer<typeof Layout> => {
+}: ContainerLayoutProps = {}): z.infer<typeof Layout> => {
     if (relative) {
         return {
             left: layoutSizeToString(relative.left),
