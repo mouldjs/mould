@@ -188,7 +188,7 @@ const transformStackContent = ({
 
 export const transformChildrenStyle = ({
     flex,
-}: ContainerLayoutProps): z.infer<typeof Layout> => {
+}: ContainerLayoutProps = {}): z.infer<typeof Layout> => {
     if (flex) {
         return {
             position: 'relative',
