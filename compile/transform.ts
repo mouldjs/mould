@@ -1,5 +1,5 @@
-import { EditorState, Mould, Component } from '../app/types'
-import { transforms } from '../mould'
+import { EditorState, Mould, Component, ParentContext } from '../app/types'
+import { transforms, definitions } from '../mould'
 
 const ensureComponentName = (mouldName: string) =>
     mouldName[0].toUpperCase() + mouldName.substring(1)
@@ -11,10 +11,10 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
     const { name, scope, kits, input, states } = mould
     const mouldName = ensureComponentName(name!)
 
-    const generateComponent = (comp: Component) => {
+    const generateComponent = (comp: Component, context?: ParentContext) => {
         const { type, props, children = [] } = comp
         let compType = `${MOULD}.components.${type}`
-
+        const plugin = definitions[type]
         const propsClone = { ...props }
         delete propsClone['__mouldName']
         delete propsClone['__kitName']
@@ -47,7 +47,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
                 if (type !== 'Mould') {
                     const transform = transforms[type]!
-                    rawProps = transform(propsClone)
+                    rawProps = transform(propsClone, context)
                 }
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
@@ -67,7 +67,9 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 return `<>
                     {scopes.${name}.map((scopes) => {
                         return (<${compType} ${propsStr} >
-                            ${children.map(generateComponent).join('\n')}
+                            ${children
+                                .map((child) => generateComponent(child))
+                                .join('\n')}
                         </${compType}>)
                     })}
                 <>`
@@ -76,7 +78,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
                 if (type !== 'Mould') {
                     const transform = transforms[type]!
-                    rawProps = transform(propsClone)
+                    rawProps = transform(propsClone, context)
                 }
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
@@ -97,7 +99,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
             compType = ensureComponentName(props['__mouldName'])
         } else {
             const transform = transforms[type]!
-            const rawProps = transform(propsClone)
+            const rawProps = transform(propsClone, context)
 
             propsStr = `${Object.keys(rawProps).reduce((prev, curr) => {
                 const value = rawProps[curr]
@@ -110,7 +112,20 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
         }
 
         return `<${compType} ${propsStr}>
-            ${children.map(generateComponent).join('\n')}
+            ${children
+                .map((child, index) => {
+                    if (plugin) {
+                        const context: ParentContext = {
+                            props,
+                            component: plugin,
+                            childrenIndex: index,
+                        }
+                        return generateComponent(child, context)
+                    } else {
+                        return generateComponent(child)
+                    }
+                })
+                .join('\n')}
         </${compType}>`
     }
 

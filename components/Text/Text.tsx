@@ -1,6 +1,10 @@
 import React, { forwardRef } from 'react'
 import * as z from 'zod'
-import { ComponentPropTypes } from '../../app/types'
+import {
+    ComponentPropTypes,
+    ParentContextProps,
+    ParentContext,
+} from '../../app/types'
 import { RawText } from './RawText'
 import { ComponentInspector } from '../../app/Inspectors'
 import {
@@ -18,6 +22,11 @@ import {
 } from '../../inspector/Filters'
 import { transformColorToStr } from '../../inspector/Color'
 import { Filter } from '../../standard/common'
+import {
+    ContainerLayoutProps,
+    ContainerRelatedInspectors,
+    getPropsFromParent,
+} from '../../inspector/InspectorProvider'
 
 type TextProps = {
     layoutProps?: LayoutPropTypes
@@ -25,6 +34,7 @@ type TextProps = {
     textProps?: TextPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
+    containerLayoutProps?: ContainerLayoutProps
 }
 
 const initialTextProps: TextPropTypes = {
@@ -103,18 +113,23 @@ const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
     }
 }
 
-export const transform = ({
-    layoutProps,
-    shadowsProps,
-    textProps,
-    blurProps,
-    filtersProps,
-}: TextProps = {}) => {
+export const transform = (
+    {
+        layoutProps,
+        shadowsProps,
+        textProps,
+        blurProps,
+        filtersProps,
+        containerLayoutProps,
+    }: TextProps = {},
+    context?: ParentContext
+) => {
     return {
         ...transformLayout(layoutProps),
         ...transformTextProps(textProps!),
         ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
         ...transformFilterProps(blurProps, filtersProps),
+        ...getPropsFromParent(context, containerLayoutProps),
     }
 }
 
@@ -129,22 +144,38 @@ export const Text = forwardRef(
             textProps = initialTextProps,
             filtersProps,
             blurProps,
+            containerLayoutProps,
+            parent,
             ...rest
-        }: ComponentPropTypes & TextProps,
+        }: ComponentPropTypes & TextProps & ParentContextProps,
         ref
     ) => {
-        const props = transform({
-            layoutProps,
-            shadowsProps,
-            textProps,
-            blurProps,
-            filtersProps,
-        })
+        const props = transform(
+            {
+                layoutProps,
+                shadowsProps,
+                textProps,
+                blurProps,
+                filtersProps,
+                containerLayoutProps,
+            },
+            parent
+        )
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
+                        <ContainerRelatedInspectors
+                            parent={parent}
+                            data={containerLayoutProps || {}}
+                            onChange={(data) => {
+                                console.log(data)
+                                requestUpdateProps({
+                                    containerLayoutProps: data,
+                                })
+                            }}
+                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}

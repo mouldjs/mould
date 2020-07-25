@@ -97,7 +97,7 @@ export const transformLayout = (
     }
 }
 
-const initialData: LayoutPropTypes = {
+export const initialData: LayoutPropTypes = {
     width: {
         amount: 100,
         unit: '%',

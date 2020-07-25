@@ -1,78 +1,69 @@
 import React, { forwardRef } from 'react'
-import * as z from 'zod'
-import {
-    ComponentPropTypes,
-    ParentContextProps,
-    ParentContext,
-} from '../../app/types'
-import { RawInput } from './RawInput'
 import { ComponentInspector } from '../../app/Inspectors'
 import {
-    LayoutInspector,
-    LayoutPropTypes,
-    transformLayout,
-} from '../../inspector/Layout'
-import { InputInspector, InputPropTypes } from './Inspector'
+    ComponentPropTypes,
+    ParentContext,
+    ParentContextProps,
+} from '../../app/types'
+import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
 import {
     BorderInspector,
     BorderPropTypes,
     transformBorderProps,
 } from '../../inspector/Border'
+import { transformColorToStr } from '../../inspector/Color'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
-import { ShadowsInspector, ShadowsPropTypes } from '../../inspector/Shadows'
-import { BlurInspector, BlurPropTypes } from '../../inspector/Blur'
 import {
-    FiltersInspector,
     FilterPropTypes,
+    FiltersInspector,
     FilterType,
 } from '../../inspector/Filters'
-import { transformColorToStr } from '../../inspector/Color'
-import { Filter } from '../../standard/common'
 import {
     ContainerLayoutProps,
     ContainerRelatedInspectors,
     getPropsFromParent,
 } from '../../inspector/InspectorProvider'
+import {
+    LayoutInspector,
+    LayoutPropTypes,
+    layoutSizeToString,
+    transformLayout,
+} from '../../inspector/Layout'
+import { ShadowsInspector, ShadowsPropTypes } from '../../inspector/Shadows'
+import { StackProps as StandardStackProp } from '../../standard'
+import { RawFrame } from './RawFrame'
+import { Layout } from '../../standard/common'
+import * as z from 'zod'
 
-type InputProps = {
-    layoutProps?: LayoutPropTypes
-    shadowsProps?: ShadowsPropTypes
-    InputProps?: InputPropTypes
+type StyleProperties = {
     fillProps?: FillPropTypes
     borderProps?: BorderPropTypes
     blurProps?: BlurPropTypes
     filtersProps?: FilterPropTypes
+    shadowsProps?: ShadowsPropTypes
+    innerShadowsProps?: ShadowsPropTypes
+}
+
+type FrameProps = {
+    layoutProps?: LayoutPropTypes
     containerLayoutProps?: ContainerLayoutProps
 }
 
-const initialInputProps: InputPropTypes = {
-    value: '',
-    placeholder: '',
-    color: {
-        r: 0,
-        g: 0,
-        b: 0,
-        a: 1,
-    },
-    size: 14,
-}
-
-const transformInputProps = (
-    InputProps: InputPropTypes = initialInputProps
-) => {
-    return {
-        value: InputProps.value,
-        placeholder: InputProps.placeholder,
-        color: transformColorToStr(InputProps.color),
-        size: InputProps.size + 'px',
+const transformStyles = ({
+    fillProps,
+    borderProps,
+    blurProps,
+    filtersProps,
+    shadowsProps,
+    innerShadowsProps,
+}: StyleProperties) => {
+    let res: StandardStackProp = {}
+    if (fillProps && fillProps.active) {
+        res = { ...res, fill: transformColorToStr(fillProps.color) }
     }
-}
-
-const transformFilterProps = (
-    blurProps?: BlurPropTypes,
-    filtersProps?: FilterPropTypes
-) => {
-    const res: z.infer<typeof Filter> = {}
+    if (borderProps) {
+        res = { ...res, ...transformBorderProps(borderProps) }
+    }
     if (filtersProps) {
         let filterStr = ''
         Object.keys(filtersProps).forEach((filterType: FilterType) => {
@@ -94,83 +85,108 @@ const transformFilterProps = (
             res.filter = `${blurStr} ${res.filter || ''}`.trim()
         }
     }
+    let shadowStr = ''
+    const handleShadow = (shadows: ShadowsPropTypes, inset: boolean) => {
+        shadows.forEach((shadow) => {
+            if (shadow.active) {
+                shadowStr = `${shadowStr}${shadowStr ? ' ,' : ''}${
+                    inset ? 'inset ' : ''
+                }${shadow.x}px ${shadow.y}px ${shadow.blur}px ${
+                    shadow.spread
+                }px ${transformColorToStr(shadow.color)}`
+            }
+        })
+    }
+    if (shadowsProps) {
+        handleShadow(shadowsProps, false)
+    }
+    if (innerShadowsProps) {
+        handleShadow(innerShadowsProps, true)
+    }
+    if (shadowStr) {
+        res.shadow = shadowStr
+    }
 
     return res
 }
 
-const transformShadowsProps = (shadowsProps: ShadowsPropTypes) => {
-    let shadowStr = ''
-    shadowsProps.forEach((shadow) => {
-        if (shadow.active) {
-            shadowStr = `${shadowStr}${shadowStr ? ' ,' : ''}${shadow.x}px ${
-                shadow.y
-            }px ${shadow.blur}px ${transformColorToStr(shadow.color)}`
+export const transformChildrenProps = ({
+    relative,
+}: ContainerLayoutProps = {}): z.infer<typeof Layout> => {
+    if (relative) {
+        return {
+            left: layoutSizeToString(relative.left),
+            top: layoutSizeToString(relative.top),
+            right: layoutSizeToString(relative.right),
+            bottom: layoutSizeToString(relative.bottom),
+            position: 'absolute',
         }
-    })
-
-    return {
-        shadow: shadowStr,
+    } else {
+        return {
+            position: 'absolute',
+        }
     }
 }
 
 export const transform = (
     {
-        layoutProps,
-        shadowsProps,
-        InputProps,
         fillProps,
         borderProps,
         blurProps,
         filtersProps,
+        shadowsProps,
+        innerShadowsProps,
+        layoutProps,
         containerLayoutProps = {},
-    }: InputProps = {},
+    }: StyleProperties & FrameProps = {},
     context?: ParentContext
 ) => {
-    let res = {}
-    if (fillProps && fillProps.active) {
-        res = { ...res, fill: transformColorToStr(fillProps.color) }
-    }
-    if (borderProps) {
-        res = { ...res, ...transformBorderProps(borderProps) }
-    }
     return {
-        ...res,
+        ...transformStyles({
+            fillProps,
+            borderProps,
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+        }),
         ...transformLayout(layoutProps),
-        ...transformInputProps(InputProps!),
-        ...(shadowsProps ? transformShadowsProps(shadowsProps) : {}),
-        ...transformFilterProps(blurProps, filtersProps),
         ...getPropsFromParent(context, containerLayoutProps),
     }
 }
 
-export const Input = forwardRef(
+export default forwardRef(
     (
         {
             requestUpdateProps,
+            children,
             path,
             connectedFields,
-            layoutProps,
-            shadowsProps,
-            InputProps = initialInputProps,
-            filtersProps,
-            blurProps,
             fillProps,
             borderProps,
-            containerLayoutProps = {},
+            blurProps,
+            filtersProps,
+            shadowsProps,
+            innerShadowsProps,
+            layoutProps,
+            containerLayoutProps,
             parent,
             ...rest
-        }: ComponentPropTypes & InputProps & ParentContextProps,
+        }: ComponentPropTypes &
+            StyleProperties &
+            FrameProps &
+            ParentContextProps,
         ref
     ) => {
-        const props = transform(
+        const style = transform(
             {
-                layoutProps,
-                shadowsProps,
-                InputProps,
-                blurProps,
-                filtersProps,
                 fillProps,
                 borderProps,
+                blurProps,
+                filtersProps,
+                shadowsProps,
+                innerShadowsProps,
+                layoutProps,
                 containerLayoutProps,
             },
             parent
@@ -184,7 +200,6 @@ export const Input = forwardRef(
                             parent={parent}
                             data={containerLayoutProps || {}}
                             onChange={(data) => {
-                                console.log(data)
                                 requestUpdateProps({
                                     containerLayoutProps: data,
                                 })
@@ -193,19 +208,11 @@ export const Input = forwardRef(
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
-                            onChange={(data) =>
-                                requestUpdateProps({ layoutProps: data })
-                            }
-                            connectedFields={connectedFields}
-                        ></LayoutInspector>
-                        <InputInspector
-                            title="Input"
-                            data={InputProps}
                             onChange={(data) => {
-                                requestUpdateProps({ InputProps: data })
+                                requestUpdateProps({ layoutProps: data })
                             }}
                             connectedFields={connectedFields}
-                        ></InputInspector>
+                        ></LayoutInspector>
                         <FillInspector
                             title="Fill"
                             data={fillProps}
@@ -225,11 +232,18 @@ export const Input = forwardRef(
                         <ShadowsInspector
                             title="Shadows"
                             data={shadowsProps}
-                            onChange={(data) =>
+                            onChange={(data) => {
                                 requestUpdateProps({ shadowsProps: data })
-                            }
+                            }}
                             connectedFields={connectedFields}
-                            withoutSpread
+                        ></ShadowsInspector>
+                        <ShadowsInspector
+                            title="Inner Shadows"
+                            data={innerShadowsProps}
+                            onChange={(data) => {
+                                requestUpdateProps({ innerShadowsProps: data })
+                            }}
+                            connectedFields={connectedFields}
                         ></ShadowsInspector>
                         <BlurInspector
                             title="Blur"
@@ -249,7 +263,10 @@ export const Input = forwardRef(
                         ></FiltersInspector>
                     </ComponentInspector>
                 )}
-                <RawInput ref={ref} {...props} {...rest}></RawInput>
+
+                <RawFrame ref={ref as any} {...style} {...rest}>
+                    {children}
+                </RawFrame>
             </>
         )
     }

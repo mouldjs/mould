@@ -1,7 +1,11 @@
-import React, { forwardRef, CSSProperties, useEffect } from 'react'
+import React, { forwardRef } from 'react'
 import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
-import { ComponentPropTypes } from '../../app/types'
+import {
+    ComponentPropTypes,
+    ParentContext,
+    ParentContextProps,
+} from '../../app/types'
 import {
     BorderInspector,
     BorderPropTypes,
@@ -19,7 +23,7 @@ import {
     StackPropTypes,
     StackInspector,
     StackDistribution,
-    StackAlignment,
+    StackDirection,
 } from './Inspector'
 import {
     LayoutPropTypes,
@@ -31,7 +35,13 @@ import { initialData } from './Inspector'
 import { RawStack } from './RawStack'
 import { FillInspector, FillPropTypes } from '../../inspector/Fill'
 import { StackProps as StandardStackProp } from '../../standard'
-import { StackSpecific } from '../../standard/stack'
+import { StackSpecific, FlexDirection } from '../../standard/stack'
+import {
+    ContainerLayoutProps,
+    ContainerRelatedInspectors,
+    getPropsFromParent,
+} from '../../inspector/InspectorProvider'
+import { Layout } from '../../standard/common'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -45,6 +55,7 @@ type StyleProperties = {
 type StackProps = {
     stackProps?: StackPropTypes
     layoutProps?: LayoutPropTypes
+    containerLayoutProps?: ContainerLayoutProps
 }
 
 const transformStyles = ({
@@ -131,6 +142,21 @@ enum mapAlignment {
     End = 'flex-end',
 }
 
+const transformDirection = (
+    direction: StackDirection
+): z.infer<typeof FlexDirection> => {
+    switch (direction) {
+        case 'Horizontal':
+            return 'row'
+        case 'HorizontalReverse':
+            return 'row-reverse'
+        case 'Vertical':
+            return 'column'
+        case 'VerticalReverse':
+            return 'column-reverse'
+    }
+}
+
 const transformStackContent = ({
     direction,
     distribute,
@@ -153,24 +179,43 @@ const transformStackContent = ({
 
     return {
         ...paddingParam,
-        flexDirection:
-            direction === 'Vertical' ? 'column' : ('row' as 'column' | 'row'),
+        flexDirection: transformDirection(direction),
         justifyContent: mapDistribution[distribute],
         alignItem: mapAlignment[alignment],
-        // gap,
+        gap: gap + 'px',
     }
 }
 
-export const transform = ({
-    fillProps,
-    borderProps,
-    blurProps,
-    filtersProps,
-    shadowsProps,
-    innerShadowsProps,
-    stackProps,
-    layoutProps,
-}: StyleProperties & StackProps = {}) => {
+export const transformChildrenStyle = ({
+    flex,
+}: ContainerLayoutProps = {}): z.infer<typeof Layout> => {
+    if (flex) {
+        return {
+            position: 'relative',
+            flexGrow: flex.grow.toString(),
+            flexShrink: flex.shrink.toString(),
+        }
+    } else {
+        return {
+            position: 'relative',
+        }
+    }
+}
+
+export const transform = (
+    {
+        fillProps,
+        borderProps,
+        blurProps,
+        filtersProps,
+        shadowsProps,
+        innerShadowsProps,
+        stackProps,
+        layoutProps,
+        containerLayoutProps = {},
+    }: StyleProperties & StackProps = {},
+    context?: ParentContext
+) => {
     return {
         ...transformStyles({
             fillProps,
@@ -182,6 +227,7 @@ export const transform = ({
         }),
         ...transformStackContent(stackProps),
         ...transformLayout(layoutProps),
+        ...getPropsFromParent(context, containerLayoutProps),
     }
 }
 
@@ -200,25 +246,43 @@ export default forwardRef(
             innerShadowsProps,
             stackProps,
             layoutProps,
+            containerLayoutProps,
+            parent,
             ...rest
-        }: ComponentPropTypes & StyleProperties & StackProps,
+        }: ComponentPropTypes &
+            StyleProperties &
+            StackProps &
+            ParentContextProps,
         ref
     ) => {
-        const style = transform({
-            fillProps,
-            borderProps,
-            blurProps,
-            filtersProps,
-            shadowsProps,
-            innerShadowsProps,
-            stackProps,
-            layoutProps,
-        })
+        const style = transform(
+            {
+                fillProps,
+                borderProps,
+                blurProps,
+                filtersProps,
+                shadowsProps,
+                innerShadowsProps,
+                stackProps,
+                layoutProps,
+                containerLayoutProps,
+            },
+            parent
+        )
 
         return (
             <>
                 {requestUpdateProps && path && (
                     <ComponentInspector path={path}>
+                        <ContainerRelatedInspectors
+                            parent={parent}
+                            data={containerLayoutProps || {}}
+                            onChange={(data) => {
+                                requestUpdateProps({
+                                    containerLayoutProps: data,
+                                })
+                            }}
+                        ></ContainerRelatedInspectors>
                         <LayoutInspector
                             title="Layout"
                             data={layoutProps}
