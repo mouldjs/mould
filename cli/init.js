@@ -1,10 +1,13 @@
+import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
 
 import * as paths from './paths'
 
 if (!fs.existsSync(path.join(paths.app.directory, 'package.json'))) {
-    console.error(`Please, run mould init within your project directory`)
+    console.error(
+        `Please, run ${chalk.cyan('mould init')} within your project directory`
+    )
     process.exit(1)
 }
 
@@ -33,6 +36,8 @@ if (!fs.existsSync(paths.app.resolvers)) {
 
 console.log(
     '\nYou could begin by typing:\n\n' +
-        '  npx mould dev\n\n' +
-        'Or you could add mould dev to your package.json scripts\n'
+        `  ${chalk.cyan('npx mould dev')}\n\n` +
+        `Or you could add ${chalk.cyan(
+            'mould dev'
+        )} to your package.json scripts\n`
 )
