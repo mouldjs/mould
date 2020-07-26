@@ -22,8 +22,9 @@ if (!fs.existsSync(paths.editor.byVersionDirectory)) {
 }
 if (!fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
-        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
-            `initialized at ${paths.app.directory}\n\n` +
+        `You don't have ${chalk.green(
+            path.basename(paths.app.mouldDirectory)
+        )} initialized at ${chalk.green(paths.app.directory)}\n\n` +
             'You could start by typing:\n\n' +
             `  ${chalk.cyan('npx mould init')}\n`
     )
