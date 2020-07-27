@@ -1,4 +1,6 @@
+import chalk from 'chalk'
 import fs from 'fs'
+import path from 'path'
 
 import { compileSchema, compileTs } from './compile'
 import {
@@ -41,16 +43,19 @@ if (fs.existsSync(paths.app.schema)) {
 } else if (fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
         `You don't have Mould Schema ` +
-            `at ${paths.app.mouldDirectory}\n\n` +
+            `at ${chalk.green(paths.app.mouldDirectory)}\n\n` +
             'You could begin by typing:\n\n' +
-            '  npx mould dev\n\n' +
-            'Or you could add mould dev to your package.json scripts\n'
+            `  ${chalk.cyan('npx mould dev')}\n\n` +
+            `Or you could add ${chalk.cyan('mould dev')} to your ${chalk.green(
+                'package.json'
+            )} scripts\n`
     )
 } else {
     console.warn(
-        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
-            `initialized at ${paths.app.directory}\n\n` +
+        `You don't have ${chalk.green(
+            path.basename(paths.app.mouldDirectory)
+        )} initialized at ${chalk.green(paths.app.directory)}\n\n` +
             'You could start by typing:\n\n' +
-            '  npx mould init\n'
+            `  ${chalk.cyan('npx mould init')}\n`
     )
 }

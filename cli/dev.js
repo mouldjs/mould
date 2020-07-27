@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import spawn from 'cross-spawn'
 import fs from 'fs'
 import { debounce } from 'lodash'
@@ -15,16 +16,17 @@ if (!fs.existsSync(paths.editor.byVersionDirectory)) {
     console.warn(
         `You don't have Mould installed.\n\n` +
             'To install Mould just type:\n\n' +
-            '  npx mould install\n'
+            `  ${chalk.cyan('npx mould install')}\n`
     )
     process.exit(1)
 }
 if (!fs.existsSync(paths.app.mouldDirectory)) {
     console.warn(
-        `You don't have ${path.basename(paths.app.mouldDirectory)} ` +
-            `initialized at ${paths.app.directory}\n\n` +
+        `You don't have ${chalk.green(
+            path.basename(paths.app.mouldDirectory)
+        )} initialized at ${chalk.green(paths.app.directory)}\n\n` +
             'You could start by typing:\n\n' +
-            '  npx mould init\n'
+            `  ${chalk.cyan('npx mould init')}\n`
     )
     process.exit(1)
 }
