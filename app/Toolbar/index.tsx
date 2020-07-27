@@ -1,4 +1,5 @@
 import AddMouldTrigger from './AddMouldTrigger'
+import InsertTrigger from './InsertTrigger'
 import PanelTrigger from './PanelTrigger'
 import Icons from './Icons'
 import { useSelector } from 'react-redux'
@@ -32,6 +33,7 @@ const Toolbar = ({}) => {
             >
                 test
             </button>
+            <InsertTrigger></InsertTrigger>
             <AddMouldTrigger></AddMouldTrigger>
             <div className="flex m-l m-r">
                 <Icons></Icons>
