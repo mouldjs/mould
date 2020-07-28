@@ -17,11 +17,6 @@ type AtomicComponentByType = {
     [key: string]: AtomicComponent | undefined
 }
 
-const Base = {
-    Components,
-    Controls,
-}
-
 const MouldComp = {
     type: 'Mould',
     Editable: Mould,
@@ -37,8 +32,8 @@ const KitComp = {
 }
 
 const MouldInstance = {
-    ...Base,
-    ...setup(Base),
+    Components,
+    Controls,
     get transforms() {
         return this.Components.reduce(
             (transformsByType, { type, Transform }) => ({
@@ -49,7 +44,7 @@ const MouldInstance = {
         )
     },
     get components() {
-        return Components.reduce(
+        return this.Components.reduce(
             (componentsByType, { type, Raw }) => ({
                 ...componentsByType,
                 [type]: Raw,
@@ -80,5 +75,11 @@ const MouldInstance = {
         return this.Controls[type]
     },
 }
+
+type InsType = typeof MouldInstance
+
+const extentions: InsType = setup(MouldInstance) as any
+Object.assign(MouldInstance.Components, extentions.Components)
+Object.assign(MouldInstance.Controls, extentions.Controls)
 
 export default MouldInstance
