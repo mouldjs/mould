@@ -1234,7 +1234,9 @@ export const handleTransfromNodeToKit = handleAction<
                     {}
                 )
 
-                const kitName = `From ${currentStatePath[0]}-${currentStatePath[1]}`
+                const kitName = `From ${currentStatePath[0]}-${
+                    currentStatePath[1]
+                } ${kits!.length + 1}`
 
                 // add kit
                 const kit = {
