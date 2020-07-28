@@ -170,7 +170,6 @@ export const Text = forwardRef(
                             parent={parent}
                             data={containerLayoutProps || {}}
                             onChange={(data) => {
-                                console.log(data)
                                 requestUpdateProps({
                                     containerLayoutProps: data,
                                 })
