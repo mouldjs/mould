@@ -1233,17 +1233,30 @@ export const handleTransfromNodeToKit = handleAction<
                     },
                     {}
                 )
-
                 const kitName = `From ${currentStatePath[0]}-${
                     currentStatePath[1]
                 } ${kits!.length + 1}`
 
                 // add kit
-                const kit = {
+                const kit: {
+                    type
+                    dataMappingVector
+                    name
+                    isList
+                    param?
+                } = {
                     type,
                     dataMappingVector: [],
                     name: kitName,
                     isList: false, // default single
+                    param: null,
+                }
+
+                if (type === 'Mould') {
+                    kit.param = {
+                        mouldName: target.props['__mouldName'],
+                        mouldState: target.props['__state'],
+                    }
                 }
 
                 kits?.push(kit)
