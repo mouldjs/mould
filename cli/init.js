@@ -39,7 +39,7 @@ if (!fs.existsSync(paths.app.setup)) {
     fs.writeFileSync(paths.app.setup, 'export default () => ({})')
 
     console.log(
-        `Created ${chalk.green(path.basename(paths.app.resolvers))} ` +
+        `Created ${chalk.green(path.basename(paths.app.setup))} ` +
             `at ${chalk.green(paths.app.mouldDirectory)}`
     )
 }
