@@ -78,7 +78,7 @@ const MouldInstance = {
 
 type InsType = typeof MouldInstance
 
-const extentions: InsType = setup(MouldInstance) as any
+const extentions: InsType = (setup as any)(MouldInstance)
 Object.assign(MouldInstance.Components, extentions.Components)
 Object.assign(MouldInstance.Controls, extentions.Controls)
 
