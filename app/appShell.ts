@@ -1139,12 +1139,26 @@ export const handleWrapChild = handleAction<EditorState, WrapChildActionType>(
     WRAP_CHILD,
     (state, { payload: { container } }) => {
         const currentStatePath = state.selection && state.selection[0]
+        const currentMould =
+            currentStatePath && ensureMould(state, currentStatePath[0])
         const currentState =
             currentStatePath &&
-            ensureMould(state, currentStatePath[0]).states[currentStatePath[1]]
+            currentMould &&
+            currentMould.states[currentStatePath[1]]
 
         if (currentState && currentStatePath) {
             const currentNodePath = state.selection![1]
+            if (currentNodePath && !currentNodePath.length) {
+                const target = currentState
+
+                const wrapped = {
+                    type: container,
+                    props: {},
+                    children: [target],
+                }
+
+                currentMould!.states[currentStatePath[1]] = wrapped
+            }
 
             if (currentNodePath && currentNodePath.length) {
                 const target = reduce(
@@ -1219,6 +1233,49 @@ export const handleTransfromNodeToKit = handleAction<
 
         if (currentState && currentStatePath) {
             const currentNodePath = state.selection![1]
+
+            // for root
+            if (currentNodePath && !currentNodePath.length) {
+                const target = currentState
+                const kitName = `From ${currentStatePath[0]}-${
+                    currentStatePath[1]
+                } ${kits!.length + 1}`
+
+                // add kit
+                const kit: {
+                    type
+                    dataMappingVector
+                    name
+                    isList
+                    param?
+                } = {
+                    type,
+                    dataMappingVector: [],
+                    name: kitName,
+                    isList: false, // default single
+                    param: null,
+                }
+
+                if (type === 'Mould') {
+                    kit.param = {
+                        mouldName: target.props['__mouldName'],
+                        mouldState: target.props['__state'],
+                    }
+                }
+
+                kits?.push(kit)
+
+                // replace original node
+                const transformed = {
+                    type: 'Kit',
+                    props: {
+                        __kitName: kitName,
+                    },
+                    children: target.children,
+                }
+
+                currentMould!.states[currentStatePath[1]] = transformed
+            }
 
             if (currentNodePath && currentNodePath.length) {
                 const target = reduce(
