@@ -6,7 +6,9 @@ import * as paths from './paths'
 
 if (!fs.existsSync(path.join(paths.app.directory, 'package.json'))) {
     console.error(
-        `Please, run ${chalk.cyan('mould init')} within your project directory`
+        `Please, run ${chalk.cyan(
+            'npx mould init'
+        )} within your project directory`
     )
     process.exit(1)
 }
