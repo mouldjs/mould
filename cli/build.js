@@ -10,7 +10,20 @@ import {
 import * as paths from './paths'
 import { existsSyncWithExtension } from './utils'
 
+function symlinkMould() {
+    //symlink mould
+    if (fs.existsSync(paths.mould.symlinkDirectory)) {
+        fs.unlinkSync(paths.mould.symlinkDirectory)
+    }
+    fs.symlinkSync(
+        paths.app.mouldDirectory,
+        paths.mould.symlinkDirectory,
+        'dir'
+    )
+}
+
 if (fs.existsSync(paths.app.schema)) {
+    symlinkMould()
     const time = process.hrtime()
 
     Promise.all([

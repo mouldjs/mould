@@ -3,7 +3,6 @@ import * as NumberControl from './NumberControl'
 import * as BooleanControl from './BooleanControl'
 import * as FunctionControl from './FunctionControl'
 import { SFC } from 'react'
-// import { ControlEditPanel } from '../app/types'
 
 export default {
     string: StringControl,

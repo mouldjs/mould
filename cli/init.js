@@ -35,6 +35,15 @@ if (!fs.existsSync(paths.app.resolvers)) {
     )
 }
 
+if (!fs.existsSync(paths.app.setup)) {
+    fs.writeFileSync(paths.app.setup, 'export default () => ({})')
+
+    console.log(
+        `Created ${chalk.green(path.basename(paths.app.setup))} ` +
+            `at ${chalk.green(paths.app.mouldDirectory)}`
+    )
+}
+
 console.log(
     '\nYou could begin by typing:\n\n' +
         `  ${chalk.cyan('npx mould dev')}\n\n` +

@@ -7,9 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addInput } from './appShell'
 import { MouldInput } from './MouldInput'
 import { Plus } from 'react-feather'
-import Controls from '../controls'
+import MouldApp from '../mould'
 
-const InputTypes = Object.keys(Controls)
+const InputTypes = Object.keys(MouldApp.Controls)
 
 export const MouldMetas = () => {
     const dispatch = useDispatch()
