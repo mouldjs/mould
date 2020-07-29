@@ -22,12 +22,24 @@ const Input = styled.input({
     letterSpacing: 1.2,
 })
 
-export default () => {
+export default ({
+    onInput,
+    clearSelected,
+}: {
+    onInput: (value: string) => void
+    clearSelected: () => void
+}) => {
     return (
         <>
             <Container>
                 <Search size="18" />
-                <Input placeholder="Find components..." />
+                <Input
+                    onChange={(e) => {
+                        onInput(e.target.value)
+                        clearSelected()
+                    }}
+                    placeholder="Find components..."
+                />
             </Container>
         </>
     )

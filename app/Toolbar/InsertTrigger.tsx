@@ -5,14 +5,14 @@ import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import Dialog from './InsertDialog'
 
 const InsertTrigger = () => {
-    const [isOpen, setIsOpen] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
     const handleClose = () => setIsOpen(false)
 
     return (
         <>
             <Popover interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}>
                 <div
-                    className="p-r-lg right-divider m-r"
+                    className="p-r right-divider m-r"
                     style={{
                         position: 'relative',
                         display: 'flex',
@@ -23,9 +23,7 @@ const InsertTrigger = () => {
                     onClick={() => setIsOpen(true)}
                 >
                     <FolderPlus color="#fff"></FolderPlus>
-                    <p className={`clickable m-t-sm m-b-0 pure`}>
-                        Insert From ...
-                    </p>
+                    <p className={`clickable m-t-sm m-b-0 pure`}>Insert</p>
                 </div>
                 <Flex
                     translate

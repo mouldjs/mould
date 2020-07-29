@@ -1,5 +1,11 @@
 import styled from 'styled-components'
 import { PlusSquare } from 'react-feather'
+import atomicComponents from '../../../components'
+import { reduce } from 'lodash'
+import { Button } from '@blueprintjs/core'
+import { useCurrentMould } from '../../utils'
+import { useDispatch } from 'react-redux'
+import { waitingForCreating } from '../../appShell'
 
 const Container = styled.div({
     display: 'flex',
@@ -31,17 +37,44 @@ const CategoryDesc = styled.p({
     marginTop: '5px',
 })
 
-const CategoryInfo = ({ title, desc }: { title: string; desc: string }) => {
-    return (
-        <CategoryWrapper>
-            <PlusSquare />
-            <CategortTitle>{title}</CategortTitle>
-            <CategoryDesc>{desc}</CategoryDesc>
-        </CategoryWrapper>
-    )
-}
+export default ({
+    currentItem,
+    onClose,
+}: {
+    currentItem: string
+    onClose: () => void
+}) => {
+    const dispatch = useDispatch()
+    const currentMould = useCurrentMould()
 
-export default () => {
+    const CategoryInfo = ({
+        title,
+        desc,
+        btnCallback,
+    }: {
+        title: string
+        desc: string
+        btnCallback?: () => void
+    }) => {
+        return (
+            <CategoryWrapper>
+                <PlusSquare />
+                <CategortTitle>{title}</CategortTitle>
+                <CategoryDesc>{desc}</CategoryDesc>
+                {btnCallback && (
+                    <Button
+                        type="button"
+                        intent="primary"
+                        onClick={btnCallback}
+                        outlined={false}
+                    >
+                        Insert
+                    </Button>
+                )}
+            </CategoryWrapper>
+        )
+    }
+
     const Placeholder = () => {
         return CategoryInfo({
             title: 'Find and insert anything',
@@ -49,11 +82,45 @@ export default () => {
         })
     }
 
+    const formattedAtomicComponents = reduce(
+        atomicComponents,
+        (res, cur) => {
+            if (cur.type !== 'Kit' && cur.type !== 'Mould') {
+                res[cur.type] = () =>
+                    CategoryInfo({
+                        title: cur.type,
+                        desc: `Insert component ${cur.type} under currentMould`,
+                        btnCallback: () => {
+                            const waitingParams: {
+                                mouldName: string
+                                injectedKitName: string
+                            } = {
+                                mouldName: '',
+                                injectedKitName: '',
+                            }
+                            if (currentMould) {
+                                waitingParams.mouldName = currentMould.name
+                            }
+                            waitingParams.injectedKitName = cur.type
+                            onClose()
+                            dispatch(waitingForCreating(waitingParams))
+                        },
+                    })
+            }
+            return res
+        },
+        {}
+    )
+
+    const components = {
+        ...formattedAtomicComponents,
+    }
+
+    const Current = components[currentItem]
+
     return (
         <>
-            <Container>
-                <Placeholder></Placeholder>
-            </Container>
+            <Container>{currentItem ? <Current /> : <Placeholder />}</Container>
         </>
     )
 }
