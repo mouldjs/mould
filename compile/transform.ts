@@ -10,6 +10,8 @@ const MOULD = 'mould'
 export const transformMouldToReactComponent = (mould: Mould): string => {
     const { name, scope, kits, input, states } = mould
     const mouldName = ensureComponentName(name!)
+    const defaultStateName = Object.keys(states)[0]
+    const defaultUseScope = `() => [{}, '${defaultStateName}']`
 
     const generateComponent = (comp: Component, context?: ParentContext) => {
         const { type, props, children = [] } = comp
@@ -141,7 +143,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
     }
 
     return `export function ${mouldName}(props) {
-    const [scopes, stateName] = ${RESOLVERS}['${mouldName}'](props)
+    const [scopes, stateName] = (${RESOLVERS}['${mouldName}'] || (${defaultUseScope}))(props)
 
     switch(stateName) {
         ${Object.keys(states).map(generateTreeCase).join('\n')}

@@ -28,7 +28,7 @@ export const RawFrame: SFC<StackProps & { ref: any }> = styled.div.attrs<
     onClick: mouseEventWrapper(props.onClick),
     onClickCapture: mouseEventWrapper(props.onClickCapture),
 }))<StackProps>`
-    position: ${(props) => props.position};
+    position: ${(props) => props.position || 'relative'};
     display: flex;
     flex-direction: ${(props) => props.flexDirection};
     justify-content: ${(props) => props.justifyContent};
