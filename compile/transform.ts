@@ -52,7 +52,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
                     delete rawProps[propField]
-                    propsStr += `${propField}={scopes[${scopeField}]}`
+                    propsStr += `${propField}={scopes['${scopeField}']}`
                 })
                 propsStr =
                     `${Object.keys(rawProps).reduce((prev, curr) => {
@@ -72,7 +72,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                                 .join('\n')}
                         </${compType}>)
                     })}
-                <>`
+                </>`
             } else {
                 let rawProps = propsClone
 
@@ -83,7 +83,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
                     delete rawProps[propField]
-                    propsStr += `${propField}={scopes[${scopeField}]}`
+                    propsStr += `${propField}={scopes['${scopeField}']}`
                 })
                 propsStr =
                     `${Object.keys(rawProps).reduce((prev, curr) => {
@@ -140,7 +140,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
             )`
     }
 
-    return `export const ${mouldName} = (props) => {
+    return `export function ${mouldName}(props) {
     const [scopes, stateName] = ${RESOLVERS}['${mouldName}'](props)
 
     switch(stateName) {
@@ -155,8 +155,10 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 export const transform = (schema: EditorState): string => {
     return `// Generated from Mould (github.com/mouldjs/mould)
 import React from 'react'
-import ${RESOLVERS} from './resolvers'
+import re from './resolvers'
 import ${MOULD} from '../mould'
+
+const ${RESOLVERS} = re as any
 
 ${Object.values(schema.moulds).map(transformMouldToReactComponent).join('\n')}
 `
