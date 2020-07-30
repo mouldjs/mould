@@ -1275,6 +1275,7 @@ export const handleTransfromNodeToKit = handleAction<
                     type: 'Kit',
                     props: {
                         __kitName: kitName,
+                        ...target.props,
                     },
                     children: target.children,
                 }
@@ -1328,6 +1329,7 @@ export const handleTransfromNodeToKit = handleAction<
                     type: 'Kit',
                     props: {
                         __kitName: kitName,
+                        ...target.props,
                     },
                     children: target.children,
                 }
