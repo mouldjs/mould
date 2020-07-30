@@ -6,16 +6,13 @@ import MouldApp from '../mould'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
-import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
-import { Server, Anchor } from 'react-feather'
 import { tick } from './selectionTick'
 import {
     insertComponentOnPath,
     modifyMouldTreePropsOnPath,
     modifyMouldTreeChildrenOnPath,
-    wrapChild,
-    transfromNodeToKit,
 } from './appShell'
+import NodeToolbar from './NodeToobar'
 
 const Moveable = dynamic(() => import('react-moveable'), {
     ssr: false,
@@ -141,87 +138,7 @@ export const Tree = ({
                             origin={false}
                         ></Moveable>
                     )}
-                    <div
-                        ref={(dom) => {
-                            if (
-                                dom?.nextElementSibling instanceof HTMLElement
-                            ) {
-                                const targetDOM = dom?.nextElementSibling
-                                const [offsetTop, offsetLeft] = [
-                                    targetDOM.offsetTop +
-                                        targetDOM.clientHeight +
-                                        10,
-                                    targetDOM.offsetLeft + 20,
-                                ]
-                                setToolbarOffsetTop(offsetTop)
-                            }
-                        }}
-                        style={{
-                            position: 'absolute',
-                            transform: `translate(20px,${toolbarOffsetTop}px)`,
-                            minWidth: '160px',
-                            border: '1px solid #aaa',
-                            borderRadius: '3px',
-                            padding: '10px',
-                            backgroundColor: '#f0f0f0',
-                            fontSize: '20px',
-                            color: '#aaa',
-                            boxShadow: '1px 1px 5px #ddd',
-                            zIndex: 2,
-                        }}
-                    >
-                        <div
-                            style={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                width: 5,
-                                height: '100%',
-                                backgroundColor: '#aaa',
-                            }}
-                        ></div>
-                        <Popover
-                            interactionKind={PopoverInteractionKind.HOVER}
-                            autoFocus={false}
-                            content={
-                                <PopoverContent content="Wrap in a Stack"></PopoverContent>
-                            }
-                        >
-                            <Server
-                                onClick={() => {
-                                    dispatch(
-                                        wrapChild({
-                                            container: 'Stack',
-                                        })
-                                    )
-                                }}
-                                size={28}
-                                color="#aaa"
-                            />
-                        </Popover>
-                        {plugin.type !== 'Kit' && (
-                            <Popover
-                                interactionKind={PopoverInteractionKind.HOVER}
-                                autoFocus={false}
-                                content={
-                                    <PopoverContent content="Transform to a Kit"></PopoverContent>
-                                }
-                            >
-                                <Anchor
-                                    className="m-l"
-                                    onClick={() => {
-                                        dispatch(
-                                            transfromNodeToKit({
-                                                type: plugin.type,
-                                            })
-                                        )
-                                    }}
-                                    size={28}
-                                    color="#aaa"
-                                />
-                            </Popover>
-                        )}
-                    </div>
+                    <NodeToolbar type={plugin.type} />
                 </>
             )}
             {canDrop && (
@@ -281,6 +198,9 @@ export const Tree = ({
             >
                 {inside}
             </Comp>
+            {!isDragging && selected && root && (
+                <NodeToolbar type={plugin.type} />
+            )}
         </>
     )
 }
