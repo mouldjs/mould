@@ -922,6 +922,11 @@ export const handleDeleteKit = handleAction<EditorState, DeleteKitAction>(
             })
         }
 
+        if (currentState?.props['__kitName'] === kitName) {
+            const type = kits[currentKitIndex].type
+            currentState.type = type
+        }
+
         Object.assign(ensureMould(state, mouldName), {
             kits: [
                 ...kits.slice(0, currentKitIndex),
