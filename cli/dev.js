@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import spawn from 'cross-spawn'
 import fs from 'fs'
+import fse from 'fs-extra'
 import { debounce } from 'lodash'
 import path from 'path'
 import {
@@ -31,6 +32,7 @@ if (!fs.existsSync(paths.app.mouldDirectory)) {
 
 ;(async function dev() {
     try {
+        copyMould()
         symlinkMould()
         await build()
         runEditor()
@@ -64,18 +66,11 @@ function build() {
     ]).then(require('./compile').compileTs)
 }
 
-function symlinkMould() {
-    //symlink editor
-    if (fs.existsSync(paths.editor.symlinkDirectory)) {
-        fs.unlinkSync(paths.editor.symlinkDirectory)
-    }
-    fs.symlinkSync(
-        paths.app.mouldDirectory,
-        paths.editor.symlinkDirectory,
-        'dir'
-    )
+function copyMould() {
+    fse.copySync(paths.app.mouldDirectory, paths.editor.symlinkDirectory)
+}
 
-    //symlink mould
+function symlinkMould() {
     if (fs.existsSync(paths.mould.symlinkDirectory)) {
         fs.unlinkSync(paths.mould.symlinkDirectory)
     }
@@ -125,6 +120,8 @@ function watchMould() {
             if (!filename) {
                 return
             }
+
+            copyMould()
 
             if (filename.startsWith(path.basename(paths.app.schema))) {
                 const compileSchemaTime = process.hrtime()
