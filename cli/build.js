@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
 
-import { compileSchema, compileTs } from './compile'
 import {
     copyByExtension,
     copyByExtensionWithExtensionReplacement,
@@ -27,7 +26,10 @@ if (fs.existsSync(paths.app.schema)) {
     const time = process.hrtime()
 
     Promise.all([
-        compileSchema(paths.app.schema, paths.mould.components),
+        require('./compile').compileSchema(
+            paths.app.schema,
+            paths.mould.components
+        ),
         existsSyncWithExtension(paths.app.mouldDirectory, '.ts') &&
             copyByExtension(
                 paths.app.mouldDirectory,
@@ -42,7 +44,7 @@ if (fs.existsSync(paths.app.schema)) {
                 '.ts'
             ),
     ])
-        .then(compileTs)
+        .then(require('./compile').compileTs)
         .then(() => {
             const [s, ns] = process.hrtime(time)
 
