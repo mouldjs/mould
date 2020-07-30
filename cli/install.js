@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import spawn from 'cross-spawn'
 import fs from 'fs'
 
@@ -36,6 +37,6 @@ const result = spawn.sync(
 if (result.status === 0) {
     console.info(
         `\nInstalled mould@${version} successfully ` +
-            `at ${paths.editor.directory}`
+            `at ${chalk.green(paths.editor.directory)}`
     )
 }
