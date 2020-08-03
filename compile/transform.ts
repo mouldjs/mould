@@ -1,5 +1,5 @@
 import { EditorState, Mould, Component, ParentContext } from '../app/types'
-import { transforms, definitions } from '../mould'
+import MouldApp from '../mould'
 
 const ensureComponentName = (mouldName: string) =>
     mouldName[0].toUpperCase() + mouldName.substring(1)
@@ -10,11 +10,13 @@ const MOULD = 'mould'
 export const transformMouldToReactComponent = (mould: Mould): string => {
     const { name, scope, kits, input, states } = mould
     const mouldName = ensureComponentName(name!)
+    const defaultStateName = Object.keys(states)[0]
+    const defaultUseScope = `() => [{}, '${defaultStateName}']`
 
     const generateComponent = (comp: Component, context?: ParentContext) => {
         const { type, props, children = [] } = comp
         let compType = `${MOULD}.components.${type}`
-        const plugin = definitions[type]
+        const plugin = MouldApp.definitions[type]
         const propsClone = { ...props }
         delete propsClone['__mouldName']
         delete propsClone['__kitName']
@@ -46,13 +48,13 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = transforms[type]!
+                    const transform = MouldApp.transforms[type]!
                     rawProps = transform(propsClone, context)
                 }
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
                     delete rawProps[propField]
-                    propsStr += `${propField}={scopes[${scopeField}]}`
+                    propsStr += `${propField}={scopes['${scopeField}']}`
                 })
                 propsStr =
                     `${Object.keys(rawProps).reduce((prev, curr) => {
@@ -72,18 +74,18 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
                                 .join('\n')}
                         </${compType}>)
                     })}
-                <>`
+                </>`
             } else {
                 let rawProps = propsClone
 
                 if (type !== 'Mould') {
-                    const transform = transforms[type]!
+                    const transform = MouldApp.transforms[type]!
                     rawProps = transform(propsClone, context)
                 }
 
                 dataMappingVector.forEach(([propField, scopeField]) => {
                     delete rawProps[propField]
-                    propsStr += `${propField}={scopes[${scopeField}]}`
+                    propsStr += `${propField}={scopes['${scopeField}']}`
                 })
                 propsStr =
                     `${Object.keys(rawProps).reduce((prev, curr) => {
@@ -98,7 +100,7 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
         } else if (type === 'Mould') {
             compType = ensureComponentName(props['__mouldName'])
         } else {
-            const transform = transforms[type]!
+            const transform = MouldApp.transforms[type]!
             const rawProps = transform(propsClone, context)
 
             propsStr = `${Object.keys(rawProps).reduce((prev, curr) => {
@@ -140,8 +142,8 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
             )`
     }
 
-    return `export const ${mouldName} = (props) => {
-    const [scopes, stateName] = ${RESOLVERS}['${mouldName}'](props)
+    return `export function ${mouldName}(props) {
+    const [scopes, stateName] = (${RESOLVERS}['${mouldName}'] || (${defaultUseScope}))(props)
 
     switch(stateName) {
         ${Object.keys(states).map(generateTreeCase).join('\n')}
@@ -155,8 +157,10 @@ export const transformMouldToReactComponent = (mould: Mould): string => {
 export const transform = (schema: EditorState): string => {
     return `// Generated from Mould (github.com/mouldjs/mould)
 import React from 'react'
-import ${RESOLVERS} from './resolvers'
-import * as ${MOULD} from '../mould'
+import re from './resolvers'
+import ${MOULD} from '../mould'
+
+const ${RESOLVERS} = re as any
 
 ${Object.values(schema.moulds).map(transformMouldToReactComponent).join('\n')}
 `

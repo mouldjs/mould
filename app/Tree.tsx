@@ -2,7 +2,7 @@ import React, { useState, useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Component, Path, ParentContext, ParentContextProps } from './types'
 import { MouldContext, ViewContext } from './Contexts'
-import Components from '../components'
+import MouldApp from '../mould'
 import { useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
 import { useIsSelectedPath, useIsDraggingComponent } from './utils'
@@ -89,7 +89,7 @@ export const Tree = ({
     if (!mould) {
         return null
     }
-    const plugin = Components.find((c) => c.type === type)
+    const plugin = MouldApp.getComponent(type)
     if (!plugin) {
         return null
     }
@@ -159,7 +159,7 @@ export const Tree = ({
                         if (!kit) {
                             throw Error(`Kit '${__kitName}' not found`)
                         }
-                        const p = Components.find((c) => c.type === kit.type)
+                        const p = MouldApp.getComponent(kit.type)
                         acceptChildren = p?.acceptChildren
                     }
                     acceptChildren && drop(dom)

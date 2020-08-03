@@ -1,8 +1,8 @@
 import React, { forwardRef, useContext } from 'react'
 import { ComponentPropTypes } from '../app/types'
-import components from './'
 import { MouldContext, ViewContext } from '../app/Contexts'
 import List from './List'
+import MouldApp from '../mould'
 
 export default forwardRef(
     (
@@ -52,7 +52,7 @@ export default forwardRef(
             )
         }
 
-        const plugin = components.find((c) => c.type === kit.type)
+        const plugin = MouldApp.getComponent(kit.type)
         if (!plugin) {
             return null
         }

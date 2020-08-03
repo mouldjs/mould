@@ -1,3 +1,5 @@
+import React from 'react'
+
 export const BorderAll = ({ color = 'currentColor', size = 14 }) => (
     <svg
         t="1587465471905"

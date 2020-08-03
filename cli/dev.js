@@ -1,10 +1,9 @@
 import chalk from 'chalk'
 import spawn from 'cross-spawn'
 import fs from 'fs'
+import fse from 'fs-extra'
 import { debounce } from 'lodash'
 import path from 'path'
-
-import { compileSchema, compileTs } from './compile'
 import {
     copyByExtension,
     copyByExtensionWithExtensionReplacement,
@@ -33,8 +32,9 @@ if (!fs.existsSync(paths.app.mouldDirectory)) {
 
 ;(async function dev() {
     try {
-        await build()
+        copyMould()
         symlinkMould()
+        await build()
         runEditor()
         watchTs()
         watchMould()
@@ -46,7 +46,10 @@ if (!fs.existsSync(paths.app.mouldDirectory)) {
 function build() {
     return Promise.all([
         fs.existsSync(paths.app.schema) &&
-            compileSchema(paths.app.schema, paths.mould.components),
+            require('./compile').compileSchema(
+                paths.app.schema,
+                paths.mould.components
+            ),
         existsSyncWithExtension(paths.app.mouldDirectory, '.ts') &&
             copyByExtension(
                 paths.app.mouldDirectory,
@@ -60,16 +63,20 @@ function build() {
                 '.js',
                 '.ts'
             ),
-    ]).then(compileTs)
+    ]).then(require('./compile').compileTs)
+}
+
+function copyMould() {
+    fse.copySync(paths.app.mouldDirectory, paths.editor.symlinkDirectory)
 }
 
 function symlinkMould() {
-    if (fs.existsSync(paths.editor.symlinkDirectory)) {
-        fs.unlinkSync(paths.editor.symlinkDirectory)
+    if (fs.existsSync(paths.mould.symlinkDirectory)) {
+        fs.unlinkSync(paths.mould.symlinkDirectory)
     }
     fs.symlinkSync(
         paths.app.mouldDirectory,
-        paths.editor.symlinkDirectory,
+        paths.mould.symlinkDirectory,
         'dir'
     )
 }
@@ -114,10 +121,13 @@ function watchMould() {
                 return
             }
 
+            copyMould()
+
             if (filename.startsWith(path.basename(paths.app.schema))) {
                 const compileSchemaTime = process.hrtime()
 
-                compileSchema(paths.app.schema, paths.mould.components)
+                require('./compile')
+                    .compileSchema(paths.app.schema, paths.mould.components)
                     .then(() => {
                         const [s, ns] = process.hrtime(compileSchemaTime)
 

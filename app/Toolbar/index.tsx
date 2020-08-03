@@ -2,15 +2,10 @@ import AddMouldTrigger from './AddMouldTrigger'
 import InsertTrigger from './InsertTrigger'
 import PanelTrigger from './PanelTrigger'
 import Icons from './Icons'
-import { useSelector } from 'react-redux'
 import React from 'react'
-import { transform } from '../../compile/transform'
-import { EditorState } from '../types'
 import Resizer from './Resizer'
 
 const Toolbar = ({}) => {
-    const state = useSelector((state: EditorState) => state)
-
     return (
         <div
             style={{
@@ -26,13 +21,6 @@ const Toolbar = ({}) => {
                 zIndex: 2,
             }}
         >
-            <button
-                onClick={() => {
-                    console.log(transform(state))
-                }}
-            >
-                test
-            </button>
             <InsertTrigger></InsertTrigger>
             <AddMouldTrigger></AddMouldTrigger>
             <div className="flex m-l m-r">

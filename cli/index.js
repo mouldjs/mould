@@ -1,4 +1,5 @@
 import arg from 'arg'
+import chalk from 'chalk'
 import spawn from 'cross-spawn'
 
 import packageJson from '../package.json'
@@ -65,5 +66,9 @@ if (commands.includes(command)) {
     }
     process.exit(result.status)
 } else {
-    console.error(`Unknown command "${command}".`)
+    console.error(
+        `Unknown command:\n\n` +
+            `  ${chalk.cyan('mould')} ${chalk.red(command)}\n`
+    )
+    process.exit(1)
 }
