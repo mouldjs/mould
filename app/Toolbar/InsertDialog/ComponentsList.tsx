@@ -1,8 +1,9 @@
 import React, { useRef } from 'react'
 import styled from 'styled-components'
-import { filter, map, findIndex } from 'lodash'
-import Components from '../../../components'
+import { filter, map, groupBy, keys } from 'lodash'
+import MouldApp from '../../../mould'
 import { useSimulateScroll } from '../../utils'
+
 const Container = styled.div({
     borderRight: '1px solid #aaa',
     flexGrow: 1,
@@ -54,33 +55,25 @@ const ItemDesc = styled.p({
     textOverflow: 'ellipsis',
 })
 
-interface listItem {
-    name: string
-    type: string
-    desc?: string
-    icon?
+const getFormattedComponents = (components) => {
+    return map(components, (comp) => {
+        return {
+            name: comp.type,
+            desc: comp.type,
+            icon: comp.Icon,
+            category: comp.category,
+        }
+    })
 }
 
-const list: listItem[] = [
-    {
-        name: 'Atomic',
-        type: 'groupTitle',
-    },
-    ...map(
-        filter(
-            Components,
-            (comp) => comp.type !== 'Kit' && comp.type !== 'Mould'
-        ),
-        (comp) => {
-            return {
-                name: comp.type,
-                desc: comp.type,
-                icon: comp.Icon,
-                type: 'item',
-            }
-        }
-    ),
-]
+const getGroupMap = (components) => {
+    const classified = groupBy(components, 'category.name')
+
+    return {
+        titles: keys(classified),
+        itemMap: classified,
+    }
+}
 
 export default ({
     onItemSelect,
@@ -92,46 +85,44 @@ export default ({
     inputValue: string
 }) => {
     const containerRef = useRef<HTMLDivElement>(null)
-    const searchedResult = filter(list, (item) => {
-        const name = item.name.toUpperCase()
+    const initialList = getFormattedComponents(MouldApp.components)
+    const searchedResult = filter(initialList, (item) => {
+        const name = item.name.toUpperCase() || item.desc.toUpperCase()
         const target = inputValue.toUpperCase()
         return name.includes(target)
     })
+
+    const components = getGroupMap(searchedResult)
+
     useSimulateScroll(containerRef)
 
     return (
         <Container ref={containerRef}>
-            {searchedResult.length ? (
-                searchedResult.map((item) => {
-                    if (item.type === 'groupTitle') {
-                        return <CategoryTitle>{item.name}</CategoryTitle>
-                    } else {
-                        const Icon = item.icon
-
+            {components.titles.map((title) => {
+                const items = components.itemMap[title]
+                return [
+                    <CategoryTitle>{title}</CategoryTitle>,
+                    items.map((item) => {
                         return (
-                            <>
-                                <Item
-                                    onClick={() => onItemSelect(item.name)}
-                                    style={{
-                                        border:
-                                            currentItem === item.name
-                                                ? '1px solid #56a9f1'
-                                                : '',
-                                    }}
-                                >
-                                    <Icon />
-                                    <ItemInfo>
-                                        <ItemTitle>{item.name}</ItemTitle>
-                                        <ItemDesc>{item.desc}</ItemDesc>
-                                    </ItemInfo>
-                                </Item>
-                            </>
+                            <Item
+                                onClick={() => onItemSelect(item.name)}
+                                style={{
+                                    border:
+                                        currentItem === item.name
+                                            ? '1px solid #56a9f1'
+                                            : '',
+                                }}
+                            >
+                                <item.icon></item.icon>
+                                <ItemInfo>
+                                    <ItemTitle>{item.name}</ItemTitle>
+                                    <ItemDesc>{item.desc}</ItemDesc>
+                                </ItemInfo>
+                            </Item>
                         )
-                    }
-                })
-            ) : (
-                <CategoryTitle>No result</CategoryTitle>
-            )}
+                    }),
+                ]
+            })}
         </Container>
     )
 }

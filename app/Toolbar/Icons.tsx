@@ -10,10 +10,9 @@ import { useCurrentMould } from '../utils'
 import { delay } from 'lodash'
 import MouldApp from '../../mould'
 
-const getIcon = (name, isActive) => {
+const getIcon = (name) => {
     const baseComponents = {
         Text: {
-            icon: <Type className={`${isActive ? 'primary' : 'pure'}`}></Type>,
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -38,7 +37,6 @@ const getIcon = (name, isActive) => {
             ),
         },
         Input: {
-            icon: <Edit className={`${isActive ? 'primary' : 'pure'}`}></Edit>,
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -63,9 +61,6 @@ const getIcon = (name, isActive) => {
             ),
         },
         Stack: {
-            icon: (
-                <Layers className={`${isActive ? 'primary' : 'pure'}`}></Layers>
-            ),
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -92,9 +87,6 @@ const getIcon = (name, isActive) => {
             ),
         },
         Frame: {
-            icon: (
-                <Layers className={`${isActive ? 'primary' : 'pure'}`}></Layers>
-            ),
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -121,7 +113,6 @@ const getIcon = (name, isActive) => {
             ),
         },
         Icon: {
-            icon: <Star className={`${isActive ? 'primary' : 'pure'}`}></Star>,
             descInPopover: (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -151,7 +142,7 @@ const getIcon = (name, isActive) => {
     return baseComponents[name]
 }
 
-const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
+const Icon = ({ iconComp, name, onHover, onPopoverOpened, isOpen }) => {
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
     const currentMould = useCurrentMould()
@@ -166,61 +157,71 @@ const Icon = ({ name, onHover, onPopoverOpened, isOpen }) => {
     })
     const isActive =
         creating?.injectedKitName && creating?.injectedKitName === name
-    const { icon, descInPopover } = getIcon(name, isActive)
+    const { descInPopover } = getIcon(name) || {}
 
+    const Icon = iconComp
     return (
-        <Popover isOpen={isOpen} onOpening={() => onPopoverOpened(name)}>
-            <div
-                style={{
-                    display: 'flex',
-                    padding: '5px 10px',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                }}
-                onMouseEnter={() => {
-                    onHover(name)
-                }}
-                onClick={() => {
-                    const waitingParams: {
-                        mouldName: string
-                        injectedKitName: string
-                    } = {
-                        mouldName: '',
-                        injectedKitName: '',
-                    }
-
-                    if (currentMould) {
-                        waitingParams.mouldName = currentMould.name
-                    }
-                    waitingParams.injectedKitName = name
-
-                    dispatch(waitingForCreating(waitingParams))
-                }}
-                ref={drag}
-            >
-                {icon}
-                <p
-                    className={`clickable m-t-sm m-b-0 ${
-                        isActive ? 'primary' : 'pure'
-                    }`}
+        <>
+            {descInPopover && (
+                <Popover
+                    isOpen={isOpen}
+                    onOpening={() => onPopoverOpened(name)}
                 >
-                    {name}
-                </p>
-            </div>
-            <div
-                style={{
-                    flexDirection: 'column',
-                    fontSize: '14px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: 180,
-                    padding: 10,
-                }}
-            >
-                {descInPopover}
-            </div>
-        </Popover>
+                    <div
+                        style={{
+                            display: 'flex',
+                            padding: '5px 10px',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                        }}
+                        onMouseEnter={() => {
+                            onHover(name)
+                        }}
+                        onClick={() => {
+                            const waitingParams: {
+                                mouldName: string
+                                injectedKitName: string
+                            } = {
+                                mouldName: '',
+                                injectedKitName: '',
+                            }
+
+                            if (currentMould) {
+                                waitingParams.mouldName = currentMould.name
+                            }
+                            waitingParams.injectedKitName = name
+
+                            dispatch(waitingForCreating(waitingParams))
+                        }}
+                        ref={drag}
+                    >
+                        <Icon
+                            className={`${isActive ? 'primary' : 'pure'}`}
+                        ></Icon>
+                        <p
+                            className={`clickable m-t-sm m-b-0 ${
+                                isActive ? 'primary' : 'pure'
+                            }`}
+                        >
+                            {name}
+                        </p>
+                    </div>
+                    <div
+                        style={{
+                            flexDirection: 'column',
+                            fontSize: '14px',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: 180,
+                            padding: 10,
+                        }}
+                    >
+                        {descInPopover}
+                    </div>
+                </Popover>
+            )}
+        </>
     )
 }
 
@@ -236,13 +237,16 @@ const Icons: any = () => {
         timer = delay(() => setOpening(null), 1500)
     }
 
-    const icons = Object.keys(MouldApp.components)
+    const baseComponentIcons = Object.keys(MouldApp.components).filter(
+        (k) => MouldApp.components[k].category.name === 'Atomic'
+    )
 
-    return icons.map((icon) => (
+    return baseComponentIcons.map((iconName) => (
         <Icon
-            key={icon}
-            name={icon}
-            isOpen={icon === opening}
+            iconComp={MouldApp.components[iconName].Icon}
+            key={iconName}
+            name={iconName}
+            isOpen={iconName === opening}
             onHover={onHover}
             onPopoverOpened={onPopoverOpened}
         ></Icon>
