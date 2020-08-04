@@ -1,11 +1,15 @@
 import styled from 'styled-components'
 import { PlusSquare } from 'react-feather'
-import atomicComponents from '../../../components'
-import { reduce } from 'lodash'
+import MouldApp from '../../../mould'
+import { reduce, values } from 'lodash'
 import { Button } from '@blueprintjs/core'
 import { useCurrentMould } from '../../utils'
 import { useDispatch } from 'react-redux'
 import { waitingForCreating } from '../../appShell'
+
+const atomicComponents = values(MouldApp.components).filter(
+    (c) => c.category.name === 'Atomic'
+)
 
 const Container = styled.div({
     display: 'flex',
@@ -82,6 +86,13 @@ export default ({
         })
     }
 
+    const HasntRegisteredHolder = () => {
+        return CategoryInfo({
+            title: 'Did not register content in this block',
+            desc: '',
+        })
+    }
+
     const formattedAtomicComponents = reduce(
         atomicComponents,
         (res, cur) => {
@@ -114,13 +125,27 @@ export default ({
 
     const components = {
         ...formattedAtomicComponents,
+        Button: () =>
+            CategoryInfo({
+                title: 'Button',
+                desc: 'Button',
+            }),
     }
-
     const Current = components[currentItem]
 
     return (
         <>
-            <Container>{currentItem ? <Current /> : <Placeholder />}</Container>
+            <Container>
+                {currentItem ? (
+                    Current ? (
+                        <Current />
+                    ) : (
+                        <HasntRegisteredHolder />
+                    )
+                ) : (
+                    <Placeholder />
+                )}
+            </Container>
         </>
     )
 }

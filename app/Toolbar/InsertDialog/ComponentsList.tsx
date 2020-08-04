@@ -1,5 +1,6 @@
 import React, { useRef } from 'react'
 import styled from 'styled-components'
+import { Package } from 'react-feather'
 import { filter, map, groupBy, keys } from 'lodash'
 import MouldApp from '../../../mould'
 import { useSimulateScroll } from '../../utils'
@@ -70,7 +71,7 @@ const getGroupMap = (components) => {
     const classified = groupBy(components, 'category.name')
 
     return {
-        titles: keys(classified),
+        titles: keys(classified).sort(),
         itemMap: classified,
     }
 }
@@ -87,9 +88,11 @@ export default ({
     const containerRef = useRef<HTMLDivElement>(null)
     const initialList = getFormattedComponents(MouldApp.components)
     const searchedResult = filter(initialList, (item) => {
-        const name = item.name.toUpperCase() || item.desc.toUpperCase()
+        const name = item.name.toUpperCase()
+        const desc = item.desc.toUpperCase()
         const target = inputValue.toUpperCase()
-        return name.includes(target)
+
+        return name.includes(target) || desc.includes(target)
     })
 
     const components = getGroupMap(searchedResult)
@@ -98,31 +101,35 @@ export default ({
 
     return (
         <Container ref={containerRef}>
-            {components.titles.map((title) => {
-                const items = components.itemMap[title]
-                return [
-                    <CategoryTitle>{title}</CategoryTitle>,
-                    items.map((item) => {
-                        return (
-                            <Item
-                                onClick={() => onItemSelect(item.name)}
-                                style={{
-                                    border:
-                                        currentItem === item.name
-                                            ? '1px solid #56a9f1'
-                                            : '',
-                                }}
-                            >
-                                <item.icon></item.icon>
-                                <ItemInfo>
-                                    <ItemTitle>{item.name}</ItemTitle>
-                                    <ItemDesc>{item.desc}</ItemDesc>
-                                </ItemInfo>
-                            </Item>
-                        )
-                    }),
-                ]
-            })}
+            {searchedResult.length ? (
+                components.titles.map((title) => {
+                    const items = components.itemMap[title]
+                    return [
+                        <CategoryTitle>{title}</CategoryTitle>,
+                        items.map((item) => {
+                            return (
+                                <Item
+                                    onClick={() => onItemSelect(item.name)}
+                                    style={{
+                                        border:
+                                            currentItem === item.name
+                                                ? '1px solid #56a9f1'
+                                                : '',
+                                    }}
+                                >
+                                    {item.icon ? <item.icon /> : <Package />}
+                                    <ItemInfo>
+                                        <ItemTitle>{item.name}</ItemTitle>
+                                        <ItemDesc>{item.desc}</ItemDesc>
+                                    </ItemInfo>
+                                </Item>
+                            )
+                        }),
+                    ]
+                })
+            ) : (
+                <CategoryTitle>No Results</CategoryTitle>
+            )}
         </Container>
     )
 }

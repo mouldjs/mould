@@ -22,7 +22,9 @@ const InsertTrigger = () => {
                     }}
                     onClick={() => setIsOpen(true)}
                 >
-                    <FolderPlus color="#fff"></FolderPlus>
+                    <FolderPlus
+                        className={isOpen ? 'primary' : 'pure'}
+                    ></FolderPlus>
                     <p className={`clickable m-t-sm m-b-0 pure`}>Insert</p>
                 </div>
                 <Flex
