@@ -66,7 +66,7 @@ const App = () => {
     const DebugPanelRef = useRef<HTMLDivElement>(null)
     const [hierarchyBlockHeight, setHierarchyBlockHeight] = useState(50)
     const [kitsBlockHeight, setKitsBlockHeight] = useState(50)
-
+    const headerHeight = 50
     useEffect(() => {
         //阻止二指滑动的默认浏览器 后退/前进 行为
         if (document) {
@@ -195,7 +195,7 @@ const App = () => {
                         dispatch(duplicateView({ viewId: currentView.id }))
                 }, 300)}
             ></KeyboardEventHandler>
-            <Toolbar></Toolbar>
+            <Toolbar height={headerHeight} />
             <Flex
                 translate
                 style={{
@@ -215,8 +215,8 @@ const App = () => {
                         transition: '0.3s',
                         position: 'absolute',
                         left: hasSelection ? 0 : -215,
-                        top: '55px',
-                        height: 'calc(100vh - 55px)',
+                        top: `${headerHeight}px`,
+                        height: `calc(100vh - ${headerHeight}px)`,
                         width: '215px',
                         zIndex: 1,
                         borderRight: '1px solid #aaaaaa',
@@ -261,9 +261,9 @@ const App = () => {
                         transition: '0.3s',
                         position: 'absolute',
                         right: hasSelection ? 0 : -215,
-                        top: '55px',
+                        top: `${headerHeight}px`,
+                        height: `calc(100vh - ${headerHeight}px)`,
                         zIndex: 1,
-                        height: 'calc(100vh - 55px)',
                         borderLeft: '1px solid #aaa',
                         backgroundColor: '#e1e1e1',
                     }}

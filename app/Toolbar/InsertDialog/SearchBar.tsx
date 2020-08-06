@@ -6,11 +6,11 @@ const Container = styled.div({
     background: '#fff',
     height: '50px',
     width: '100%',
-    borderBottom: '1px solid #aaa',
-    borderRadius: '4px 4px 0 0',
+    borderBottom: '1px solid #ddd',
     alignItems: 'center',
     paddingLeft: '10px',
     paddingRight: '10px',
+    borderRight: '1px solid #ddd',
 })
 
 const Input = styled.input({
@@ -22,13 +22,7 @@ const Input = styled.input({
     letterSpacing: 1.2,
 })
 
-export default ({
-    onInput,
-    clearSelected,
-}: {
-    onInput: (value: string) => void
-    clearSelected: () => void
-}) => {
+export default ({ onInput }: { onInput: (value: string) => void }) => {
     return (
         <>
             <Container>
@@ -36,7 +30,6 @@ export default ({
                 <Input
                     onChange={(e) => {
                         onInput(e.target.value)
-                        clearSelected()
                     }}
                     placeholder="Find components..."
                 />

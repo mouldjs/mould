@@ -1,9 +1,8 @@
+import { useState } from 'react'
 import styled from 'styled-components'
-import { Dialog } from '@blueprintjs/core'
+import { Drawer, Position } from '@blueprintjs/core'
 import SearchBar from './SearchBar'
 import ComponentsList from './ComponentsList'
-import InfoBlock from './InfoBlock'
-import { useState } from 'react'
 
 const Body = styled.div({
     display: 'flex',
@@ -12,7 +11,7 @@ const Body = styled.div({
 })
 
 const BodyWrapper = styled.div({
-    height: 'calc(100% - 50px)',
+    height: '100vh',
 })
 
 // just list atomic component for layout
@@ -30,36 +29,25 @@ export default ({
         canEscapeKeyClose: false,
         canOutsideClickClose: true,
         enforceFocus: false,
-        usePortal: true,
+        usePortal: false,
+        position: Position.LEFT,
+        size: undefined,
+        hasBackdrop: false,
         style: {
-            maxWidth: 'calc(100vw - 200px)',
-            maxHeight: 'calc(100vh - 200px)',
-            minWidth: '680px',
-            minHeight: '480px',
-            height: '480px',
-            paddingBottom: 0,
+            width: '215px',
+            height: '100%',
         },
     }
 
-    const [currentItem, setCurrentItem] = useState('')
     const [inputValue, setInputValue] = useState('')
-    const onItemSelect = (itemName) => setCurrentItem(itemName)
     const onInput = (value) => setInputValue(value)
-    const clearSelected = () => setCurrentItem('')
 
     return (
-        <Dialog isOpen={isOpen} onClose={onClose} {...config}>
+        <Drawer isOpen={isOpen} onClose={onClose} {...config}>
             <BodyWrapper>
-                <SearchBar onInput={onInput} clearSelected={clearSelected} />
-                <Body>
-                    <ComponentsList
-                        inputValue={inputValue}
-                        onItemSelect={onItemSelect}
-                        currentItem={currentItem}
-                    />
-                    <InfoBlock onClose={onClose} currentItem={currentItem} />
-                </Body>
+                <SearchBar onInput={onInput} />
+                <ComponentsList inputValue={inputValue} />
             </BodyWrapper>
-        </Dialog>
+        </Drawer>
     )
 }

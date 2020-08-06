@@ -25,7 +25,13 @@ const InsertTrigger = () => {
                     <FolderPlus
                         className={isOpen ? 'primary' : 'pure'}
                     ></FolderPlus>
-                    <p className={`clickable m-t-sm m-b-0 pure`}>Insert</p>
+                    <p
+                        className={`clickable m-t-sm m-b-0 ${
+                            isOpen ? 'primary' : 'pure'
+                        }`}
+                    >
+                        Insert
+                    </p>
                 </div>
                 <Flex
                     translate
