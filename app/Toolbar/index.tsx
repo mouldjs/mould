@@ -1,10 +1,11 @@
 import AddMouldTrigger from './AddMouldTrigger'
+import InsertTrigger from './InsertTrigger'
 import PanelTrigger from './PanelTrigger'
 import Icons from './Icons'
 import React from 'react'
 import Resizer from './Resizer'
 
-const Toolbar = ({}) => {
+const Toolbar = ({ height }: { height: string | number }) => {
     return (
         <div
             style={{
@@ -15,11 +16,12 @@ const Toolbar = ({}) => {
                 background: '#333',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '55px',
+                height,
                 width: '100vw',
                 zIndex: 2,
             }}
         >
+            <InsertTrigger></InsertTrigger>
             <AddMouldTrigger></AddMouldTrigger>
             <div className="flex m-l m-r">
                 <Icons></Icons>

@@ -45,10 +45,19 @@ const MouldInstance = {
     },
     get components() {
         return this.Components.reduce(
-            (componentsByType, { type, Raw }) => ({
-                ...componentsByType,
-                [type]: Raw,
-            }),
+            (componentsByType, { type, Raw, category, Icon }) => {
+                componentsByType[type] = {
+                    Raw,
+                    type,
+                    category: category || {
+                        name: 'Atomic',
+                        isBase: true,
+                    },
+                    Icon,
+                }
+
+                return componentsByType
+            },
             {} as ComponentsByType
         )
     },
