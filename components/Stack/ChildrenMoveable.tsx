@@ -136,7 +136,6 @@ export const StackChildrenMoveable: ChildrenMoveable = ({
                         v !== target
                 )
                 .map((v) => {
-                    console.log(v)
                     return v
                 })}
         ></Moveable>

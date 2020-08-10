@@ -1,10 +1,12 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, SFC } from 'react'
 import * as z from 'zod'
 import { ComponentInspector } from '../../app/Inspectors'
 import {
     ComponentPropTypes,
     ParentContext,
     ParentContextProps,
+    Path,
+    Component,
 } from '../../app/types'
 import {
     BorderInspector,
@@ -42,6 +44,10 @@ import {
     getPropsFromParent,
 } from '../../inspector/InspectorProvider'
 import { Layout } from '../../standard/common'
+import styled, { css } from 'styled-components'
+import { useDrop } from 'react-dnd'
+import { useDispatch } from 'react-redux'
+import { insertComponentOnPath } from '../../app/appShell'
 
 type StyleProperties = {
     fillProps?: FillPropTypes
@@ -231,6 +237,166 @@ export const transform = (
     }
 }
 
+const getFlexDirectionForGap = (
+    stackDirection: StackDirection | undefined
+): 'row' | 'column' => {
+    if (stackDirection === 'Vertical' || stackDirection === 'VerticalReverse') {
+        return 'row'
+    }
+    if (
+        stackDirection === 'Horizontal' ||
+        stackDirection === 'HorizontalReverse'
+    ) {
+        return 'column'
+    }
+    return 'column'
+}
+
+const Gap: SFC<
+    StackProps & { ref: any; canDrop: boolean; isOver: boolean }
+> = styled.div.attrs<
+    StackProps & { ref: any; canDrop: boolean; isOver: boolean }
+>((props) => {
+    let height = '100%'
+    let width = '100%'
+    let left = '0'
+    let top = '0'
+    const direction = getFlexDirectionForGap(props.stackProps?.direction)
+    if (direction === 'column') {
+        width = props.canDrop ? '20px' : '0'
+        left = '-10px'
+    }
+    if (direction === 'row') {
+        height = props.canDrop ? '20px' : '0'
+        top = '-10px'
+    }
+    return { ...props, width, height, left, top, direction }
+})<
+    StackProps & {
+        width: string
+        height: string
+        left: string
+        top: string
+        canDrop: boolean
+        isOver: boolean
+        direction: string
+    }
+>`
+    position: absolute;
+    width: ${({ width }) => width};
+    height: ${({ height }) => height};
+    left: ${({ left }) => left};
+    top: ${({ top }) => top};
+    flex-direction: ${({ direction }) => direction};
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    z-index: 1000;
+`
+
+const GapContainer = styled.div({
+    position: 'relative',
+    flexGrow: 0,
+    flexShrink: 0,
+    margin: '0',
+})
+
+const GapNotifer = styled.div({
+    width: '7px',
+    height: '7px',
+    borderRadius: '7px',
+    border: 'solid 1px #4488ff',
+    background: 'white',
+    flexGrow: 0,
+    flexShrink: 0,
+})
+const GapLine = styled.div<{ direction: 'row' | 'column' }>`
+    flex-grow: 1;
+    background: #4488ff;
+    ${(props) =>
+        props.direction === 'row'
+            ? css`
+                  height: 1px;
+              `
+            : css`
+                  width: 1px;
+              `}
+`
+
+const StackGap: SFC<
+    StackProps & { path?: Path; isOver: boolean; index: number }
+> = ({ path, isOver: parentOver, index, ...rest }) => {
+    const dispatch = useDispatch()
+    let [{ canDrop, isOver }, drop] = useDrop<
+        { type: string; name: string; props?: object; children?: Component[] },
+        void,
+        { canDrop: boolean; isOver: boolean }
+    >({
+        accept: 'TREE',
+        drop: (item, monitor) => {
+            if (path) {
+                const canDrop =
+                    monitor.canDrop() && monitor.isOver({ shallow: true })
+
+                canDrop &&
+                    dispatch(
+                        insertComponentOnPath({
+                            component: {
+                                type: item.name,
+                                props: item.props || {},
+                                children: item.children,
+                            },
+                            path,
+                            index,
+                        })
+                    )
+            }
+        },
+        collect: (monitor) => {
+            let canDrop = false
+            let isOver = false
+            try {
+                canDrop = monitor.canDrop()
+                isOver = monitor.isOver({ shallow: true })
+            } catch (e) {}
+
+            return {
+                canDrop,
+                isOver,
+            }
+        },
+    })
+
+    let height = '100%'
+    let width = '100%'
+    const direction = getFlexDirectionForGap(rest.stackProps?.direction)
+    if (direction === 'column') {
+        width = '0'
+    }
+    if (direction === 'row') {
+        height = '0'
+    }
+    canDrop = true
+    return (
+        <GapContainer style={{ width, height }}>
+            <Gap
+                {...rest}
+                ref={drop}
+                canDrop={canDrop && (parentOver || isOver)}
+                isOver={isOver}
+            >
+                {isOver ? (
+                    <>
+                        <GapNotifer></GapNotifer>
+                        <GapLine direction={direction}></GapLine>
+                        <GapNotifer></GapNotifer>
+                    </>
+                ) : null}
+            </Gap>
+        </GapContainer>
+    )
+}
+
 export default forwardRef(
     (
         {
@@ -248,13 +414,37 @@ export default forwardRef(
             layoutProps,
             containerLayoutProps,
             parent,
+            isOver,
             ...rest
         }: ComponentPropTypes &
             StyleProperties &
             StackProps &
-            ParentContextProps,
+            ParentContextProps & { isOver: boolean },
         ref
     ) => {
+        let [{ canDrop }, drop] = useDrop<
+            {
+                type: string
+                name: string
+                props?: object
+                children?: Component[]
+            },
+            void,
+            { canDrop: boolean }
+        >({
+            accept: 'TREE',
+            drop: (item, monitor) => {},
+            collect: (monitor) => {
+                let canDrop = false
+                try {
+                    canDrop = monitor.canDrop()
+                } catch (e) {}
+
+                return {
+                    canDrop,
+                }
+            },
+        })
         const style = transform(
             {
                 fillProps,
@@ -269,6 +459,31 @@ export default forwardRef(
             },
             parent
         )
+
+        const gapCount = (children?.length ?? 0) + 1
+        const insertedChildren: JSX.Element[] = []
+
+        if (canDrop) {
+            for (let i = 0; i < gapCount; i++) {
+                insertedChildren.push(
+                    <StackGap
+                        stackProps={stackProps}
+                        layoutProps={layoutProps}
+                        path={path}
+                        isOver={isOver}
+                        index={i}
+                        key={'gap' + i}
+                    ></StackGap>
+                )
+                if (i < (children?.length ?? 0)) {
+                    insertedChildren.push(
+                        (children![i] as unknown) as JSX.Element
+                    )
+                }
+            }
+        } else {
+            children?.forEach((v) => insertedChildren.push(v as any))
+        }
 
         return (
             <>
@@ -350,7 +565,7 @@ export default forwardRef(
                     </ComponentInspector>
                 )}
                 <RawStack ref={ref as any} {...style} {...rest}>
-                    {children}
+                    {insertedChildren}
                 </RawStack>
             </>
         )

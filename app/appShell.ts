@@ -1009,6 +1009,7 @@ export const handleZoomWorkspace = handleAction<
 type InsertComponentOnPathAction = {
     component: Component
     path: Path
+    index?: number
 }
 const INSERT_COMPONENT_ON_PATH = 'INSERT_COMPONENT_ON_PATH'
 export const insertComponentOnPath = createAction<InsertComponentOnPathAction>(
@@ -1019,7 +1020,7 @@ export const handleInsertComponentOnPath = handleAction<
     InsertComponentOnPathAction
 >(
     INSERT_COMPONENT_ON_PATH,
-    (state, { payload: { component, path } }) => {
+    (state, { payload: { component, path, index } }) => {
         const [[mouldName, stateName], indexArr] = path
         const tree = ensureMould(state, mouldName).states[stateName]
         let parent = tree!
@@ -1029,7 +1030,11 @@ export const handleInsertComponentOnPath = handleAction<
         if (!parent.children) {
             parent.children = []
         }
-        parent.children.push(component)
+        if (index === undefined) {
+            parent.children.push(component)
+        } else {
+            parent.children.splice(index, 0, component)
+        }
         state.selection = path
 
         return state
