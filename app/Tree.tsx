@@ -47,10 +47,10 @@ export const Tree = ({
     const mould = useContext(MouldContext)
     const view = useContext(ViewContext)
     const selected = useIsSelectedPath(path)
-    const [{ canDrop }, drop] = useDrop<
+    const [{ canDrop, isOver }, drop] = useDrop<
         { type: string; name: string; props?: object; children?: Component[] },
         void,
-        { canDrop: boolean }
+        { canDrop: boolean; isOver: boolean }
     >({
         accept: 'TREE',
         drop: (item, monitor) => {
@@ -76,6 +76,7 @@ export const Tree = ({
             } catch (e) {}
 
             return {
+                isOver: monitor.isOver(),
                 canDrop: canDrop && monitor.isOver({ shallow: true }),
             }
         },
@@ -145,6 +146,7 @@ export const Tree = ({
                 <Moveable target={compRef.current} origin={false}></Moveable>
             )}
             <Comp
+                isOver={isOver}
                 ref={(dom) => {
                     // TODO temp fix, need to find a better solution
                     let acceptChildren = plugin.acceptChildren
