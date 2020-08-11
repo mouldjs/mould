@@ -22,6 +22,13 @@ const ItemInfo = styled.div({
     textAlign: 'left',
 })
 
+const IconWrapper = styled.div({
+    width: 50,
+    height: 50,
+    display: 'flex',
+    alignItems: 'center',
+})
+
 const ItemTitle = styled.p({
     fontSize: '12px',
     fontWeight: 600,
@@ -33,9 +40,10 @@ const ItemDesc = styled.p({
     fontSize: '12px',
     color: '#aaa',
     marginBottom: 0,
-    whiteSpace: 'nowrap',
+    whiteSpace: 'pre-wrap',
     overflow: 'hidden',
     maxWidth: '150px',
+    height: '32px',
     textOverflow: 'ellipsis',
 })
 
@@ -55,7 +63,7 @@ export default ({ name, icon, desc }: { name; icon?; desc? }) => {
 
     return (
         <Item ref={dragRef}>
-            {icon ? <IconComp /> : <Package />}
+            <IconWrapper>{icon ? <IconComp /> : <Package />}</IconWrapper>
             <ItemInfo>
                 <ItemTitle>{name}</ItemTitle>
                 <ItemDesc>{desc}</ItemDesc>

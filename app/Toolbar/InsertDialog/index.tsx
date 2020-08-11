@@ -4,12 +4,6 @@ import { Drawer, Position } from '@blueprintjs/core'
 import SearchBar from './SearchBar'
 import ComponentsList from './ComponentsList'
 
-const Body = styled.div({
-    display: 'flex',
-    height: '100%',
-    flexGrow: 1,
-})
-
 const BodyWrapper = styled.div({
     height: '100vh',
 })
