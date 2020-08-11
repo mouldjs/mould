@@ -37,6 +37,7 @@ import {
 } from './utils'
 import { debounce } from 'lodash'
 import LeftMenu from './Aside/LeftMenu'
+import RightMenu from './Aside/RightMenu'
 
 const schemaQuery = gql`
     query {
@@ -193,7 +194,9 @@ const App = () => {
                 }}
             >
                 <LeftMenu headerHeight={headerHeight} />
-                <Box
+                <RightMenu headerHeight={headerHeight} />
+
+                {/* <Box
                     translate
                     width={215}
                     style={{
@@ -219,7 +222,7 @@ const App = () => {
                     >
                         <PropertyToolBar.Target />
                     </div>
-                </Box>
+                </Box> */}
             </Flex>
             <Workspace></Workspace>
         </Flex>
