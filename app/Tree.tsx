@@ -86,6 +86,8 @@ export const Tree = ({
     const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
 
     const compRef = useRef<HTMLElement>()
+    const childrenCompRef = useRef<HTMLElement[]>()
+    childrenCompRef.current = []
 
     if (!mould) {
         return null
@@ -104,6 +106,9 @@ export const Tree = ({
                       props,
                       component: plugin,
                       childrenIndex: index,
+                      childrenCompRef: childrenCompRef as React.MutableRefObject<
+                          HTMLElement[]
+                      >,
                   }
                   return (
                       <Tree
@@ -120,6 +125,7 @@ export const Tree = ({
                 <>
                     {ChildrenMoveable ? (
                         <ChildrenMoveable
+                            path={path}
                             props={props}
                             target={compRef.current}
                             requestUpdateProps={(nextProps) => {
@@ -132,6 +138,7 @@ export const Tree = ({
                                     })
                                 )
                             }}
+                            parentContext={parent!}
                         ></ChildrenMoveable>
                     ) : (
                         <Moveable
@@ -166,6 +173,11 @@ export const Tree = ({
                     }
                     acceptChildren && drop(dom)
                     compRef.current = dom
+                    if (parent && parent.childrenCompRef) {
+                        parent.childrenCompRef.current[
+                            parent.childrenIndex
+                        ] = dom
+                    }
                 }}
                 onDoubleClick={() => {
                     tick((tickData = []) => {

@@ -58,7 +58,7 @@ type StyleProperties = {
     innerShadowsProps?: ShadowsPropTypes
 }
 
-type StackProps = {
+export type StackProps = {
     stackProps?: StackPropTypes
     layoutProps?: LayoutPropTypes
     containerLayoutProps?: ContainerLayoutProps
