@@ -335,6 +335,42 @@ export const handleModifyMouldTreeChildrenOnPath = handleAction<
     initialData
 )
 
+type SortMouldTreeChildrenOnPathAction = {
+    mouldName: string
+    state: string
+    path: number[]
+    from: number
+    to: number
+}
+const SORT_MOULD_TREE_CHILDREN_ON_PATH = 'SORT_MOULD_TREE_CHILDREN_ON_PATH'
+
+export const sortMouldTreeChildrenOnPath = createAction<
+    SortMouldTreeChildrenOnPathAction
+>(SORT_MOULD_TREE_CHILDREN_ON_PATH)
+export const handleSortMouldTreeChildrenOnPath = handleAction<
+    EditorState,
+    SortMouldTreeChildrenOnPathAction
+>(
+    SORT_MOULD_TREE_CHILDREN_ON_PATH,
+    (state, action) => {
+        const { mouldName, state: mouldState, path, from, to } = action.payload
+        const mould = ensureMould(state, mouldName)
+        const node = ensureTreeNodeByPath(mould.states[mouldState]!, path)
+        if (node.children) {
+            const sortedChildren = node.children.concat()
+            const source = sortedChildren.splice(from, 1)
+            sortedChildren.splice(to, 0, ...source)
+            node.children = sortedChildren
+        }
+        state.selection = [
+            [mouldName, mouldState],
+            [...path, to],
+        ]
+        return state
+    },
+    initialData
+)
+
 type WaitingForCreatingAction = {
     mouldName?: string
     injectedKitName?: string

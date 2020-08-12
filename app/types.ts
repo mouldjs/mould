@@ -103,6 +103,7 @@ export type ParentContext = {
     props: object
     component: AtomicComponent
     childrenIndex: number
+    childrenCompRef?: React.MutableRefObject<(SVGElement | HTMLElement)[]>
 }
 
 export type ChildrenMoveable = SFC<{
@@ -115,6 +116,8 @@ export type ChildrenMoveable = SFC<{
         containerLayoutProps?: ContainerLayoutProps
         layoutProps?: LayoutPropTypes
     }
+    parentContext: ParentContext
+    path: Path
 }>
 
 export type AtomicComponent = {
