@@ -85,9 +85,12 @@ export const Tree = ({
 
     const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
 
+    const [compRefState, setCompRefState] = useState<HTMLElement>()
     const compRef = useRef<HTMLElement>()
     const childrenCompRef = useRef<HTMLElement[]>()
-    childrenCompRef.current = []
+    if (childrenCompRef.current === undefined) {
+        childrenCompRef.current = []
+    }
 
     if (!mould) {
         return null
@@ -172,7 +175,10 @@ export const Tree = ({
                         acceptChildren = p?.acceptChildren
                     }
                     acceptChildren && drop(dom)
-                    compRef.current = dom
+                    if (compRef.current !== dom) {
+                        compRef.current = dom
+                        setCompRefState(dom)
+                    }
                     if (parent && parent.childrenCompRef) {
                         parent.childrenCompRef.current[
                             parent.childrenIndex
