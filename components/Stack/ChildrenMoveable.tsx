@@ -149,7 +149,8 @@ export const StackChildrenMoveable: ChildrenMoveable = ({
                     height: '',
                 })
             }}
-            onDragStart={({ target }) => {
+            onDragStart={({ target, currentTarget }) => {
+                currentTarget.setState({ enableSnap: false })
                 const sibling = parentContext.childrenCompRef?.current ?? []
                 siblingComponentPositions = sibling.map(getElementCenter)
                 lastIndex = startIndex = sibling.indexOf(target as HTMLElement)
@@ -237,15 +238,7 @@ export const StackChildrenMoveable: ChildrenMoveable = ({
                     )
                 }
             }}
-            elementGuidelines={Array.from(target.parentElement?.children ?? [])
-                .filter(
-                    (v: HTMLElement) =>
-                        !v.classList.contains('moveable-control-box') &&
-                        v !== target
-                )
-                .map((v) => {
-                    return v
-                })}
+            elementGuidelines={parentContext.childrenCompRef?.current ?? []}
         ></Moveable>
     )
 }
