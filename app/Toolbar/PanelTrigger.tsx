@@ -4,7 +4,7 @@ import { EditorState, Path } from '../../app/types'
 import { selectComponent, selectComponentFromTree } from '../../app/appShell'
 import { AlignRight } from 'react-feather'
 
-const PanelTrigger = () => {
+export default () => {
     const dispatch = useDispatch()
 
     const { selection, moulds } = useSelector((state: EditorState) => state)
@@ -34,6 +34,7 @@ const PanelTrigger = () => {
             })
         )
     }
+
     const visible = specific.mouldName && stateName
 
     return (
@@ -51,11 +52,8 @@ const PanelTrigger = () => {
                     className={
                         selection ? 'clickable primary' : 'clickable pure'
                     }
-                    style={{ position: 'absolute', right: '10px', top: '15px' }}
                 ></AlignRight>
             )}
         </>
     )
 }
-
-export default PanelTrigger

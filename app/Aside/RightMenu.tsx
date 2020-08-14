@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Tab, Tabs } from '@blueprintjs/core'
-import Operation from './Operation'
 import { useSelector } from 'react-redux'
 import { EditorState } from '../types'
+import { MouldStates } from '../MouldStates'
+import { TitledBoard } from '../../inspector/FormComponents'
 import styled from 'styled-components'
+import Operation from './Operation'
+import Binding from './Binding'
+import { useCurrentNode, useCurrentMould, useCurrentState } from '../utils'
 
 type TabId = 'operation' | 'binding'
 
-const TabWrapper = styled.div({
+const Container = styled.div({
     width: 215,
     transition: '0.3s',
     position: 'absolute',
@@ -20,26 +24,57 @@ export default ({ headerHeight }: { headerHeight }) => {
     const hasSelection = useSelector((state: EditorState) => !!state.selection)
     const [currentTab, setCurrentTab] = useState('operation')
     const handleTabChange = (navbarTabId: TabId) => setCurrentTab(navbarTabId)
+    const mould = useCurrentMould()
+    const mouldName = mould?.name
+    const stateName = useCurrentState()
+    const node = useCurrentNode()
+    const isKit = node?.type === 'Kit'
 
     return (
-        <TabWrapper
+        <Container
             style={{
                 right: hasSelection ? 0 : -215,
                 top: `${headerHeight}px`,
                 height: `calc(100vh - ${headerHeight}px)`,
             }}
         >
-            <Tabs
-                id="Tabs"
-                className="right-tabs"
-                selectedTabId={currentTab}
-                onChange={handleTabChange}
-                renderActiveTabPanelOnly={true}
-                large
-            >
-                <Tab id="operation" title="Operation" panel={<Operation />} />
-                <Tab id="binding" title="Binding" panel={<div>abbbaa</div>} />
-            </Tabs>
-        </TabWrapper>
+            {isKit ? (
+                <Tabs
+                    id="Tabs"
+                    className="right-tabs"
+                    selectedTabId={currentTab}
+                    onChange={handleTabChange}
+                    renderActiveTabPanelOnly={true}
+                    large
+                >
+                    <Tab
+                        id="operation"
+                        title="Operation"
+                        panel={<Operation />}
+                    />
+                    <Tab
+                        id="binding"
+                        title="Binding"
+                        panel={
+                            <>
+                                <TitledBoard title="Kit">
+                                    <Binding
+                                        mouldName={mouldName}
+                                        stateName={stateName}
+                                        node={node}
+                                    />
+                                </TitledBoard>
+                                <TitledBoard title="Inputs">
+                                    <div>Inputs</div>
+                                </TitledBoard>
+                            </>
+                        }
+                    />
+                </Tabs>
+            ) : (
+                <Operation />
+            )}
+            <MouldStates></MouldStates>
+        </Container>
     )
 }

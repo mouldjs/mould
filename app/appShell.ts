@@ -748,8 +748,11 @@ export const handleConnectScopeToKit = handleAction<
     (state, { payload: { scope, prop, mouldName, kitIndex } }) => {
         const mould = ensureMould(state, mouldName)
         const kit = mould.kits[kitIndex]
+        const scopeList = mould.scope
         kit.dataMappingVector.push([prop, scope])
-
+        if (!find(scopeList, (s) => s === scope)) {
+            mould.scope.push(scope)
+        }
         return state
     },
     initialData
@@ -925,7 +928,6 @@ export const handleModifyKitName = handleAction<
                 newValue: newKitName,
             })
         }
-
         Object.assign(currentKit, { name: newKitName })
 
         return state

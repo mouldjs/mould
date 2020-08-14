@@ -1,9 +1,18 @@
 import AddMouldTrigger from './AddMouldTrigger'
-import InsertTrigger from './InsertTrigger'
+import styled from 'styled-components'
+// import InsertTrigger from './InsertTrigger'
 import PanelTrigger from './PanelTrigger'
+import DebugTrigger from './DebugTrigger'
 import Icons from './Icons'
 import React from 'react'
 import Resizer from './Resizer'
+
+const RightWrapper = styled.div({
+    position: 'absolute',
+    right: '10px',
+    top: '15px',
+    display: 'flex',
+})
 
 const Toolbar = ({ height }: { height: string | number }) => {
     return (
@@ -21,13 +30,17 @@ const Toolbar = ({ height }: { height: string | number }) => {
                 zIndex: 2,
             }}
         >
-            <InsertTrigger></InsertTrigger>
+            {/* TODO: Header Refactor*/}
+            {/* <InsertTrigger></InsertTrigger> */}
             <AddMouldTrigger></AddMouldTrigger>
             <div className="flex m-l m-r">
                 <Icons></Icons>
             </div>
             <Resizer></Resizer>
-            <PanelTrigger></PanelTrigger>
+            <RightWrapper>
+                <DebugTrigger />
+                <PanelTrigger />
+            </RightWrapper>
         </div>
     )
 }

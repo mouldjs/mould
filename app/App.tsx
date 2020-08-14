@@ -14,7 +14,6 @@ import { EditorState } from './types'
 import { useEffect, useRef, useState } from 'react'
 import { undo, redo } from '../lib/undo-redux'
 import Toolbar from './Toolbar/index'
-import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import {
@@ -26,7 +25,6 @@ import {
     pauseDebugging,
     updateDebugging,
 } from './appShell'
-import { MouldStates } from './MouldStates'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import {
@@ -74,7 +72,6 @@ const App = () => {
 
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
-    const hasSelection = useSelector((state: EditorState) => !!state.selection)
     const debugging = useSelector((state: EditorState) => state.debugging)
     const zoom = useSelector((state: EditorState) => state.testWorkspace.zoom)
     const mould = useCurrentMould()
@@ -90,9 +87,6 @@ const App = () => {
         const result = zoom + step >= 5 ? zoom : zoom + step
         dispatch(zoomWorkspace({ zoom: result }))
     }
-
-    const [inputValue, setInputValue] = useState('')
-    const onInput = (value) => setInputValue(value)
 
     return (
         <Flex
@@ -195,34 +189,6 @@ const App = () => {
             >
                 <LeftMenu headerHeight={headerHeight} />
                 <RightMenu headerHeight={headerHeight} />
-
-                {/* <Box
-                    translate
-                    width={215}
-                    style={{
-                        transition: '0.3s',
-                        position: 'absolute',
-                        right: hasSelection ? 0 : -215,
-                        top: `${headerHeight}px`,
-                        height: `calc(100vh - ${headerHeight}px)`,
-                        zIndex: 1,
-                        borderLeft: '1px solid #aaa',
-                        backgroundColor: '#e1e1e1',
-                    }}
-                >
-                    <MouldStates></MouldStates>
-                    <div
-                        ref={InspectorsBlockRef}
-                        style={{
-                            width: '100%',
-                            position: 'absolute',
-                            height: '100%',
-                            overflowY: 'auto',
-                        }}
-                    >
-                        <PropertyToolBar.Target />
-                    </div>
-                </Box> */}
             </Flex>
             <Workspace></Workspace>
         </Flex>

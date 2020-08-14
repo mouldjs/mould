@@ -36,36 +36,6 @@ export default ({ headerHeight }: { headerHeight }) => {
                     <ComponentsList inputValue={inputValue} />
                 </div>
             </TitledBoard>
-            {/* <ArcherContainer
-                style={{
-                    backgroundColor: '#e1e1e1',
-                }}
-                svgContainerStyle={{
-                    overflow: 'visible',
-                    pointerEvents: 'none',
-                    zIndex: -1,
-                }}
-                strokeColor="red"
-                arrowLength={0}
-                strokeWidth={1}
-            >
-                <MouldScope></MouldScope>
-                <div ref={KitsBlockRef}>
-                    <TitledBoard title="Kits">
-                        <MouldKits></MouldKits>
-                    </TitledBoard>
-                </div>
-            </ArcherContainer>
-            <div
-                ref={DebugPanelRef}
-                style={{
-                    height: `calc(100% - ${kitsBlockHeight}px)`,
-                    overflowY: 'auto',
-                }}
-            >
-                <MouldMetas></MouldMetas>
-                <DebugPanel.Target></DebugPanel.Target>
-            </div> */}
         </Box>
     )
 }
