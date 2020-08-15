@@ -80,12 +80,12 @@ export const useCurrentState = () => {
     return selection[0][1]
 }
 
-export const useCurrentNode = () => {
+export const useCurrentNode: () => {
+    node: Component | null
+    isRoot: boolean
+} = () => {
     const selection = useSelector((state: EditorState) => state.selection)
     const state = useSelector((state: EditorState) => state)
-    if (!selection) {
-        return
-    }
 
     const currentStatePath = selection && selection[0]
     const currentMould =
@@ -95,13 +95,16 @@ export const useCurrentNode = () => {
         currentMould &&
         currentMould.states[currentStatePath[1]]
     let target: Component | null = null
+    let isRoot: boolean = false
     if (currentState && currentStatePath) {
         const currentNodePath = selection![1]
         if (currentNodePath && !currentNodePath.length) {
+            isRoot = true
             target = currentState
         }
 
         if (currentNodePath && currentNodePath.length) {
+            isRoot = false
             target = reduce(
                 currentNodePath,
                 (res: any, cur) => {
@@ -117,7 +120,10 @@ export const useCurrentNode = () => {
         }
     }
 
-    return target
+    return {
+        isRoot,
+        node: target,
+    }
 }
 
 export const useCurrentDebuggingView = () => {
@@ -219,7 +225,6 @@ export const getDefaultStateName = (mould: Mould) => {
 }
 
 export const useSimulateScroll = (ref) => {
-    console.log(ref, 'ref in simulate')
     const bind = useWheel(
         ({ event, delta: [, dy] }) => {
             if (ref && ref.current) {

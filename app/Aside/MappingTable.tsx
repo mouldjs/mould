@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import mould from '../../mould'
@@ -6,11 +6,23 @@ import { useCurrentMould } from '../utils'
 import { MenuItem } from '@blueprintjs/core'
 import { Suggest } from '@blueprintjs/select'
 import { X } from 'react-feather'
-import { deleteScope, connectScopeToKit } from '../appShell'
-import { Property, propertySelectProps } from './PropertySelectUtils'
-import { findIndex } from 'lodash'
+import {
+    disconnectScopeToKit,
+    connectScopeToKit,
+    modifyScopeFromDataMappingVector,
+} from '../appShell'
+import {
+    Scope,
+    Property,
+    suggestSelectProps,
+    createTarget,
+    renderCreateTargetOption,
+    isTargetEqual,
+} from './SuggestSelectUtils'
+import { findIndex, clone } from 'lodash'
 
 const PropertySuggest = Suggest.ofType<Property>()
+const ScopeSuggest = Suggest.ofType<Scope>()
 
 const Table = styled.table({
     width: '100%',
@@ -49,12 +61,19 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
 
     const currentMould = useCurrentMould()
     const kits = currentMould && currentMould.kits
+    const scope = currentMould && currentMould.scope
     const currentKit = kits?.find((k) => k.name === kitName)
     const bindingList = currentKit?.dataMappingVector
-
+    const [internalScope, setInternalScope] = useState(clone(scope) || [])
     const type = currentKit?.type
 
+    useEffect(() => {
+        setInternalScope(clone(scope) || [])
+    }, [scope])
     const plugin = mould.getComponent(type)
+    if (!plugin) {
+        return null
+    }
     const fields =
         plugin.type === 'Mould'
             ? Object.keys(currentMould!.input)
@@ -62,28 +81,47 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
     const usedAttrs = bindingList?.map(([src]) => src)
     const attrsList = fields.filter((f) => !usedAttrs?.includes(f))
 
-    const suggestProps = {
+    const propertySuggestConfig = {
         allowCreate: false,
         closeOnSelect: true,
-        createdItems: [],
         fill: false,
-        items: attrsList,
         openOnKeyDown: false,
         resetOnClose: true,
         resetOnQuery: true,
         resetOnSelect: true,
     }
 
-    const deleteMapping = ({ scope }: { scope: string }) => () => {
+    const scopeSuggestConfig = {
+        allowCreate: false,
+        closeOnSelect: true,
+        createdItems: [],
+        fill: false,
+        items: scope,
+        minimal: true,
+        openOnKeyDown: false,
+        resetOnClose: false,
+        resetOnQuery: true,
+        resetOnSelect: false,
+    }
+
+    const deleteMapping = ({
+        scope,
+        prop,
+    }: {
+        scope: string
+        prop: string
+    }) => () => {
         dispatch(
-            deleteScope({
-                scopeName: scope,
+            disconnectScopeToKit({
+                scope,
+                prop,
                 mouldName,
+                kitName,
             })
         )
     }
 
-    const handleValueChange = (p: Property) => {
+    const handleAddingPropertyChange = (p: Property) => {
         const kitIndex = findIndex(kits, (k) => k.name === kitName)
         const scope = currentMould && currentMould.scope
         const tmpScope = `scope ${scope!.length + 1}`
@@ -93,6 +131,22 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
                 prop: p,
                 mouldName,
                 kitIndex,
+            })
+        )
+    }
+
+    const handleScopeEditingChange = (s: Scope, index: number) => {
+        setInternalScope([
+            ...internalScope.slice(0, index),
+            s,
+            ...internalScope.slice(index),
+        ])
+        dispatch(
+            modifyScopeFromDataMappingVector({
+                mouldName,
+                newScope: s,
+                indexInDataMappingVector: index,
+                kitName,
             })
         )
     }
@@ -111,10 +165,35 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
                         <Row>
                             <td>{v[0]}</td>
                             <ScopeWrapper>
-                                <div>{v[1]}</div>
+                                <ScopeSuggest
+                                    className="suggest-select"
+                                    {...suggestSelectProps({
+                                        items: internalScope,
+                                    })}
+                                    {...scopeSuggestConfig}
+                                    defaultSelectedItem={v[1]}
+                                    createNewItemFromQuery={createTarget}
+                                    createNewItemRenderer={
+                                        renderCreateTargetOption
+                                    }
+                                    inputValueRenderer={(s: Scope) => s}
+                                    itemsEqual={isTargetEqual}
+                                    items={internalScope}
+                                    noResults={
+                                        <MenuItem
+                                            disabled={true}
+                                            text="No results."
+                                        />
+                                    }
+                                    onItemSelect={(s) =>
+                                        handleScopeEditingChange(s, index)
+                                    }
+                                    popoverProps={{ minimal: true }}
+                                />
                                 <DeleteIcon
                                     onClick={deleteMapping({
                                         scope: v[1],
+                                        prop: v[0],
                                     })}
                                     size={12}
                                 />
@@ -125,17 +204,15 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
                 <tr>
                     <td>
                         <PropertySuggest
-                            {...propertySelectProps({ items: attrsList })}
-                            {...suggestProps}
+                            className="suggest-select"
+                            {...suggestSelectProps({ items: attrsList })}
+                            {...propertySuggestConfig}
                             items={attrsList}
-                            inputProps={{
-                                className: 'primary',
-                            }}
                             noResults={
                                 <MenuItem disabled={true} text="No results." />
                             }
                             inputValueRenderer={() => 'new...'}
-                            onItemSelect={handleValueChange}
+                            onItemSelect={handleAddingPropertyChange}
                             popoverProps={{
                                 minimal: true,
                             }}

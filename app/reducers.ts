@@ -41,6 +41,7 @@ import {
     handleUpdateDebugging,
     handleWrapChild,
     handleTransfromNodeToKit,
+    handleModifyScopeFromDataMappingVector,
 } from './appShell'
 
 export default () => [
@@ -88,4 +89,5 @@ export default () => [
     handleUpdateDebugging,
     handleWrapChild,
     handleTransfromNodeToKit,
+    handleModifyScopeFromDataMappingVector,
 ]

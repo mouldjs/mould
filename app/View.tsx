@@ -2,7 +2,6 @@ import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { EditorState, Path, Component } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import dynamic from 'next/dynamic'
-import { Play, Pause } from 'react-feather'
 import {
     useIsSelectedPath,
     useIsDraggingComponent,
@@ -198,134 +197,89 @@ export const View = ({ viewId }: { viewId: string }) => {
                                 e.stopPropagation()
                             }}
                         >
-                            <TitledBoard
-                                title="Debug"
-                                renderTitle={() => {
+                            {mould &&
+                                Object.keys(mould.input).map((input, index) => {
+                                    const isFirst = index === 0
+                                    const config = mould.input[input]
+                                    const Control = MouldApp.getControl(
+                                        config.type
+                                    ).Renderer
                                     return (
                                         <div
-                                            onClick={() => {
-                                                isDebugging
-                                                    ? dispatch(pauseDebugging())
-                                                    : dispatch(
-                                                          updateDebugging({
-                                                              mouldName,
-                                                              stateName: state,
-                                                          })
-                                                      )
+                                            onContextMenu={(event) => {
+                                                event.preventDefault()
+                                                ContextMenu.show(
+                                                    <Menu>
+                                                        <MenuItem
+                                                            onClick={() => {
+                                                                setEditControlName(
+                                                                    input
+                                                                )
+                                                            }}
+                                                            icon="edit"
+                                                            text="Edit"
+                                                        ></MenuItem>
+                                                        <MenuItem
+                                                            onClick={() => {
+                                                                dispatch(
+                                                                    removeInput(
+                                                                        {
+                                                                            mouldName,
+                                                                            inputKey: input,
+                                                                        }
+                                                                    )
+                                                                )
+                                                            }}
+                                                            icon="remove"
+                                                            text="Remove"
+                                                        ></MenuItem>
+                                                    </Menu>,
+                                                    {
+                                                        left: event.clientX,
+                                                        top: event.clientY,
+                                                    }
+                                                )
                                             }}
                                         >
-                                            {!isDebugging ? (
-                                                <Play
-                                                    size={14}
-                                                    color="#959595"
-                                                ></Play>
-                                            ) : (
-                                                <Pause
-                                                    size={14}
-                                                    color="#959595"
-                                                ></Pause>
-                                            )}
+                                            <ControlGrid
+                                                marginTop={isFirst ? 0 : 8}
+                                            >
+                                                <ControlGridItem area="active / active / visual / visual">
+                                                    {input}
+                                                </ControlGridItem>
+                                                <ControlGridItem area="value / value / control / control">
+                                                    <Control
+                                                        config={config}
+                                                        data={inputValue[input]}
+                                                        onChange={(value) => {
+                                                            dispatch(
+                                                                updateDebugging(
+                                                                    {
+                                                                        mouldName,
+                                                                        stateName: state,
+                                                                        inputValue: {
+                                                                            ...inputValue,
+                                                                            [input]: isObject(
+                                                                                value
+                                                                            )
+                                                                                ? {
+                                                                                      ...inputValue[
+                                                                                          input
+                                                                                      ],
+                                                                                      ...value,
+                                                                                  }
+                                                                                : value,
+                                                                        },
+                                                                    }
+                                                                )
+                                                            )
+                                                        }}
+                                                    ></Control>
+                                                </ControlGridItem>
+                                            </ControlGrid>
                                         </div>
                                     )
-                                }}
-                            >
-                                {mould &&
-                                    Object.keys(mould.input).map(
-                                        (input, index) => {
-                                            const isFirst = index === 0
-                                            const config = mould.input[input]
-                                            const Control = MouldApp.getControl(
-                                                config.type
-                                            ).Renderer
-
-                                            return (
-                                                <div
-                                                    onContextMenu={(event) => {
-                                                        event.preventDefault()
-                                                        ContextMenu.show(
-                                                            <Menu>
-                                                                <MenuItem
-                                                                    onClick={() => {
-                                                                        setEditControlName(
-                                                                            input
-                                                                        )
-                                                                    }}
-                                                                    icon="edit"
-                                                                    text="Edit"
-                                                                ></MenuItem>
-                                                                <MenuItem
-                                                                    onClick={() => {
-                                                                        dispatch(
-                                                                            removeInput(
-                                                                                {
-                                                                                    mouldName,
-                                                                                    inputKey: input,
-                                                                                }
-                                                                            )
-                                                                        )
-                                                                    }}
-                                                                    icon="remove"
-                                                                    text="Remove"
-                                                                ></MenuItem>
-                                                            </Menu>,
-                                                            {
-                                                                left:
-                                                                    event.clientX,
-                                                                top:
-                                                                    event.clientY,
-                                                            }
-                                                        )
-                                                    }}
-                                                >
-                                                    <ControlGrid
-                                                        marginTop={
-                                                            isFirst ? 0 : 8
-                                                        }
-                                                    >
-                                                        <ControlGridItem area="active / active / visual / visual">
-                                                            {input}
-                                                        </ControlGridItem>
-                                                        <ControlGridItem area="value / value / control / control">
-                                                            <Control
-                                                                config={config}
-                                                                data={
-                                                                    inputValue[
-                                                                        input
-                                                                    ]
-                                                                }
-                                                                onChange={(
-                                                                    value
-                                                                ) => {
-                                                                    dispatch(
-                                                                        updateDebugging(
-                                                                            {
-                                                                                mouldName,
-                                                                                stateName: state,
-                                                                                inputValue: {
-                                                                                    ...inputValue,
-                                                                                    [input]: isObject(
-                                                                                        value
-                                                                                    )
-                                                                                        ? {
-                                                                                              ...inputValue[
-                                                                                                  input
-                                                                                              ],
-                                                                                              ...value,
-                                                                                          }
-                                                                                        : value,
-                                                                                },
-                                                                            }
-                                                                        )
-                                                                    )
-                                                                }}
-                                                            ></Control>
-                                                        </ControlGridItem>
-                                                    </ControlGrid>
-                                                </div>
-                                            )
-                                        }
-                                    )}
-                            </TitledBoard>
+                                })}
                         </div>
                     </DebugPanel.Source>
                 </>

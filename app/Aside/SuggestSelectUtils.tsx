@@ -2,6 +2,8 @@ import { ItemPredicate, ItemRenderer } from '@blueprintjs/select'
 import { MenuItem } from '@blueprintjs/core'
 
 export type Property = string
+export type Scope = string
+export type Target = Property | Scope
 
 function escapeRegExpChars(text: string) {
     return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1')
@@ -38,49 +40,71 @@ function highlightText(text: string, query: string) {
     return tokens
 }
 
-export const filterProperty: ItemPredicate<Property> = (
+export const doFilter: ItemPredicate<Target> = (
     query,
-    property,
+    target,
     _index,
     exactMatch
 ) => {
-    const normalizedTitle = property.toLowerCase()
+    const normalizedTitle = target.toLowerCase()
     const normalizedQuery = query.toLowerCase()
 
     if (exactMatch) {
         return normalizedTitle === normalizedQuery
     } else {
         return (
-            `${property}. ${normalizedTitle} ${property}`.indexOf(
+            `${target}. ${normalizedTitle} ${target}`.indexOf(
                 normalizedQuery
             ) >= 0
         )
     }
 }
 
-export const renderPropertyItem: ItemRenderer<Property> = (
-    property,
+export const doRenderItem: ItemRenderer<Target> = (
+    target,
     { handleClick, modifiers, query }
 ) => {
     if (!modifiers.matchesPredicate) {
         return null
     }
-    const text = `${property}`
+    const text = `${target}`
     return (
         <MenuItem
             active={modifiers.active}
             disabled={modifiers.disabled}
-            key={property}
+            key={target}
             onClick={handleClick}
             text={highlightText(text, query)}
         />
     )
 }
 
-export const propertySelectProps = (items) => {
+export const suggestSelectProps = (items) => {
     return {
-        itemPredicate: filterProperty,
-        itemRenderer: renderPropertyItem,
+        itemPredicate: doFilter,
+        itemRenderer: doRenderItem,
         items,
     }
+}
+
+export function isTargetEqual(targetA: Target, targetB: Target) {
+    return targetA.toLowerCase() === targetB.toLowerCase()
+}
+
+export const renderCreateTargetOption = (
+    query: string,
+    active: boolean,
+    handleClick: React.MouseEventHandler<HTMLElement>
+) => (
+    <MenuItem
+        icon="add"
+        text={`Create "${query}"`}
+        active={active}
+        onClick={handleClick}
+        shouldDismissPopover={false}
+    />
+)
+
+export function createTarget(iptVal: string): Target {
+    return iptVal
 }

@@ -112,7 +112,7 @@ export const MouldInput = ({
             size={215}
             hasBackdrop={false}
             style={{ background: '#e1e1e1', top: 50 }}
-            position="left"
+            position="right"
         >
             <Form>
                 <TitledBoard title="Input">

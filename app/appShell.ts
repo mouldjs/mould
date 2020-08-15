@@ -22,7 +22,16 @@ import {
     ensureTreeNodeByPath,
 } from './utils'
 import nanoid from 'nanoid'
-import { remove, find, cloneDeep, reduce, values, take, last } from 'lodash'
+import {
+    remove,
+    find,
+    cloneDeep,
+    reduce,
+    values,
+    take,
+    last,
+    findIndex,
+} from 'lodash'
 type SelectComponentAction = { pathes: Path[] }
 const SELECT_COMPONENT = 'SELECT_COMPONENT'
 export const selectComponent = createAction<SelectComponentAction>(
@@ -138,6 +147,44 @@ export const handleModifyScope = handleAction<EditorState, ModifyScopeAction>(
     (state, action) => {
         ensureMould(state, action.payload.mouldName).scope =
             action.payload.scope
+
+        return state
+    },
+    initialData
+)
+
+type ModifyScopeFromDataMappingVectorAction = {
+    mouldName: string
+    newScope: string
+    indexInDataMappingVector
+    kitName
+}
+const MODIFY_SCOPE_FROM_DATAMAPPINGVECTOR =
+    'MODIFY_SCOPE_FROM_DATAMAPPINGVECTOR'
+export const modifyScopeFromDataMappingVector = createAction<
+    ModifyScopeFromDataMappingVectorAction
+>(MODIFY_SCOPE_FROM_DATAMAPPINGVECTOR)
+export const handleModifyScopeFromDataMappingVector = handleAction<
+    EditorState,
+    ModifyScopeFromDataMappingVectorAction
+>(
+    MODIFY_SCOPE_FROM_DATAMAPPINGVECTOR,
+    (
+        state,
+        { payload: { mouldName, newScope, indexInDataMappingVector, kitName } }
+    ) => {
+        const currentMould = ensureMould(state, mouldName)
+        const scope = currentMould.scope
+        const currentKit = find(currentMould.kits, (k) => k.name === kitName)
+        const oldScope = currentKit!.dataMappingVector[
+            indexInDataMappingVector
+        ][1]
+        currentKit!.dataMappingVector[indexInDataMappingVector][1] = newScope
+
+        const indexInScope = findIndex(scope, (s) => s === oldScope)
+        if (!scope.includes(newScope)) {
+            currentMould.scope.splice(indexInScope, 1, newScope)
+        }
 
         return state
     },
