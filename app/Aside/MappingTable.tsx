@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import mould from '../../mould'
-import { useCurrentMould } from '../utils'
+import { useCurrentMould, useSimulateScroll } from '../utils'
 import { MenuItem } from '@blueprintjs/core'
 import { Suggest } from '@blueprintjs/select'
 import { X } from 'react-feather'
@@ -23,6 +23,12 @@ import { findIndex, clone } from 'lodash'
 
 const PropertySuggest = Suggest.ofType<Property>()
 const ScopeSuggest = Suggest.ofType<Scope>()
+
+const TableWrapper = styled.div({
+    display: 'inline-block',
+    maxHeight: '350px',
+    overflow: 'auto',
+})
 
 const Table = styled.table({
     width: '100%',
@@ -57,6 +63,8 @@ const DeleteIcon = styled(X)`
 `
 
 export default ({ mouldName, kitName }: { mouldName; kitName }) => {
+    const WrapperRef = useRef<HTMLDivElement>(null)
+
     const dispatch = useDispatch()
 
     const currentMould = useCurrentMould()
@@ -151,76 +159,82 @@ export default ({ mouldName, kitName }: { mouldName; kitName }) => {
         )
     }
 
+    useSimulateScroll(WrapperRef)
     return (
-        <Table className="bp3-html-table bp3-html-table-bordered bp3-html-table-striped bp3-interactive">
-            <thead>
-                <tr>
-                    <th>Property</th>
-                    <th>Scope</th>
-                </tr>
-            </thead>
-            <tbody>
-                {bindingList?.map((v, index) => {
-                    return (
-                        <Row>
-                            <td>{v[0]}</td>
-                            <ScopeWrapper>
-                                <ScopeSuggest
-                                    className="suggest-select"
-                                    {...suggestSelectProps({
-                                        items: internalScope,
-                                    })}
-                                    {...scopeSuggestConfig}
-                                    defaultSelectedItem={v[1]}
-                                    createNewItemFromQuery={createTarget}
-                                    createNewItemRenderer={
-                                        renderCreateTargetOption
-                                    }
-                                    inputValueRenderer={(s: Scope) => s}
-                                    itemsEqual={isTargetEqual}
-                                    items={internalScope}
-                                    noResults={
-                                        <MenuItem
-                                            disabled={true}
-                                            text="No results."
-                                        />
-                                    }
-                                    onItemSelect={(s) =>
-                                        handleScopeEditingChange(s, index)
-                                    }
-                                    popoverProps={{ minimal: true }}
-                                />
-                                <DeleteIcon
-                                    onClick={deleteMapping({
-                                        scope: v[1],
-                                        prop: v[0],
-                                    })}
-                                    size={12}
-                                />
-                            </ScopeWrapper>
-                        </Row>
-                    )
-                })}
-                <tr>
-                    <td>
-                        <PropertySuggest
-                            className="suggest-select"
-                            {...suggestSelectProps({ items: attrsList })}
-                            {...propertySuggestConfig}
-                            items={attrsList}
-                            noResults={
-                                <MenuItem disabled={true} text="No results." />
-                            }
-                            inputValueRenderer={() => 'new...'}
-                            onItemSelect={handleAddingPropertyChange}
-                            popoverProps={{
-                                minimal: true,
-                            }}
-                        />
-                    </td>
-                    <td>...</td>
-                </tr>
-            </tbody>
-        </Table>
+        <TableWrapper ref={WrapperRef}>
+            <Table className="bp3-html-table bp3-html-table-bordered bp3-html-table-striped bp3-interactive">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Scope</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {bindingList?.map((v, index) => {
+                        return (
+                            <Row>
+                                <td>{v[0]}</td>
+                                <ScopeWrapper>
+                                    <ScopeSuggest
+                                        className="suggest-select"
+                                        {...suggestSelectProps({
+                                            items: internalScope,
+                                        })}
+                                        {...scopeSuggestConfig}
+                                        defaultSelectedItem={v[1]}
+                                        createNewItemFromQuery={createTarget}
+                                        createNewItemRenderer={
+                                            renderCreateTargetOption
+                                        }
+                                        inputValueRenderer={(s: Scope) => s}
+                                        itemsEqual={isTargetEqual}
+                                        items={internalScope}
+                                        noResults={
+                                            <MenuItem
+                                                disabled={true}
+                                                text="No results."
+                                            />
+                                        }
+                                        onItemSelect={(s) =>
+                                            handleScopeEditingChange(s, index)
+                                        }
+                                        popoverProps={{ minimal: true }}
+                                    />
+                                    <DeleteIcon
+                                        onClick={deleteMapping({
+                                            scope: v[1],
+                                            prop: v[0],
+                                        })}
+                                        size={12}
+                                    />
+                                </ScopeWrapper>
+                            </Row>
+                        )
+                    })}
+                    <tr>
+                        <td>
+                            <PropertySuggest
+                                className="suggest-select"
+                                {...suggestSelectProps({ items: attrsList })}
+                                {...propertySuggestConfig}
+                                items={attrsList}
+                                noResults={
+                                    <MenuItem
+                                        disabled={true}
+                                        text="No results."
+                                    />
+                                }
+                                inputValueRenderer={() => 'new...'}
+                                onItemSelect={handleAddingPropertyChange}
+                                popoverProps={{
+                                    minimal: true,
+                                }}
+                            />
+                        </td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </Table>
+        </TableWrapper>
     )
 }

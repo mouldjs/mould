@@ -8,10 +8,11 @@ const Item = styled.div({
     display: 'flex',
     boxSizing: 'border-box',
     alignItems: 'center',
-    padding: '10px 10px',
+    padding: '5px',
     borderRadius: '4px',
     marginBottom: 5,
     cursor: 'pointer',
+    backgroundColor: '#fff',
     '&:hover': {
         background: '#D2E9FF',
     },
@@ -27,6 +28,7 @@ const IconWrapper = styled.div({
     height: 50,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
 })
 
 const ItemTitle = styled.p({

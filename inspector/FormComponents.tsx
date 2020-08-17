@@ -1,4 +1,4 @@
-import React, { ReactNode, Fragment, useState } from 'react'
+import React, { ReactNode, Fragment, useState, RefObject } from 'react'
 import { Flex, Text, Box, Tooltip, FlexProps } from '@modulz/radix'
 import { Plus } from 'react-feather'
 
@@ -123,19 +123,21 @@ export const TitledBoard = ({
     desc,
     renderTitle = () => null,
     children,
+    ref,
 }: {
     collspaed?: boolean
     renderTitle?: () => ReactNode
     children: ReactNode
     title: string
     desc?: string
+    ref?: RefObject<HTMLDivElement>
 }) => {
     // let [collspaed, setCollspaed] = useState(false)
 
     // if (collspae) {
     return !collspaed ? (
         <Fragment>
-            <Head title={title} desc={desc}>
+            <Head title={title} desc={desc} ref={ref}>
                 <Flex translate alignItems="center">
                     {renderTitle ? (
                         renderTitle()
