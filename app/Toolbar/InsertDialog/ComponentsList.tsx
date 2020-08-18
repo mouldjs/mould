@@ -7,13 +7,11 @@ import ListItem from './ComponentsListItem'
 
 const Container = styled.div({
     flexGrow: 1,
-    padding: '5px 10px',
     height: '100%',
     maxWidth: '260px',
-    maxHeight: '100%',
-    textAlign: 'center',
+    maxHeight: 'calc(100% - 50px)',
     overflow: 'auto',
-    backgroundColor: '#fff',
+
     borderRight: '1px solid #ddd',
 })
 

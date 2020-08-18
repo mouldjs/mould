@@ -4,14 +4,12 @@ import { Search } from 'react-feather'
 
 const Container = styled.div({
     display: 'flex',
-    background: '#fff',
-    height: '50px',
+    height: '35px',
     width: '100%',
-    borderBottom: '1px solid #ddd',
+    borderBottom: '1px solid #aaa',
     alignItems: 'center',
     paddingLeft: '10px',
     paddingRight: '10px',
-    borderRight: '1px solid #ddd',
 })
 
 const Input = styled.input({
@@ -20,7 +18,7 @@ const Input = styled.input({
     border: 'none',
     fontSize: '14px',
     paddingLeft: '5px',
-    letterSpacing: 1.2,
+    background: 'transparent',
 })
 
 export default ({ onInput }: { onInput: (value: string) => void }) => {

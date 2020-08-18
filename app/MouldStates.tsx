@@ -18,6 +18,7 @@ export const MouldStates = () => {
     const wrapperStyle = {
         position: 'absolute',
         right: '215px',
+        top: 0,
         width: '100%',
         display: 'flex',
         justifyContent: 'flex-end',

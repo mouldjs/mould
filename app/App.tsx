@@ -11,13 +11,11 @@ import { Provider, useSelector, useDispatch } from 'react-redux'
 import { getStore } from './store'
 import { RadixProvider, Flex, Box } from '@modulz/radix'
 import { EditorState } from './types'
-import { useEffect, useRef, useState, Fragment } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { undo, redo } from '../lib/undo-redux'
 import Toolbar from './Toolbar/index'
-import PropertyToolBar from './PropertyToolBar'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-import { Explorer2 } from './Explorer'
 import {
     cancelCreating,
     deleteNode,
@@ -27,13 +25,6 @@ import {
     pauseDebugging,
     updateDebugging,
 } from './appShell'
-import { TitledBoard } from '../inspector/FormComponents'
-import { MouldMetas } from './MouldMetas'
-import { MouldScope } from './MouldScope'
-import { MouldStates } from './MouldStates'
-import { MouldKits } from './Kits/index'
-import { ArcherContainer } from 'react-archer'
-import DebugPanel from './DebugPanel'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import {
@@ -43,6 +34,8 @@ import {
     useSimulateScroll,
 } from './utils'
 import { debounce } from 'lodash'
+import LeftMenu from './Aside/LeftMenu'
+import RightMenu from './Aside/RightMenu'
 
 const schemaQuery = gql`
     query {
@@ -60,12 +53,7 @@ function handleTouchMove(e) {
 }
 
 const App = () => {
-    const HierarchyBlockRef = useRef<HTMLDivElement>(null)
     const InspectorsBlockRef = useRef<HTMLDivElement>(null)
-    const KitsBlockRef = useRef<HTMLDivElement>(null)
-    const DebugPanelRef = useRef<HTMLDivElement>(null)
-    const [hierarchyBlockHeight, setHierarchyBlockHeight] = useState(50)
-    const [kitsBlockHeight, setKitsBlockHeight] = useState(50)
     const headerHeight = 50
     useEffect(() => {
         //阻止二指滑动的默认浏览器 后退/前进 行为
@@ -80,21 +68,10 @@ const App = () => {
         }
     }, [])
 
-    useEffect(() => {
-        if (HierarchyBlockRef.current) {
-            setHierarchyBlockHeight(HierarchyBlockRef.current.clientHeight)
-        }
-        if (KitsBlockRef.current) {
-            setKitsBlockHeight(KitsBlockRef.current.clientHeight)
-        }
-    })
-
     useSimulateScroll(InspectorsBlockRef)
-    useSimulateScroll(DebugPanelRef)
 
     const dispatch = useDispatch()
     const creating = useSelector((state: EditorState) => state.creating)
-    const hasSelection = useSelector((state: EditorState) => !!state.selection)
     const debugging = useSelector((state: EditorState) => state.debugging)
     const zoom = useSelector((state: EditorState) => state.testWorkspace.zoom)
     const mould = useCurrentMould()
@@ -196,6 +173,7 @@ const App = () => {
                 }, 300)}
             ></KeyboardEventHandler>
             <Toolbar height={headerHeight} />
+
             <Flex
                 translate
                 style={{
@@ -209,83 +187,8 @@ const App = () => {
                     height: '100%',
                 }}
             >
-                <Box
-                    translate
-                    style={{
-                        transition: '0.3s',
-                        position: 'absolute',
-                        left: hasSelection ? 0 : -215,
-                        top: `${headerHeight}px`,
-                        height: `calc(100vh - ${headerHeight}px)`,
-                        width: '215px',
-                        zIndex: 1,
-                        borderRight: '1px solid #aaaaaa',
-                        backgroundColor: '#e1e1e1',
-                    }}
-                >
-                    <ArcherContainer
-                        style={{
-                            backgroundColor: '#e1e1e1',
-                        }}
-                        svgContainerStyle={{
-                            overflow: 'visible',
-                            pointerEvents: 'none',
-                            zIndex: -1,
-                        }}
-                        strokeColor="red"
-                        arrowLength={0}
-                        strokeWidth={1}
-                    >
-                        <MouldScope></MouldScope>
-                        <div ref={KitsBlockRef}>
-                            <TitledBoard title="Kits">
-                                <MouldKits></MouldKits>
-                            </TitledBoard>
-                        </div>
-                    </ArcherContainer>
-                    <div
-                        ref={DebugPanelRef}
-                        style={{
-                            height: `calc(100% - ${kitsBlockHeight}px)`,
-                            overflowY: 'auto',
-                        }}
-                    >
-                        <MouldMetas></MouldMetas>
-                        <DebugPanel.Target></DebugPanel.Target>
-                    </div>
-                </Box>
-                <Box
-                    translate
-                    width={215}
-                    style={{
-                        transition: '0.3s',
-                        position: 'absolute',
-                        right: hasSelection ? 0 : -215,
-                        top: `${headerHeight}px`,
-                        height: `calc(100vh - ${headerHeight}px)`,
-                        zIndex: 1,
-                        borderLeft: '1px solid #aaa',
-                        backgroundColor: '#e1e1e1',
-                    }}
-                >
-                    <MouldStates></MouldStates>
-                    <div ref={HierarchyBlockRef}>
-                        <TitledBoard title="Hierarchy">
-                            <Explorer2></Explorer2>
-                        </TitledBoard>
-                    </div>
-                    <div
-                        ref={InspectorsBlockRef}
-                        style={{
-                            width: '100%',
-                            position: 'absolute',
-                            height: `calc(100% - ${hierarchyBlockHeight}px)`,
-                            overflowY: 'auto',
-                        }}
-                    >
-                        <PropertyToolBar.Target />
-                    </div>
-                </Box>
+                <LeftMenu headerHeight={headerHeight} />
+                <RightMenu headerHeight={headerHeight} />
             </Flex>
             <Workspace></Workspace>
         </Flex>

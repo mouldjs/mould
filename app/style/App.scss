@@ -58,6 +58,10 @@ radix-portal div {
     margin-bottom: 5px;
 }
 
+.m-b {
+    margin-bottom: 10px;
+}
+
 .m-b-0 {
     margin-bottom: 0px;
 }
@@ -172,4 +176,27 @@ input.editable-state {
         height: 20px;
         background-color: #bbb;
     }
+}
+
+.bp3-tabs.right-tabs {
+    .bp3-tab-list {
+        justify-content: center;
+    }
+    .bp3-tab-panel {
+        margin-top: 0;
+    }
+
+    .bp3-tab {
+        width: 50%;
+        margin-right: 0;
+        text-align: center;
+    }
+}
+
+.suggest-select {
+    .bp3-input {
+        background: transparent;
+        box-shadow: none;
+    }
+    
 }

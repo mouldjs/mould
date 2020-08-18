@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import nanoid from 'nanoid'
 import data from './initialData'
 import { useWheel } from 'react-use-gesture'
-import { find } from 'lodash'
+import { find, reduce, values } from 'lodash'
 
 export const initialData = (data as any) as EditorState
 
@@ -78,6 +78,52 @@ export const useCurrentState = () => {
     }
 
     return selection[0][1]
+}
+
+export const useCurrentNode: () => {
+    node: Component | null
+    isRoot: boolean
+} = () => {
+    const selection = useSelector((state: EditorState) => state.selection)
+    const state = useSelector((state: EditorState) => state)
+
+    const currentStatePath = selection && selection[0]
+    const currentMould =
+        currentStatePath && ensureMould(state, currentStatePath[0])
+    const currentState =
+        currentStatePath &&
+        currentMould &&
+        currentMould.states[currentStatePath[1]]
+    let target: Component | null = null
+    let isRoot: boolean = false
+    if (currentState && currentStatePath) {
+        const currentNodePath = selection![1]
+        if (currentNodePath && !currentNodePath.length) {
+            isRoot = true
+            target = currentState
+        }
+
+        if (currentNodePath && currentNodePath.length) {
+            isRoot = false
+            target = reduce(
+                currentNodePath,
+                (res: any, cur) => {
+                    if (!values(res).length) {
+                        res = currentState
+                    }
+
+                    res = res.children![cur]
+                    return res
+                },
+                {}
+            )
+        }
+    }
+
+    return {
+        isRoot,
+        node: target,
+    }
 }
 
 export const useCurrentDebuggingView = () => {

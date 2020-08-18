@@ -8,10 +8,11 @@ const Item = styled.div({
     display: 'flex',
     boxSizing: 'border-box',
     alignItems: 'center',
-    padding: '10px 10px',
+    padding: '5px',
     borderRadius: '4px',
     marginBottom: 5,
     cursor: 'pointer',
+    backgroundColor: '#fff',
     '&:hover': {
         background: '#D2E9FF',
     },
@@ -20,6 +21,14 @@ const Item = styled.div({
 const ItemInfo = styled.div({
     marginLeft: '10px',
     textAlign: 'left',
+})
+
+const IconWrapper = styled.div({
+    width: 50,
+    height: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 })
 
 const ItemTitle = styled.p({
@@ -33,9 +42,10 @@ const ItemDesc = styled.p({
     fontSize: '12px',
     color: '#aaa',
     marginBottom: 0,
-    whiteSpace: 'nowrap',
+    whiteSpace: 'pre-wrap',
     overflow: 'hidden',
     maxWidth: '150px',
+    height: '32px',
     textOverflow: 'ellipsis',
 })
 
@@ -55,7 +65,7 @@ export default ({ name, icon, desc }: { name; icon?; desc? }) => {
 
     return (
         <Item ref={dragRef}>
-            {icon ? <IconComp /> : <Package />}
+            <IconWrapper>{icon ? <IconComp /> : <Package />}</IconWrapper>
             <ItemInfo>
                 <ItemTitle>{name}</ItemTitle>
                 <ItemDesc>{desc}</ItemDesc>
