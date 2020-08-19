@@ -88,7 +88,10 @@ const MouldInstance = {
 type InsType = typeof MouldInstance
 
 const extensions: InsType = (setup as any)(MouldInstance)
-Object.assign(MouldInstance.Components, extensions.Components)
+MouldInstance.Components = [
+    ...MouldInstance.Components,
+    ...(extensions.Components || []),
+]
 Object.assign(MouldInstance.Controls, extensions.Controls)
 
 export default MouldInstance
