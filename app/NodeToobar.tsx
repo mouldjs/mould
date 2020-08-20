@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import Components from '../components'
 import styled from 'styled-components'
 import { Popover, PopoverInteractionKind } from '@blueprintjs/core'
 import { Server, Anchor } from 'react-feather'
 import { useDispatch } from 'react-redux'
 import { wrapChild, transfromNodeToKit } from './appShell'
+import MouldApp from '../mould'
 
 const ToolbarWrapper = styled.div({
     position: 'absolute',
@@ -43,7 +43,7 @@ const PopoverContent = ({ content }: { content: string }) => {
 const NodeToolbar = ({ type }: { type: string }) => {
     const dispatch = useDispatch()
     const [toolbarOffsetTop, setToolbarOffsetTop] = useState<number>(0)
-    const plugin = Components.find((c) => c.type === type)
+    const plugin = MouldApp.getComponent(type)
     if (!plugin) {
         return null
     }
