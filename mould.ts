@@ -32,6 +32,7 @@ const KitComp = {
 }
 
 const MouldInstance = {
+    appWrapper: (app) => app,
     Components,
     Controls,
     get transforms() {
@@ -93,5 +94,6 @@ MouldInstance.Components = [
     ...(extensions.Components || []),
 ]
 Object.assign(MouldInstance.Controls, extensions.Controls)
+MouldInstance.appWrapper = extensions.appWrapper
 
 export default MouldInstance

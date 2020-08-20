@@ -36,6 +36,7 @@ import {
 import { debounce } from 'lodash'
 import LeftMenu from './Aside/LeftMenu'
 import RightMenu from './Aside/RightMenu'
+import MouldApp from '../mould'
 
 const schemaQuery = gql`
     query {
@@ -213,7 +214,7 @@ export default () => {
             <DndProvider backend={HTML5Backend}>
                 <CustomDragLayer></CustomDragLayer>
                 <RadixProvider>
-                    <App></App>
+                    {MouldApp.appWrapper(<App></App>)}
                 </RadixProvider>
             </DndProvider>
         </Provider>
