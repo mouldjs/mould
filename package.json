@@ -110,6 +110,7 @@
         "@types/react-treeview": "^0.4.2",
         "@types/redux-actions": "^2.6.1",
         "@types/styled-components": "^5.1.0",
+        "@types/styled-system": "^5.1.10",
         "@zeit/next-css": "^1.0.1",
         "@zeit/next-sass": "^1.0.1",
         "babel-plugin-styled-components": "^1.10.6",
