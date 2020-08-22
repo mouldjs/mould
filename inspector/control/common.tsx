@@ -1,4 +1,4 @@
-import { SFC, Component, FunctionComponent, CSSProperties } from 'react'
+import React, { SFC, Component, FunctionComponent, CSSProperties } from 'react'
 import { Text } from '@modulz/radix'
 import { InputGroup, NumericInput, HTMLSelect } from '@blueprintjs/core'
 import { Checkbox } from '../Checkbox'

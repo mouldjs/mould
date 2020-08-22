@@ -1,3 +1,4 @@
+import React from 'react'
 import { LayoutInspector } from '../../inspector/Layout'
 import * as z from 'zod'
 import { BaseComponentProps } from './baseprops'
