@@ -1,3 +1,4 @@
+import React from 'react'
 import { ItemPredicate, ItemRenderer } from '@blueprintjs/select'
 import { MenuItem } from '@blueprintjs/core'
 
