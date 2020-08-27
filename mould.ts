@@ -94,6 +94,6 @@ MouldInstance.Components = [
     ...(extensions.Components || []),
 ]
 Object.assign(MouldInstance.Controls, extensions.Controls)
-MouldInstance.appWrapper = extensions.appWrapper
+MouldInstance.appWrapper = extensions.appWrapper || ((app) => app)
 
 export default MouldInstance
