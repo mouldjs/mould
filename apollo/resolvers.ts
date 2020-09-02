@@ -19,6 +19,7 @@ export const resolvers = {
                 return null
             }
         },
+        ping: () => true,
     },
     Mutation: {
         saveSchemas: async (parent, { schemas }) => {
