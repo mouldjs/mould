@@ -26,7 +26,7 @@ import {
     updateDebugging,
 } from './appShell'
 import gql from 'graphql-tag'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useLazyQuery } from '@apollo/react-hooks'
 import {
     useCurrentMould,
     useCurrentView,
@@ -37,10 +37,17 @@ import { debounce } from 'lodash'
 import LeftMenu from './Aside/LeftMenu'
 import RightMenu from './Aside/RightMenu'
 import MouldApp from '../mould'
+import Entry from './Entry'
 
 const schemaQuery = gql`
     query {
         schemas
+    }
+`
+
+const pingQuery = gql`
+    query {
+        ping
     }
 `
 
@@ -197,26 +204,49 @@ const App = () => {
 }
 
 export default () => {
-    const { data, loading, error } = useQuery(schemaQuery)
+    const { data: initData, loading: initLoading, error: initError } = useQuery(
+        schemaQuery
+    )
+    const [
+        getSchemaData,
+        { loading: entryLoading, data: entryData, error: entryError },
+    ] = useLazyQuery(pingQuery, {
+        onCompleted: () => {
+            setSchemaReady(entryData && entryData.ping)
+        },
+    })
 
-    if (loading) {
+    const [schemaReady, setSchemaReady] = useState<Boolean>(
+        entryData && entryData.pong
+    )
+
+    if (initLoading) {
         return null
     }
 
-    if (error) {
-        return <div>{error}</div>
+    if (initError && !schemaReady) {
+        const err = entryError || initError
+        return (
+            <Entry
+                onReady={() => getSchemaData()}
+                loading={entryLoading}
+                error={err?.toString()}
+            ></Entry>
+        )
     }
 
-    const dataObj = data.schemas ? JSON.parse(data.schemas) : null
+    const initDataObj = initData.schemas ? JSON.parse(initData.schemas) : null
 
     return (
-        <Provider store={getStore(dataObj)}>
-            <DndProvider backend={HTML5Backend}>
-                <CustomDragLayer></CustomDragLayer>
-                <RadixProvider>
-                    {MouldApp.appWrapper(<App></App>)}
-                </RadixProvider>
-            </DndProvider>
+        <Provider store={getStore(initDataObj)}>
+            {
+                <DndProvider backend={HTML5Backend}>
+                    <CustomDragLayer></CustomDragLayer>
+                    <RadixProvider>
+                        {MouldApp.appWrapper(<App></App>)}
+                    </RadixProvider>
+                </DndProvider>
+            }
         </Provider>
     )
 }
