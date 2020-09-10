@@ -1,12 +1,14 @@
 {
-    "name": "@mouldjs/mould",
+    "name": "@mouldjs/loader",
     "version": "0.4.1",
     "license": "Apache-2.0",
+    "main": "./loader-release/compile/loader.js",
     "scripts": {
         "dev": "node scripts/ensure-test-workdir && cross-env WORKDIR=./test-mould next dev",
         "clean": "rm -rf release",
         "prebuild": "yarn clean & node scripts/ensure-test-workdir",
         "build": "tsc -p tsconfig.package.json",
+        "build:cjs": "tsc -p tsconfig.cjs.json",
         "postbuild": "copyfiles -e \"./node_modules/**/*\" -e \"./release/**/*\" -e \"./**/*.ts*\" -s \"./**/*\" release",
         "prepublishOnly": "node scripts/prepublish-checks",
         "publish-package": "yarn build && cd release && npm publish --access public"
@@ -103,6 +105,7 @@
         "zustand": "^2.2.3"
     },
     "devDependencies": {
+        "@mouldjs/mould": "^0.4.1",
         "@types/lodash": "^4.14.155",
         "@types/node": "^12.7.8",
         "@types/ramda": "^0.26.33",

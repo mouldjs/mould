@@ -158,9 +158,9 @@ export const transform = (schema: EditorState): string => {
     return `// Generated from Mould (github.com/mouldjs/mould)
 import React from 'react'
 import re from './resolvers'
-import ${MOULD} from '../mould'
+import ${MOULD} from '@mouldjs/mould'
 
-const ${RESOLVERS} = re as any
+const ${RESOLVERS} = re
 
 ${Object.values(schema.moulds).map(transformMouldToReactComponent).join('\n')}
 `

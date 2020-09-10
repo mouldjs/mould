@@ -3,7 +3,7 @@
     "compilerOptions": {
         "jsx": "react",
         "target": "es5",
-        "outDir": "./release",
+        "outDir": "./mould-release",
         "noEmit": false,
         "declaration": true
     },
