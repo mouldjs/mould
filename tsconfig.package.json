@@ -12,7 +12,8 @@
         ".mould",
         ".components",
         ".next",
-        "release",
+        "mould-release",
+        "loader-release",
         "pages"
     ],
     "include": [
