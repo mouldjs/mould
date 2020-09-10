@@ -1,0 +1,23 @@
+Noted:  
+    Before the complete function package (or refactor) splitting, the ways for output will be...
+
+    1. loader
+        package.json
+            name: "@mouldjs/loader"
+            main(used for entry): "./loader-release/compile/loader.js"
+            script: "yarn run build:cjs"
+        module type: "commonjs"
+        tsconfig: "tsconfig.cjs.json"
+        edit: 
+            ADD compile/loader.ts
+            EDIT compile/transform.ts as any in output string
+    2. mould
+        package.json
+            name: "@mouldjs/mould"
+            main(used for entry): ./mould-release/mould.js
+            script: "yarn run build"
+        module type: "es"
+        tsconfig: "tsconfig.package.json"
+
+    related commits:
+        #b34e90a
