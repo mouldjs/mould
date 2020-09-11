@@ -217,7 +217,7 @@ export default () => {
     })
 
     const [schemaReady, setSchemaReady] = useState<Boolean>(
-        entryData && entryData.pong
+        entryData && entryData.ping
     )
 
     if (initLoading) {
